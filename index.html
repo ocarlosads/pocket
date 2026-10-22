@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pocket Edit">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#141416">
+    <link rel="manifest" href="./manifest.json">
     <title>Pocket Edit</title>
 <style>
         :root {
@@ -38,11 +44,143 @@
             color: var(--text-primary);
             min-height: 100vh;
             height: 100vh;
+            height: 100dvh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             user-select: none;
             -webkit-user-select: none;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-right: env(safe-area-inset-right, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            padding-left: env(safe-area-inset-left, 0px);
+            box-sizing: border-box;
+        }
+
+        /* iPhone 11 and Mobile Landscape fine-tuning */
+        @media (max-height: 450px) and (orientation: landscape) {
+            .app-header {
+                height: 38px;
+                padding: 0 10px;
+                gap: 6px;
+            }
+
+            .app-logo {
+                font-size: 13px;
+            }
+
+            .connection-badge {
+                padding: 3px 7px;
+                font-size: 10px;
+            }
+
+            .nav-preset-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 14px;
+            }
+
+            .patch-info-badge {
+                height: 26px;
+                min-width: 105px;
+                padding: 2px 8px;
+            }
+
+            .patch-info-badge .patch-number,
+            .patch-info-badge .patch-name {
+                font-size: 11.5px;
+            }
+
+            .header-icon-btn {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+
+            .quick-save-snap-btn, .snapshots-nav-btn {
+                height: 26px;
+                font-size: 10.5px;
+                padding: 2px 8px;
+            }
+
+            .global-volume-control {
+                padding: 2px 6px;
+            }
+
+            .global-volume-control .slider {
+                width: 55px;
+            }
+
+            .pedals-snapshots-bar {
+                height: 30px;
+                padding: 0 10px;
+            }
+
+            .pedal-snap-pill {
+                height: 23px;
+                padding: 2px 7px;
+                font-size: 10px;
+            }
+
+            .pedal-snap-pill .pill-name {
+                max-width: 70px;
+                font-size: 10.5px;
+            }
+
+            .pedals-snap-action-btn {
+                height: 23px;
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+            .signal-chain {
+                padding: 4px 10px;
+            }
+
+            .chain-module {
+                width: 62px;
+                height: 64px;
+            }
+
+            .chain-module .module-icon {
+                height: 20px;
+                width: 20px;
+            }
+
+            .chain-module .module-name {
+                font-size: 11px;
+            }
+
+            .chain-module .module-type {
+                font-size: 8.5px;
+            }
+
+            .stage-content {
+                padding: 6px 10px;
+                gap: 8px;
+            }
+
+            .live-controls-panel {
+                width: 170px;
+                gap: 6px;
+            }
+
+            .live-tap-card {
+                min-height: 75px;
+                padding: 6px;
+            }
+
+            .tap-bpm-number {
+                font-size: 28px;
+            }
+
+            .note-btn {
+                height: 30px;
+            }
+
+            .patch-volume-module {
+                padding: 4px 8px;
+            }
         }
 
         /* Top Navigation Header */
@@ -2270,7 +2408,6 @@
 
                     <div class="pedals-snap-actions">
                         <button id="pedalsBarSaveSnapBtn" class="pedals-snap-action-btn" title="Gravar pedais e knobs atuais no snapshot selecionado">💾 Gravar no Snap Ativo</button>
-                        <button id="pedalsBarEditSnapBtn" class="pedals-snap-action-btn" title="Abrir editor visual completo de snapshots">⚙️ Configurar</button>
                     </div>
                 </div>
 
@@ -14193,24 +14330,11 @@
                     });
                 }
 
-                // BPM direct entry on click
+                // Tap BPM Display click now triggers tap rhythm without opening prompt dialog
                 const tapBpmDisplay = document.getElementById('tap-bpm-display');
                 if (tapBpmDisplay) {
-                    tapBpmDisplay.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const currentBpm = parseFloat(document.getElementById('tap-bpm-input-7')?.value || '120');
-                        const entered = prompt('Digite o BPM desejado (20 a 300):', Math.round(currentBpm));
-                        if (entered !== null) {
-                            const val = parseFloat(entered);
-                            if (!isNaN(val) && val >= 20 && val <= 300) {
-                                const bpmInput = document.getElementById('tap-bpm-input-7');
-                                if (bpmInput) {
-                                    bpmInput.value = val;
-                                    bpmInput.dispatchEvent(new Event('change'));
-                                }
-                            }
-                        }
-                    });
+                    // Click on the number simply delegates to the card's tap tempo event
+                    tapBpmDisplay.style.cursor = 'pointer';
                 }
             }
 
@@ -14463,12 +14587,7 @@
                     });
                 }
 
-                const pedalsBarEditBtn = document.getElementById('pedalsBarEditSnapBtn');
-                if (pedalsBarEditBtn) {
-                    pedalsBarEditBtn.addEventListener('click', () => {
-                        this.openEditSnapshotModal(this.activeSnapshotId);
-                    });
-                }
+                // Removed pedalsBarEditBtn
 
                 // Initial render of compact bar pills for active preset
                 this.renderSnapshotsForCurrentPreset();
