@@ -1171,9 +1171,9 @@
 
         /* Snapshots Header */
         .snapshots-header {
-            height: 44px;
-            background: #19191d;
-            border-bottom: 1px solid var(--border-subtle);
+            height: 46px;
+            background: #141418;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -1183,10 +1183,10 @@
         }
 
         .snapshots-back-btn, .snapshots-edit-btn {
-            background: #26262c;
-            border: 1px solid var(--border-medium);
-            border-radius: var(--radius-sm);
-            color: #ffffff;
+            background: #232328;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #b0b4c4;
             font-size: 13px;
             font-weight: 700;
             padding: 6px 14px;
@@ -1199,8 +1199,9 @@
         }
 
         .snapshots-back-btn:hover, .snapshots-edit-btn:hover {
-            border-color: var(--accent-orange);
-            background: #32323a;
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.25);
+            background: #2f2f38;
         }
 
         .snapshots-back-btn:active, .snapshots-edit-btn:active {
@@ -1211,8 +1212,9 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 800;
+            letter-spacing: 0.3px;
         }
 
         .snapshots-header-title .patch-num {
@@ -1223,102 +1225,250 @@
             color: #ffffff;
         }
 
-        /* Snapshots Grid / Columns (Screen Filling) */
+        /* Snapshots Grid Base (Screen Filling) */
         .snapshots-grid {
             flex: 1;
-            display: flex;
-            gap: 10px;
-            padding: 10px 14px;
-            height: calc(100% - 44px);
             box-sizing: border-box;
             overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* DUAL ORIENTATION: Portrait (2x2 + Tap Bar below) vs Landscape (4 cols + Tap Col right) */
+        @media (orientation: portrait), (max-width: 680px) {
+            .snapshots-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr 1fr auto;
+                grid-template-areas:
+                    "snap1 snap2"
+                    "snap3 snap4"
+                    "tap   tap";
+                gap: 10px;
+                padding: 10px 12px;
+                height: calc(100% - 46px);
+            }
+
+            .snapshot-card[data-snap-id="1"] { grid-area: snap1; }
+            .snapshot-card[data-snap-id="2"] { grid-area: snap2; }
+            .snapshot-card[data-snap-id="3"] { grid-area: snap3; }
+            .snapshot-card[data-snap-id="4"] { grid-area: snap4; }
+
+            .snap-tap-tempo-column {
+                grid-area: tap;
+                width: 100%;
+                height: 70px;
+                min-height: 62px;
+                max-height: 80px;
+                border-radius: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 16px;
+            }
+
+            .snap-tap-content {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 16px;
+            }
+
+            .snap-tap-title-block {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                line-height: 0.95;
+            }
+
+            .snap-tap-title-tap, .snap-tap-title-tempo {
+                font-size: 19px;
+                font-weight: 900;
+                color: #ffffff;
+                letter-spacing: 0.5px;
+            }
+
+            .snap-tap-bpm-block {
+                display: flex;
+                align-items: baseline;
+                gap: 6px;
+            }
+
+            .snap-tap-bpm-num {
+                font-size: 32px;
+                font-weight: 900;
+                font-family: 'JetBrains Mono', monospace;
+                color: #ffffff;
+                line-height: 1;
+            }
+
+            .snap-tap-bpm-unit {
+                font-size: 13px;
+                font-weight: 800;
+                color: rgba(255, 255, 255, 0.95);
+                letter-spacing: 1px;
+            }
+        }
+
+        @media (orientation: landscape) and (min-width: 681px) {
+            .snapshots-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr) 130px;
+                grid-template-rows: 1fr;
+                grid-template-areas: "snap1 snap2 snap3 snap4 tap";
+                gap: 10px;
+                padding: 10px 14px;
+                height: calc(100% - 46px);
+            }
+
+            .snapshot-card[data-snap-id="1"] { grid-area: snap1; }
+            .snapshot-card[data-snap-id="2"] { grid-area: snap2; }
+            .snapshot-card[data-snap-id="3"] { grid-area: snap3; }
+            .snapshot-card[data-snap-id="4"] { grid-area: snap4; }
+
+            .snap-tap-tempo-column {
+                grid-area: tap;
+                width: 100%;
+                height: 100%;
+                border-radius: 18px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 16px 8px;
+            }
+
+            .snap-tap-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .snap-tap-title-block {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                line-height: 1.1;
+            }
+
+            .snap-tap-title-tap, .snap-tap-title-tempo {
+                font-size: 22px;
+                font-weight: 900;
+                color: #ffffff;
+                text-align: center;
+            }
+
+            .snap-tap-bpm-block {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+            }
+
+            .snap-tap-bpm-num {
+                font-size: 38px;
+                font-weight: 900;
+                font-family: 'JetBrains Mono', monospace;
+                color: #ffffff;
+                line-height: 1;
+            }
+
+            .snap-tap-bpm-unit {
+                font-size: 12px;
+                font-weight: 800;
+                color: rgba(255, 255, 255, 0.95);
+                letter-spacing: 2px;
+            }
         }
 
         /* Individual Big Snapshot Button */
         .snapshot-card {
-            flex: 1;
             border-radius: 18px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 10px 14px 10px;
+            padding: 16px 10px 14px 10px;
             cursor: pointer;
             position: relative;
             box-sizing: border-box;
             transition: transform 0.12s ease, box-shadow 0.15s ease, filter 0.15s ease, border 0.15s ease;
             touch-action: manipulation;
-            border: 2px solid transparent;
+            border: 2.5px solid transparent;
             overflow: hidden;
+            opacity: 0.95;
         }
 
         .snapshot-card:active {
             transform: scale(0.97);
-            filter: brightness(0.9);
+            filter: brightness(0.92);
         }
 
         .snapshot-card.active {
             border-color: #ffffff !important;
-            box-shadow: 0 0 24px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.6) !important;
-            filter: brightness(1.08);
+            box-shadow: 0 0 24px rgba(255, 255, 255, 0.4), 0 8px 24px rgba(0,0,0,0.5) !important;
+            filter: brightness(1.05);
             transform: translateY(-2px);
+            opacity: 1;
         }
 
-        /* Specific snapshot vibrant theme colors with high contrast */
+        /* Curated Refined Themes from User Reference Image */
         .snapshot-card[data-snap-id="1"] {
-            background: linear-gradient(155deg, #2563eb, #1d4ed8);
-            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+            background: linear-gradient(155deg, #536284, #424e6b);
+            box-shadow: 0 4px 16px rgba(66, 78, 107, 0.35);
         }
 
         .snapshot-card[data-snap-id="1"].active {
-            box-shadow: 0 0 30px rgba(37, 99, 235, 0.85), 0 8px 25px rgba(0,0,0,0.6) !important;
+            box-shadow: 0 0 26px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.5) !important;
         }
 
         .snapshot-card[data-snap-id="2"] {
-            background: linear-gradient(155deg, #e11d48, #be123c);
-            box-shadow: 0 4px 16px rgba(225, 29, 72, 0.4);
+            background: linear-gradient(155deg, #8c5660, #73434b);
+            box-shadow: 0 4px 16px rgba(115, 67, 75, 0.35);
         }
 
         .snapshot-card[data-snap-id="2"].active {
-            box-shadow: 0 0 30px rgba(225, 29, 72, 0.85), 0 8px 25px rgba(0,0,0,0.6) !important;
+            box-shadow: 0 0 26px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.5) !important;
         }
 
         .snapshot-card[data-snap-id="3"] {
-            background: linear-gradient(155deg, #d97706, #b45309);
-            box-shadow: 0 4px 16px rgba(217, 119, 6, 0.4);
+            background: linear-gradient(155deg, #8a7c49, #6f6336);
+            box-shadow: 0 4px 16px rgba(111, 99, 54, 0.35);
         }
 
         .snapshot-card[data-snap-id="3"].active {
-            box-shadow: 0 0 30px rgba(217, 119, 6, 0.85), 0 8px 25px rgba(0,0,0,0.6) !important;
+            box-shadow: 0 0 26px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.5) !important;
         }
 
         .snapshot-card[data-snap-id="4"] {
-            background: linear-gradient(155deg, #059669, #047857);
-            box-shadow: 0 4px 16px rgba(5, 150, 105, 0.4);
+            background: linear-gradient(155deg, #477b67, #376150);
+            box-shadow: 0 4px 16px rgba(55, 97, 80, 0.35);
         }
 
         .snapshot-card[data-snap-id="4"].active {
-            box-shadow: 0 0 30px rgba(5, 150, 105, 0.85), 0 8px 25px rgba(0,0,0,0.6) !important;
+            box-shadow: 0 0 26px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.5) !important;
         }
 
-        /* Snapshot Header (SNAP 1, SNAP 2, etc.) */
+        /* Snapshot Header Label (SNAP 1, SNAP 2, etc.) */
         .snap-badge-label {
             font-size: 11px;
             font-weight: 800;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.75);
-            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            color: rgba(18, 22, 28, 0.6);
+            text-align: center;
         }
 
         /* Large Snapshot Name in Center */
         .snap-main-name {
-            font-size: 30px;
+            font-size: clamp(24px, 4.2vw, 36px);
             font-weight: 900;
-            color: #ffffff;
+            color: #171c24;
             text-align: center;
             letter-spacing: -0.5px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.15);
             line-height: 1.1;
             margin: auto 0;
             max-width: 100%;
@@ -1498,60 +1648,27 @@
             pointer-events: none;
         }
 
-        /* Large Vertical Tap Tempo Column in Snapshots View */
+        /* Tap Tempo Base Styles in Snapshots View */
         .snap-tap-tempo-column {
-            flex: 0 0 135px;
-            background: linear-gradient(145deg, #ff6b35, #f0501f);
-            border-radius: 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 16px 8px;
+            background: linear-gradient(145deg, #ff6029, #f24e18);
             cursor: pointer;
             box-sizing: border-box;
             user-select: none;
             touch-action: manipulation;
-            box-shadow: 0 4px 18px var(--accent-orange-glow);
-            transition: transform 0.08s ease, filter 0.08s ease;
+            box-shadow: 0 4px 18px rgba(255, 87, 34, 0.45);
+            transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .snap-tap-tempo-column:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
             filter: brightness(0.92);
         }
 
         .snap-tap-tempo-column.beat-flash {
-            filter: brightness(1.4);
-            box-shadow: 0 0 35px #ffffff, 0 0 50px var(--accent-orange) !important;
-        }
-
-        .snap-tap-title {
-            font-size: 22px;
-            font-weight: 900;
-            color: #ffffff;
-            line-height: 1.1;
-            text-align: center;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
-            letter-spacing: 0.5px;
-        }
-
-        .snap-tap-bpm-num {
-            font-size: 38px;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            color: #ffffff;
-            margin: 12px 0 4px 0;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            line-height: 1;
-        }
-
-        .snap-tap-bpm-sub {
-            font-size: 12px;
-            font-weight: 800;
-            color: rgba(255, 255, 255, 0.9);
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            filter: brightness(1.35);
+            box-shadow: 0 0 35px #ffffff, 0 0 50px #ff5722 !important;
         }
 
         /* Snapshots Nav Button in Main Header */
@@ -3122,7 +3239,7 @@
                             <span class="patch-num" id="snapHeaderPatchNum">P01</span>
                             <span class="patch-title" id="snapHeaderPatchName">Preset</span>
                         </div>
-                        <div style="width: 70px;"></div> <!-- Spacer to keep title centered -->
+                        <button id="snapHeaderEditBtn" class="snapshots-edit-btn" title="Editar nomes e ordem dos snapshots">Editar</button>
                     </header>
 
                     <!-- Snapshots Empty State for Presets without Snapshots -->
@@ -3138,13 +3255,13 @@
                         </div>
                     </div>
 
-                    <!-- 4 Big Snapshots Buttons + 1 Tap Tempo Column -->
+                    <!-- 4 Big Snapshots Buttons + 1 Tap Tempo (Grid responsivo 2x2 portrait / 4 colunas landscape) -->
                     <div class="snapshots-grid">
                         <!-- SNAP 1 -->
                         <div class="snapshot-card active" data-snap-id="1">
                             <div class="snap-card-top-row">
                                 <div class="snap-badge-label">SNAP 1</div>
-                                <div class="snap-rhythm-badge" id="snapRhythm1">1/4</div>
+                                <div class="snap-rhythm-badge" id="snapRhythm1" style="display:none;">1/4</div>
                             </div>
                             <div class="snap-main-name" id="snapName1">Limpo</div>
                             <div class="snap-pedals-container">
@@ -3154,9 +3271,9 @@
                                     <span class="snap-pedal-chip" data-module-id="2">DRV</span>
                                     <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
                                     <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                 </div>
                                 <div class="snap-pedals-row">
-                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                     <span class="snap-pedal-chip" data-module-id="6">FX2</span>
                                     <span class="snap-pedal-chip" data-module-id="7">DLY</span>
                                     <span class="snap-pedal-chip on" data-module-id="8">RVB</span>
@@ -3168,7 +3285,7 @@
                         <div class="snapshot-card" data-snap-id="2">
                             <div class="snap-card-top-row">
                                 <div class="snap-badge-label">SNAP 2</div>
-                                <div class="snap-rhythm-badge" id="snapRhythm2">1/4</div>
+                                <div class="snap-rhythm-badge" id="snapRhythm2" style="display:none;">1/4</div>
                             </div>
                             <div class="snap-main-name" id="snapName2">Crunch</div>
                             <div class="snap-pedals-container">
@@ -3178,9 +3295,9 @@
                                     <span class="snap-pedal-chip on" data-module-id="2">DRV</span>
                                     <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
                                     <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                 </div>
                                 <div class="snap-pedals-row">
-                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                     <span class="snap-pedal-chip" data-module-id="6">FX2</span>
                                     <span class="snap-pedal-chip" data-module-id="7">DLY</span>
                                     <span class="snap-pedal-chip" data-module-id="8">RVB</span>
@@ -3192,7 +3309,7 @@
                         <div class="snapshot-card" data-snap-id="3">
                             <div class="snap-card-top-row">
                                 <div class="snap-badge-label">SNAP 3</div>
-                                <div class="snap-rhythm-badge" id="snapRhythm3">1/8d</div>
+                                <div class="snap-rhythm-badge" id="snapRhythm3" style="display:none;">1/8d</div>
                             </div>
                             <div class="snap-main-name" id="snapName3">Solo</div>
                             <div class="snap-pedals-container">
@@ -3202,9 +3319,9 @@
                                     <span class="snap-pedal-chip on" data-module-id="2">DRV</span>
                                     <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
                                     <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                 </div>
                                 <div class="snap-pedals-row">
-                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                     <span class="snap-pedal-chip" data-module-id="6">FX2</span>
                                     <span class="snap-pedal-chip on" data-module-id="7">DLY</span>
                                     <span class="snap-pedal-chip" data-module-id="8">RVB</span>
@@ -3216,7 +3333,7 @@
                         <div class="snapshot-card" data-snap-id="4">
                             <div class="snap-card-top-row">
                                 <div class="snap-badge-label">SNAP 4</div>
-                                <div class="snap-rhythm-badge" id="snapRhythm4">1/8</div>
+                                <div class="snap-rhythm-badge" id="snapRhythm4" style="display:none;">1/8</div>
                             </div>
                             <div class="snap-main-name" id="snapName4">Ambiente</div>
                             <div class="snap-pedals-container">
@@ -3226,9 +3343,9 @@
                                     <span class="snap-pedal-chip" data-module-id="2">DRV</span>
                                     <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
                                     <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                 </div>
                                 <div class="snap-pedals-row">
-                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                     <span class="snap-pedal-chip" data-module-id="6">FX2</span>
                                     <span class="snap-pedal-chip on" data-module-id="7">DLY</span>
                                     <span class="snap-pedal-chip on" data-module-id="8">RVB</span>
@@ -3236,11 +3353,18 @@
                             </div>
                         </div>
 
-                        <!-- Big Vertical TAP TEMPO Column -->
+                        <!-- Big TAP TEMPO Button / Column (Responsive Dual Layout) -->
                         <div class="snap-tap-tempo-column" id="snapTapColumn" title="Toque no ritmo para marcar o BPM">
-                            <div class="snap-tap-title">TAP<br>TEMPO</div>
-                            <div class="snap-tap-bpm-num" id="snapTapBpmNum">120</div>
-                            <div class="snap-tap-bpm-sub">BPM</div>
+                            <div class="snap-tap-content">
+                                <div class="snap-tap-title-block">
+                                    <span class="snap-tap-title-tap">TAP</span>
+                                    <span class="snap-tap-title-tempo">TEMPO</span>
+                                </div>
+                                <div class="snap-tap-bpm-block">
+                                    <span class="snap-tap-bpm-num" id="snapTapBpmNum">120</span>
+                                    <span class="snap-tap-bpm-unit">BPM</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -13597,9 +13721,19 @@
 
                 document.getElementById('patchNumber').textContent = baseName;
                 document.getElementById('patchName').textContent = displayName;
+                this.activeSnapshotId = 1;
                 if (this.updateSnapshotsHeaderInfo) {
                     this.updateSnapshotsHeaderInfo();
                     this.renderSnapshotsForCurrentPreset();
+                }
+
+                // Sempre abrir no SNAP 1 por padrão se houver snapshots para este preset
+                if (this.hasPresetSnapshots && this.hasPresetSnapshots(baseName)) {
+                    const snaps = this.snapshotsData[baseName];
+                    const snap1 = snaps ? snaps.find(s => s.id === 1) : null;
+                    if (snap1 && snap1.saved !== false) {
+                        this.activateSnapshot(1);
+                    }
                 }
 
                 if (!sendCommand) {
@@ -14936,6 +15070,11 @@
 
                 if (closeBtn) {
                     closeBtn.addEventListener('click', () => this.toggleSnapshotsView(false));
+                }
+
+                const snapHeaderEditBtn = document.getElementById('snapHeaderEditBtn');
+                if (snapHeaderEditBtn) {
+                    snapHeaderEditBtn.addEventListener('click', () => this.openSnapshotOrganizerModal());
                 }
 
                 // Snapshots Cards Click Listeners (live performance only)
@@ -17645,6 +17784,21 @@
                         }, 70);
                     } else {
                         this.syncTapTempoFromCurrentPreset(decodedData);
+                    }
+
+                    // Sincroniza snapshots e garante abertura sempre no SNAP 1 por padrão
+                    const currentBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                    this.activeSnapshotId = 1;
+                    if (this.updateSnapshotsHeaderInfo) {
+                        this.updateSnapshotsHeaderInfo();
+                        this.renderSnapshotsForCurrentPreset();
+                    }
+                    if (this.hasPresetSnapshots && this.hasPresetSnapshots(currentBaseName)) {
+                        const snaps = this.snapshotsData[currentBaseName];
+                        const snap1 = snaps ? snaps.find(s => s.id === 1) : null;
+                        if (snap1 && snap1.saved !== false) {
+                            this.activateSnapshot(1);
+                        }
                     }
 
                     this.log('UI sync complete. Command sending re-enabled.', 'info');
