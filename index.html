@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="dark">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Pocket Edit">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#141416">
+    <link rel="icon" type="image/png" sizes="192x192" href="./img/icon-192.png">
+    <link rel="apple-touch-icon" href="./img/icon-192.png">
     <link rel="manifest" href="./manifest.json">
     <title>Pocket Edit</title>
 <style>
@@ -38,9 +41,18 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html {
+            background-color: #141416 !important;
+            color-scheme: dark;
+            width: 100%;
+            height: 100%;
+            min-height: 100%;
+            overflow: hidden;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-base);
+            background-color: #141416 !important;
             color: var(--text-primary);
             min-height: 100vh;
             height: 100vh;
@@ -1314,6 +1326,37 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             padding: 0 4px;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+        }
+
+        .snap-main-name:hover {
+            opacity: 0.85;
+            text-decoration: underline dotted rgba(255,255,255,0.4);
+        }
+
+        .snap-card-rename-btn {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            width: 22px;
+            height: 20px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            touch-action: manipulation;
+        }
+
+        .snap-card-rename-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #ffffff;
+        }
+
+        .snap-card-rename-btn:active {
+            transform: scale(0.9);
         }
 
         /* Foot pedal micro-grid in each Snapshot card */
@@ -2571,6 +2614,7 @@
                     </div>
 
                     <div class="pedals-snap-actions">
+                        <button id="pedalsBarEditSnapBtn" class="pedals-snap-action-btn" title="Editar nomes e pedais dos Snapshots">Editar</button>
                         <button id="pedalsBarSaveSnapBtn" class="pedals-snap-action-btn" title="Gravar pedais e knobs atuais no snapshot selecionado">Gravar no Snap Ativo</button>
                     </div>
                 </div>
@@ -2932,7 +2976,13 @@
                             <span class="patch-num" id="snapHeaderPatchNum">P01</span>
                             <span class="patch-title" id="snapHeaderPatchName">Preset</span>
                         </div>
-                        <div style="width: 70px;"></div>
+                        <button id="editSnapshotsBtn" class="snapshots-edit-btn" title="Editar nomes e configurações dos Snapshots">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Editar
+                        </button>
                     </header>
 
                     <!-- Snapshots Empty State for Presets without Snapshots -->
@@ -2954,9 +3004,17 @@
                         <div class="snapshot-card active" data-snap-id="1">
                             <div class="snap-card-top-row">
                                 <div class="snap-badge-label">SNAP 1</div>
-                                <div class="snap-rhythm-badge" id="snapRhythm1">1/4</div>
+                                <div style="display: flex; gap: 4px; align-items: center;">
+                                    <button class="snap-card-rename-btn" data-snap-id="1" title="Renomear este snapshot" aria-label="Renomear Snapshot 1">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="snap-rhythm-badge" id="snapRhythm1">1/4</div>
+                                </div>
                             </div>
-                            <div class="snap-main-name" id="snapName1">Limpo</div>
+                            <div class="snap-main-name" id="snapName1" title="Clique para renomear este snapshot">Limpo</div>
                             <div class="snap-pedals-container">
                                 <div class="snap-pedals-row">
                                     <span class="snap-pedal-chip" data-module-id="0">NR</span>
@@ -2978,9 +3036,17 @@
                         <div class="snapshot-card" data-snap-id="2">
                             <div class="snap-card-top-row">
                                 <div class="snap-badge-label">SNAP 2</div>
-                                <div class="snap-rhythm-badge" id="snapRhythm2">1/4</div>
+                                <div style="display: flex; gap: 4px; align-items: center;">
+                                    <button class="snap-card-rename-btn" data-snap-id="2" title="Renomear este snapshot" aria-label="Renomear Snapshot 2">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="snap-rhythm-badge" id="snapRhythm2">1/4</div>
+                                </div>
                             </div>
-                            <div class="snap-main-name" id="snapName2">Crunch</div>
+                            <div class="snap-main-name" id="snapName2" title="Clique para renomear este snapshot">Crunch</div>
                             <div class="snap-pedals-container">
                                 <div class="snap-pedals-row">
                                     <span class="snap-pedal-chip on" data-module-id="0">NR</span>
@@ -3002,9 +3068,17 @@
                         <div class="snapshot-card" data-snap-id="3">
                             <div class="snap-card-top-row">
                                 <div class="snap-badge-label">SNAP 3</div>
-                                <div class="snap-rhythm-badge" id="snapRhythm3">1/8d</div>
+                                <div style="display: flex; gap: 4px; align-items: center;">
+                                    <button class="snap-card-rename-btn" data-snap-id="3" title="Renomear este snapshot" aria-label="Renomear Snapshot 3">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="snap-rhythm-badge" id="snapRhythm3">1/8d</div>
+                                </div>
                             </div>
-                            <div class="snap-main-name" id="snapName3">Solo</div>
+                            <div class="snap-main-name" id="snapName3" title="Clique para renomear este snapshot">Solo</div>
                             <div class="snap-pedals-container">
                                 <div class="snap-pedals-row">
                                     <span class="snap-pedal-chip on" data-module-id="0">NR</span>
@@ -3026,9 +3100,17 @@
                         <div class="snapshot-card" data-snap-id="4">
                             <div class="snap-card-top-row">
                                 <div class="snap-badge-label">SNAP 4</div>
-                                <div class="snap-rhythm-badge" id="snapRhythm4">1/8</div>
+                                <div style="display: flex; gap: 4px; align-items: center;">
+                                    <button class="snap-card-rename-btn" data-snap-id="4" title="Renomear este snapshot" aria-label="Renomear Snapshot 4">
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="snap-rhythm-badge" id="snapRhythm4">1/8</div>
+                                </div>
                             </div>
-                            <div class="snap-main-name" id="snapName4">Ambiente</div>
+                            <div class="snap-main-name" id="snapName4" title="Clique para renomear este snapshot">Ambiente</div>
                             <div class="snap-pedals-container">
                                 <div class="snap-pedals-row">
                                     <span class="snap-pedal-chip" data-module-id="0">NR</span>
@@ -3133,6 +3215,28 @@
             <div style="font-size: 10px; color: var(--text-secondary); margin-top: 2px;">Manter o mesmo BPM ao trocar de presets</div>
         </div>
         <div id="globalTempoSettingsToggle" class="toggle-switch on" title="Ativar/Desativar Tap Tempo Global"></div>
+    </div>
+
+    <div class="control-row">
+        <div>
+            <div class="control-label" style="font-weight: 700; color: #fff;">Volume do Patch</div>
+            <div style="font-size: 10px; color: var(--text-secondary);">Nível de saída deste preset (0-100)</div>
+        </div>
+        <div class="slider-container">
+            <input type="range" min="0" max="100" value="75" step="1" class="slider" data-global-param="presetVolume">
+            <span class="slider-value">75</span>
+        </div>
+    </div>
+
+    <div class="control-row" style="margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
+        <div>
+            <div class="control-label" style="font-weight: 700; color: #fff;">Volume Global</div>
+            <div style="font-size: 10px; color: var(--text-secondary);">Volume master geral de saída (0-100)</div>
+        </div>
+        <div class="slider-container">
+            <input type="range" min="0" max="100" value="75" step="1" class="slider" data-global-param="globalVolume">
+            <span class="slider-value">75</span>
+        </div>
     </div>
 
     <div class="control-row">
@@ -13076,45 +13180,68 @@
                 this.setupEventListeners();
             }
 
+            safeStorageGet(key, fallback = null) {
+                try {
+                    const val = localStorage.getItem(key);
+                    return val !== null ? val : fallback;
+                } catch (e) {
+                    return fallback;
+                }
+            }
+
+            safeStorageSet(key, val) {
+                try {
+                    localStorage.setItem(key, val);
+                } catch (e) {}
+            }
+
             startEditor() {
-                this.log('Loading hardcoded libraries...', 'info');
+                try {
+                    this.log('Loading hardcoded libraries...', 'info');
                     this.definitions = MODULE_LIBRARY_DATA;
                     this.commands = COMMAND_LIBRARY_DATA;
 
                     if (!this.definitions || !this.commands) {
                         this.log('Error: Hardcoded library data is missing.', 'error');
-                        alert('Error: Library data is missing. Check the script tag.');
                         return;
                     }
 
                     this.log('Libraries loaded successfully.', 'info');
 
-                    this.buildFxIdMaps();
-                    this.populatePatchLists();
-                    this.populateUIFromDefinitions();
-                    this.setupControlListeners();
-                    this.setupAmpCloneMode();
-                    this.setupDragAndDrop();
-                    this.setupTapTempo();
-                    this.setupLiveUI();
-                    this.initSnapshotsSystem();
-                    this.initQuickSaveSceneSystem();
+                    try { this.buildFxIdMaps(); } catch (e) { console.warn('buildFxIdMaps error', e); }
+                    try { this.populatePatchLists(); } catch (e) { console.warn('populatePatchLists error', e); }
+                    try { this.populateUIFromDefinitions(); } catch (e) { console.warn('populateUIFromDefinitions error', e); }
+                    try { this.setupControlListeners(); } catch (e) { console.warn('setupControlListeners error', e); }
+                    try { this.setupAmpCloneMode(); } catch (e) { console.warn('setupAmpCloneMode error', e); }
+                    try { this.setupDragAndDrop(); } catch (e) { console.warn('setupDragAndDrop error', e); }
+                    try { this.setupTapTempo(); } catch (e) { console.warn('setupTapTempo error', e); }
+                    try { this.setupLiveUI(); } catch (e) { console.warn('setupLiveUI error', e); }
+                    try { this.initSnapshotsSystem(); } catch (e) { console.warn('initSnapshotsSystem error', e); }
+                    try { this.initQuickSaveSceneSystem(); } catch (e) { console.warn('initQuickSaveSceneSystem error', e); }
 
-                    document.getElementById('editor-container').style.display = 'flex';
+                    const editorCont = document.getElementById('editor-container');
+                    if (editorCont) editorCont.style.display = 'flex';
 
-                const firstUserPatch = document.querySelector('#patchListContainer .patch-item');
-                if (firstUserPatch) {
-                    const baseName = firstUserPatch.dataset.baseName;
-                    const displayText = firstUserPatch.textContent;
-                    const displayName = displayText.includes(': ') ? displayText.split(': ')[1] : 'Preset';
-                    document.getElementById('patchNumber').textContent = baseName;
-                    document.getElementById('patchName').textContent = displayName;
-                    firstUserPatch.classList.add('selected');
+                    const firstUserPatch = document.querySelector('#patchListContainer .patch-item');
+                    if (firstUserPatch) {
+                        const baseName = firstUserPatch.dataset.baseName;
+                        const displayText = firstUserPatch.textContent;
+                        const displayName = displayText.includes(': ') ? displayText.split(': ')[1] : 'Preset';
+                        const pNum = document.getElementById('patchNumber');
+                        const pName = document.getElementById('patchName');
+                        if (pNum) pNum.textContent = baseName;
+                        if (pName) pName.textContent = displayName;
+                        firstUserPatch.classList.add('selected');
+                    }
+                    try { this.selectModule(0); } catch (e) {}
+                    document.querySelectorAll('.slider').forEach(slider => {
+                        this.updateSliderProgress(slider);
+                    });
+                } catch (fatalErr) {
+                    console.error('Fatal startEditor error:', fatalErr);
+                    const editorCont = document.getElementById('editor-container');
+                    if (editorCont) editorCont.style.display = 'flex';
                 }
-                this.selectModule(0); 
-                document.querySelectorAll('.slider').forEach(slider => {
-                    this.updateSliderProgress(slider);
-                });
             }
 
             async loadFiles() {
@@ -13637,9 +13764,25 @@
                             const value = slider.value;
 
                             if (slider.min < 0) {
-                                valueDisplay.textContent = `${value}dB`;
+                                if (valueDisplay) valueDisplay.textContent = `${value}dB`;
                             } else {
-                                valueDisplay.textContent = value;
+                                if (valueDisplay) valueDisplay.textContent = value;
+                            }
+
+                            // Keep all sliders for this same paramName synchronized in UI!
+                            document.querySelectorAll(`.slider[data-global-param="${paramName}"]`).forEach(otherSlider => {
+                                if (otherSlider !== slider) {
+                                    otherSlider.value = value;
+                                    this.updateSliderProgress(otherSlider);
+                                    const otherDisplay = otherSlider.nextElementSibling;
+                                    if (otherDisplay) {
+                                        otherDisplay.textContent = otherSlider.min < 0 ? `${value}dB` : value;
+                                    }
+                                }
+                            });
+                            if (paramName === 'presetVolume') {
+                                const pvd = document.getElementById('patchVolDisplay');
+                                if (pvd) pvd.textContent = value;
                             }
 
                             clearTimeout(slider.debounceTimer);
@@ -13868,7 +14011,7 @@
                 }
 
                 // Check saved preference or default to true
-                const isGlobalEnabled = localStorage.getItem('pocketedit_global_tap_tempo') !== '0';
+                const isGlobalEnabled = this.safeStorageGet('pocketedit_global_tap_tempo', '1') !== '0';
 
                 this.globalTapTempo = {
                     enabled: isGlobalEnabled,
@@ -13881,7 +14024,7 @@
                     globalTempoSettingsToggle.addEventListener('click', () => {
                         this.globalTapTempo.enabled = !this.globalTapTempo.enabled;
                         globalTempoSettingsToggle.classList.toggle('on', this.globalTapTempo.enabled);
-                        localStorage.setItem('pocketedit_global_tap_tempo', this.globalTapTempo.enabled ? '1' : '0');
+                        this.safeStorageSet('pocketedit_global_tap_tempo', this.globalTapTempo.enabled ? '1' : '0');
                         this.log(`Configuração: Tap Tempo Global ${this.globalTapTempo.enabled ? 'ativado' : 'desativado'}`, 'info');
                     });
                 }
@@ -14738,15 +14881,40 @@
 
                 // Snapshots Cards Click Listeners
                 document.querySelectorAll('.snapshot-card').forEach(card => {
-                    card.addEventListener('click', () => {
+                    card.addEventListener('click', (e) => {
+                        if (e.target.closest('.snap-card-rename-btn')) return;
                         const snapId = parseInt(card.dataset.snapId, 10);
                         this.activateSnapshot(snapId);
+                    });
+                });
+
+                // Direct rename button on Snapshot Cards
+                document.querySelectorAll('.snap-card-rename-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const snapId = parseInt(btn.dataset.snapId, 10);
+                        this.promptRenameSnapshot(snapId);
+                    });
+                });
+
+                // Clicking the snapshot name directly also prompts rename
+                document.querySelectorAll('.snap-main-name').forEach(nameEl => {
+                    nameEl.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const card = nameEl.closest('.snapshot-card');
+                        const snapId = card ? parseInt(card.dataset.snapId, 10) : 1;
+                        this.promptRenameSnapshot(snapId);
                     });
                 });
 
                 // Visual Snapshot Editor Listeners
                 if (editBtn) {
                     editBtn.addEventListener('click', () => this.openEditSnapshotModal());
+                }
+
+                const pedalsBarEditBtn = document.getElementById('pedalsBarEditSnapBtn');
+                if (pedalsBarEditBtn) {
+                    pedalsBarEditBtn.addEventListener('click', () => this.openEditSnapshotModal());
                 }
 
                 const snapEditorCloseBtn = document.getElementById('snapEditorCloseBtn');
@@ -15061,11 +15229,16 @@
                             `;
                         }).join('');
 
-                        // Attach click listeners to new pills
+                        // Attach click and dblclick listeners to new pills
                         pillsContainer.querySelectorAll('.pedal-snap-pill').forEach(pill => {
                             pill.addEventListener('click', () => {
                                 const snapId = parseInt(pill.dataset.snapId, 10);
                                 this.activateSnapshot(snapId);
+                            });
+                            pill.addEventListener('dblclick', (e) => {
+                                e.stopPropagation();
+                                const snapId = parseInt(pill.dataset.snapId, 10);
+                                this.promptRenameSnapshot(snapId);
                             });
                         });
 
@@ -15199,8 +15372,39 @@
                 this.log(`Snapshot Ativado: ${snap.name} (${snap.title}) em ${presetBaseName} - Ritmo: ${this.getRhythmLabel(multiplier)}`, 'info');
             }
 
+            promptRenameSnapshot(snapId) {
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                let snaps = this.getPresetSnapshots(presetBaseName);
+                if (!snaps) snaps = this.createDefaultSnapshotsForPreset(presetBaseName);
+                const currentSnap = snaps.find(s => s.id === snapId) || snaps[0];
+                const currentName = currentSnap ? currentSnap.name : `Snap ${snapId}`;
+                const newName = prompt(`Digite o novo nome para o SNAP ${snapId}:`, currentName);
+                if (newName !== null && newName.trim() !== '') {
+                    this.renameSnapshot(snapId, newName.trim());
+                }
+            }
+
+            renameSnapshot(snapId, newName) {
+                if (!newName) return;
+                const trimmed = newName.trim();
+                if (!trimmed) return;
+
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                let snaps = this.getPresetSnapshots(presetBaseName);
+                if (!snaps) snaps = this.createDefaultSnapshotsForPreset(presetBaseName);
+                const snap = snaps.find(s => s.id === snapId);
+                if (snap) {
+                    snap.name = trimmed.substring(0, 15);
+                    snap.title = snap.name;
+                    this.saveAllSnapshotsData();
+                    this.renderSnapshotsForCurrentPreset();
+                    this.log(`Snapshot ${snapId} renomeado para: ${snap.name}`, 'info');
+                }
+            }
+
             openEditSnapshotModal(targetSnapId = null) {
                 const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const patchName = document.getElementById('patchName')?.textContent.trim() || 'Preset';
                 let snaps = this.getPresetSnapshots(presetBaseName);
                 if (!snaps) snaps = this.createDefaultSnapshotsForPreset(presetBaseName);
 
@@ -15240,12 +15444,15 @@
                 if (nameInput) {
                     nameInput.value = currentSnap.name;
                     nameInput.oninput = () => {
-                        currentSnap.name = nameInput.value.trim() || `Snap ${snapId}`;
+                        const newName = nameInput.value.trim() || `Snap ${snapId}`;
+                        currentSnap.name = newName;
+                        currentSnap.title = newName;
                         const tabNameEl = document.getElementById(`snapTabName${snapId}`);
                         if (tabNameEl) tabNameEl.textContent = currentSnap.name;
                         const snapCardName = document.getElementById(`snapName${snapId}`);
                         if (snapCardName) snapCardName.textContent = currentSnap.name;
                         this.saveAllSnapshotsData();
+                        this.renderSnapshotsForCurrentPreset();
                     };
                 }
 
@@ -17949,8 +18156,17 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            window.bleEditor = new SonicakeBLEEditor();
-            window.bleEditor.startEditor(); // Automatically start the editor on page load
+            try {
+                window.bleEditor = new SonicakeBLEEditor();
+                window.bleEditor.startEditor(); // Automatically start the editor on page load
+            } catch (err) {
+                console.error('Fatal initialization error:', err);
+                const ec = document.getElementById('editor-container');
+                if (ec) ec.style.display = 'flex';
+            }
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            }
         });
     </script>
 
