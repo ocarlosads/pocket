@@ -4,427 +4,491 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pocket Edit</title>
-    <style>
+<style>
+        :root {
+            --bg-base: #141416;
+            --bg-surface: #1e1e22;
+            --bg-elevated: #26262c;
+            --bg-card: #222226;
+            --border-subtle: #2d2d34;
+            --border-medium: #3a3a44;
+            --accent-orange: #ff6b35;
+            --accent-orange-hover: #ff7d4d;
+            --accent-orange-glow: rgba(255, 107, 53, 0.4);
+            --accent-green: #00e676;
+            --accent-green-glow: rgba(0, 230, 118, 0.5);
+            --text-primary: #ffffff;
+            --text-secondary: #9e9ea8;
+            --text-muted: #6c6c76;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
-            color: #e0e0e0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
             min-height: 100vh;
-            overflow-x: auto;
-        }
-
-        .main-container {
-            display: flex;
             height: 100vh;
-        }
-
-        /* Left Sidebar */
-        .sidebar {
-            width: 200px;
-            background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
-            border-right: 1px solid #444;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        .sidebar-header {
-            padding: 15px;
-            background: linear-gradient(90deg, #ff6b35, #f7931e);
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 1px solid #444;
-        }
-
-        .connection-panel {
-            padding: 15px;
-            border-bottom: 1px solid #444;
-        }
-
-        .connection-status {
+        /* Top Navigation Header */
+        .app-header {
+            height: 44px;
+            background: #19191d;
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            font-size: 12px;
+            justify-content: space-between;
+            padding: 0 14px;
+            gap: 10px;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo {
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .connection-badge {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: #232328;
+            border: 1px solid var(--border-medium);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .connection-badge:hover {
+            border-color: var(--accent-orange);
+            color: var(--text-primary);
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #ff4444;
+            background: #ff3b30;
+            box-shadow: 0 0 6px rgba(255, 59, 48, 0.6);
+            transition: all 0.3s ease;
         }
 
         .status-dot.connected {
-            background: #44ff44;
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green-glow);
         }
 
-        .btn {
-            width: 100%;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
-            color: #e0e0e0;
-            cursor: pointer;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover:not(:disabled) {
-            background: linear-gradient(145deg, #5a5a5a, #4a4a4a);
-            transform: translateY(-1px);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-primary {
-            background: linear-gradient(145deg, #0066cc, #0052a3);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background: linear-gradient(145deg, #0077dd, #0066cc);
-        }
-
-        .patch-list {
-            flex: 1;
+        /* Preset Navigation in Header Center */
+        .header-center {
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+            max-width: 360px;
         }
 
-        .patch-tabs {
+        .nav-preset-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-sm);
+            background: #26262c;
+            border: 1px solid var(--border-medium);
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
             display: flex;
-            flex-shrink: 0;
-        }
-
-        .patch-tab-btn {
-            flex: 1;
-            padding: 10px;
-            background: #333;
-            border: none;
-            border-bottom: 2px solid #333;
-            color: #999;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-size: 11px;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
+            touch-action: manipulation;
         }
 
-        .patch-tab-btn:hover {
-            background: #444;
+        .nav-preset-btn:active {
+            background: var(--accent-orange);
+            transform: scale(0.92);
         }
 
-        .patch-tab-btn.active {
-            color: #ff6b35;
-            background: #2a2a2a;
-            border-bottom-color: #ff6b35;
-        }
-
-        .patch-search-container {
-            padding: 8px;
-            background: #2a2a2a;
-            flex-shrink: 0;
-        }
-
-        #patchSearchInput {
-            width: 100%;
-            padding: 6px 10px;
-            background: #1e1e1e;
-            border: 1px solid #444;
-            border-radius: 4px;
-            color: #e0e0e0;
-            font-size: 12px;
-        }
-
-        .patch-items-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 8px 8px 8px;
-            max-height: 45vh; 
-        }
-
-        .patch-item {
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid transparent;
-            border-radius: 4px;
-            margin-bottom: 2px;
+        .patch-info-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #232328;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            padding: 4px 12px;
             cursor: pointer;
-            font-size: 12px;
             transition: all 0.2s ease;
+            height: 30px;
+            min-width: 130px;
+            max-width: 210px;
+            justify-content: center;
+        }
+
+        .patch-info-badge:hover {
+            border-color: var(--accent-orange);
+        }
+
+        .patch-info-badge .patch-number {
+            color: var(--accent-orange);
+            font-weight: 800;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .patch-info-badge .patch-name {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 13px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .patch-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: #666;
+        /* Header Right Controls */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .patch-item.selected {
-            background: linear-gradient(145deg, #0066cc, #0052a3);
-            border-color: #0088ff;
+        .global-volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #232328;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 3px 8px;
         }
 
-        /* Main Content Area */
+        .global-volume-control .control-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .global-volume-control .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .global-volume-control .slider {
+            width: 75px;
+        }
+
+        .global-volume-control .slider-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-primary);
+            min-width: 20px;
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .header-icon-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-sm);
+            background: #26262c;
+            border: 1px solid var(--border-medium);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .header-icon-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-orange);
+        }
+
+        /* Main Workspace Container */
+        .main-container {
+            flex: 1;
+            display: flex;
+            position: relative;
+            height: calc(100vh - 44px);
+            overflow: hidden;
+        }
+
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #2a2a2a;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-base);
         }
 
-        .top-bar {
-            height: 60px;
-            background: linear-gradient(180deg, #3a3a3a, #2a2a2a);
-            border-bottom: 1px solid #444;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            justify-content: space-between;
-        }
-
-        .patch-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .patch-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: #ff6b35;
-        }
-
-        .patch-number {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #ccc;
-        }
-
-        /* Signal Chain */
-        .signal-chain {
-            padding: 15px 20px;
+        #editor-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            justify-content: center;
-            border-bottom: 1px solid #444; /* Added separator */
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Signal Chain Horizontal Strip */
+        .signal-chain {
+            background: #18181c;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 6px 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
         }
 
         .chain-flow {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 2px 0;
+        }
+
+        .chain-flow::-webkit-scrollbar {
+            display: none;
         }
 
         .chain-module {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(145deg, #404040, #303030);
-            border: 2px solid #555;
-            border-radius: 8px;
+            width: 70px;
+            height: 72px;
+            flex-shrink: 0;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-medium);
+            border-radius: var(--radius-md);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             position: relative;
+            padding: 3px;
+            touch-action: manipulation;
         }
 
         .chain-module:hover {
-            border-color: #777;
-            transform: translateY(-2px);
+            border-color: #555562;
         }
 
         .chain-module.active {
-            border-color: #ff6b35;
-            box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+            border-color: var(--accent-orange) !important;
+            box-shadow: 0 0 12px var(--accent-orange-glow);
+            background: #26262c;
         }
 
         .chain-module.disabled {
-            opacity: 0.4;
-            border-color: #333;
+            opacity: 0.45;
         }
 
         .chain-module.dragging {
-            opacity: 0.5;
-            background: #555;
+            opacity: 0.4;
+            transform: scale(0.95);
+        }
+
+        .chain-module .module-status {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #3c3c44;
+            transition: all 0.2s ease;
+        }
+
+        .chain-module .module-status.on {
+            background: var(--accent-green);
+            box-shadow: 0 0 6px var(--accent-green-glow);
+        }
+
+        .chain-module .module-icon {
+            height: 24px;
+            width: 24px;
+            margin-bottom: 2px;
+            color: #b0b0bc;
+        }
+
+        .chain-module .module-name {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .chain-module .module-type {
+            font-size: 9px;
+            color: var(--text-secondary);
+            max-width: 62px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-top: 3px;
+            line-height: 1;
         }
 
         #fixed-chain-block {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(0,0,0,0.15);
-            border: 1px dashed #555;
-            border-radius: 12px;
-            padding: 10px;
-        }
-
-        #chain-terminator {
-            width: 0;
-            height: 0;
+            gap: 8px;
+            background: transparent;
+            border: none;
             padding: 0;
             margin: 0;
-            border: none;
-            font-size: 0;
-        }
-
-        .module-name {
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #ccc;
-        }
-
-        .module-type {
-            font-size: 9px;
-            color: #888;
-            margin-top: 2px;
-        }
-
-        .module-status {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #333;
-            cursor: pointer;
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
-        }
-
-        /* for larger clickable area */
-        .module-status::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            bottom: -6px;
-            left: -6px;
-        }
-
-        .module-status:hover {
-            box-shadow: 0 0 6px rgba(255,255,255,0.3);
-        }
-
-        .module-status.on {
-            background: #44ff44;
-        }
-
-        .module-status.on:hover {
-            box-shadow: 0 0 8px rgba(68,255,68,0.7);
         }
 
         .chain-connector {
-            width: 20px;
-            height: 2px;
-            background: #666;
-            position: relative;
+            display: none !important;
         }
 
-        .chain-connector::after {
-            content: '▶';
-            position: absolute;
-            right: -10px;
-            top: -6px;
-            color: #666;
-            font-size: 10px;
+        #chain-terminator {
+            display: none !important;
         }
 
-        /* Effects Panel */
-        .effects-panel {
-            background: linear-gradient(180deg, #353535, #2a2a2a);
-            padding: 20px;
+        /* Stage Content Split View (Bottom Half) */
+        .stage-content {
             flex: 1;
-            overflow-y: auto;
+            display: flex;
+            padding: 8px 12px;
+            gap: 12px;
+            height: calc(100% - 84px);
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
-        .effect-description {
-            font-size: 12px;
-            color: #aaa;
-            margin-bottom: 20px;
-            line-height: 1.5;
-            background: rgba(0,0,0,0.2);
-            padding: 10px;
-            border-radius: 4px;
-            border-left: 3px solid #ff6b35;
+        /* Active Module Parameters Panel (Left/Center) */
+        .effects-panel {
+            flex: 1;
+            background: #1e1e22;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            scrollbar-width: thin;
         }
 
         .effect-controls {
             display: none;
+            flex-direction: column;
+            height: 100%;
         }
 
         .effect-controls.active {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            display: flex;
         }
 
-        .control-section {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid #444;
-            border-radius: 6px;
-            padding: 15px;
-        }
-
-        .control-section h4 {
-            color: #ff6b35;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            letter-spacing: 0.5px;
-        }
-
-        .control-row {
+        /* Module Header with Name, Type Selector and On/Off Switch */
+        .effect-controls > .control-section:first-child {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-wrap: nowrap;
+            gap: 10px;
         }
 
-        .control-label {
-            min-width: 60px;
+        .effect-controls > .control-section:first-child .module-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--accent-orange);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            margin: 0;
+        }
+
+        .effect-controls > .control-section:first-child .control-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .effect-controls > .control-section:first-child .control-label {
             font-size: 11px;
-            color: #ccc;
-            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
         }
 
+        .dropdown-select {
+            background: #28282e;
+            border: 1px solid var(--border-medium);
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-select:hover, .dropdown-select:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .effect-description {
+            display: none;
+        }
+
+        /* On/Off Switch Toggle Styling */
         .toggle-switch {
-            width: 40px;
-            height: 20px;
-            background: #333;
-            border-radius: 10px;
+            width: 44px;
+            height: 24px;
+            background: #3a3a42;
+            border-radius: 12px;
             position: relative;
             cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .toggle-switch.on {
-            background: #ff6b35;
+            transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            flex-shrink: 0;
+            touch-action: manipulation;
         }
 
         .toggle-switch::after {
@@ -432,107 +496,545 @@
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 16px;
-            height: 16px;
-            background: white;
+            width: 20px;
+            height: 20px;
+            background: #ffffff;
             border-radius: 50%;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
+
+        .toggle-switch.on {
+            background: var(--accent-orange);
         }
 
         .toggle-switch.on::after {
             transform: translateX(20px);
         }
 
-        .toggle-switch.locked {
-            cursor: not-allowed;
-            opacity: 0.7;
+        /* 3-Column Parameter Sliders Grid */
+        .effect-controls > .control-section:last-child {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px 18px;
+            align-content: start;
+            padding-top: 4px;
+            flex: 1;
+            overflow-y: auto;
         }
 
-        .dropdown-select {
-            background: #333;
-            border: 1px solid #555;
-            border-radius: 4px;
-            color: #e0e0e0;
-            padding: 5px 10px;
-            font-size: 11px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .slider-container {
-            display: flex;
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-rows: auto auto;
+            row-gap: 4px;
             align-items: center;
-            width: 100%;
-            gap: 10px;
         }
 
+        .control-row .control-label {
+            grid-column: 1;
+            grid-row: 1;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .control-row .slider-container {
+            display: contents;
+        }
+
+        .control-row .slider-value {
+            grid-column: 2;
+            grid-row: 1;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            background: transparent;
+            padding: 0;
+        }
+
+        .control-row .slider {
+            grid-column: 1 / -1;
+            grid-row: 2;
+            width: 100%;
+        }
+
+        /* Slider Controls Styling */
         .slider {
             -webkit-appearance: none;
             appearance: none;
-            width: 100%;
-            height: 8px;
-            background: linear-gradient(to right, #ff6b35 var(--progress, 0%), #2a2a2a var(--progress, 0%));
+            height: 6px;
+            background: #383840;
+            border-radius: 3px;
             outline: none;
-            opacity: 0.9;
-            transition: opacity .2s;
-            border-radius: 4px;
-            border: 1px solid #444;
             cursor: pointer;
-        }
-
-        .slider:hover {
-            opacity: 1;
+            touch-action: pan-y;
+            margin: 3px 0;
         }
 
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 16px;
-            height: 16px;
-            background: #ff6b35;
-            cursor: pointer;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
+            background: var(--accent-orange);
+            border: 2px solid #ffffff;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .slider::-webkit-slider-thumb:active {
+            transform: scale(1.15);
         }
 
         .slider::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            background: #ff6b35;
-            cursor: pointer;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
+            background: var(--accent-orange);
+            border: 2px solid #ffffff;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.5);
+            cursor: pointer;
         }
 
-        .slider-value {
+        /* Right Column: Live Controls (Tap Tempo, Rhythmic Figures, Patch Vol) */
+        .live-controls-panel {
+            width: 195px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: 100%;
+        }
+
+        /* Big TAP TEMPO Button / Card */
+        .live-tap-card {
+            background: linear-gradient(145deg, #ff6b35, #f0501f);
+            border-radius: var(--radius-lg);
+            padding: 10px 8px;
+            color: #ffffff;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-height: 90px;
+            box-shadow: 0 4px 14px var(--accent-orange-glow);
+            transition: transform 0.08s ease, filter 0.08s ease, box-shadow 0.08s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .live-tap-card:active {
+            transform: scale(0.96);
+            filter: brightness(0.92);
+        }
+
+        .live-tap-card.beat-flash {
+            filter: brightness(1.35);
+            box-shadow: 0 0 25px #ffffff, 0 0 50px var(--accent-orange) !important;
+        }
+
+        .tap-card-header {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            line-height: 1;
+        }
+
+        .chain-module.active {
+            cursor: pointer;
+        }
+
+        .chain-module.active:active {
+            transform: scale(0.96);
+        }
+
+        .tap-card-bpm-display {
+            margin: 4px 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tap-bpm-number {
+            font-size: 34px;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        }
+
+        .bpm-input-hidden {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
+        }
+
+        .tap-card-label {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.9;
+            line-height: 1;
+        }
+
+        .tap-delay-ms {
+            font-size: 10px;
+            font-weight: 600;
+            opacity: 0.8;
+            margin-top: 3px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Rhythmic Figures directly below TAP TEMPO Button */
+        .note-divisions {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .note-btn {
+            flex: 1;
+            height: 34px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #25252a;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            color: #c4c4d0;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.15s ease;
+            padding: 1px 0;
+        }
+
+        .note-btn:hover {
+            border-color: var(--accent-orange);
+            color: #ffffff;
+        }
+
+        .note-btn.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: #ffffff;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--accent-orange-glow);
+        }
+
+        .note-btn .note-symbol {
             font-size: 11px;
-            color: #ccc;
-            min-width: 25px;
-            text-align: right;
-            background: rgba(0,0,0,0.2);
-            padding: 2px 4px;
-            border-radius: 3px;
+            font-weight: bold;
+            line-height: 1;
         }
 
-        .slider-value-input {
-            width: 35px; /* Adjust width as needed */
+        .note-btn .note-name {
+            font-size: 8.5px;
+            font-weight: 700;
+            line-height: 1;
+            margin-top: 1px;
+        }
+
+        /* Patch Volume Module directly below Rhythmic Figures */
+        .patch-volume-container {
+            width: 100%;
+        }
+
+        .patch-volume-module {
+            background: #222226;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            padding: 6px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .patch-vol-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .patch-vol-info .module-name {
             font-size: 11px;
-            color: #e0e0e0;
-            background: #1e1e1e;
-            border: 1px solid #ff6b35;
-            border-radius: 3px;
-            text-align: right;
-            padding: 1px 3px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Log Panel */
+        .patch-vol-info .slider-value {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--accent-orange);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .patch-volume-module .slider {
+            width: 100%;
+        }
+
+        /* Slide-out Presets Drawer */
+        .sidebar.drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 290px;
+            background: #1c1c20;
+            border-right: 1px solid var(--border-medium);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.7);
+            transform: translateX(-100%);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(2px);
+            z-index: 1040;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .drawer-header {
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+            background: #202025;
+        }
+
+        .drawer-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .close-drawer-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .close-drawer-btn:hover {
+            color: #fff;
+        }
+
+        .patch-list {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .patch-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .patch-tab-btn {
+            flex: 1;
+            padding: 7px;
+            background: #26262c;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .patch-tab-btn.active {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: #ffffff;
+        }
+
+        .patch-search-container {
+            margin-bottom: 8px;
+        }
+
+        .patch-search-container input {
+            width: 100%;
+            background: #141416;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            padding: 6px 10px;
+            color: #ffffff;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .patch-search-container input:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .patch-items-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .patch-item {
+            padding: 8px 12px;
+            background: #242429;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            color: #dedee6;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .patch-item:hover {
+            background: #2d2d34;
+            color: #ffffff;
+        }
+
+        .patch-item.selected {
+            background: rgba(255, 107, 53, 0.15);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+
+        .connection-panel {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Buttons & Utility Styles */
+        .btn {
+            background: #2e2e36;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            color: #e0e0ea;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .btn:hover:not(:disabled) {
+            border-color: var(--accent-orange);
+            color: #ffffff;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-orange-hover);
+        }
+
+        /* Modals & Popups */
+        .advanced-settings-panel {
+            position: fixed;
+            top: 50px;
+            right: 14px;
+            width: 310px;
+            background: rgba(28, 28, 33, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 1002;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: none;
+        }
+
+        .advanced-settings-panel.visible {
+            display: block;
+        }
+
+        .advanced-settings-panel h4 {
+            color: var(--accent-orange);
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+
         .log-panel {
             position: fixed;
             bottom: 0;
             right: 0;
-            width: 500px;
-            height: 350px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid #444;
-            border-radius: 6px 6px 0 0;
+            width: 480px;
+            height: 320px;
+            background: rgba(16, 16, 20, 0.98);
+            border: 1px solid var(--border-medium);
+            border-radius: 8px 8px 0 0;
             display: none;
             flex-direction: column;
             z-index: 1000;
@@ -543,469 +1045,1238 @@
         }
 
         .log-header {
-            padding: 10px;
-            background: #333;
-            border-bottom: 1px solid #444;
+            padding: 8px 12px;
+            background: #24242a;
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .log-header h4 {
-            font-size: 12px;
-            color: #ccc;
-            text-transform: uppercase;
-        }
-
+        /* Log Toggle is now in header or unobtrusive */
         .log-toggle {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            padding: 8px 12px;
-            background: #333;
-            border: 1px solid #555;
-            border-radius: 4px;
-            color: #ccc;
-            cursor: pointer;
-            font-size: 11px;
-            z-index: 1001;
+            display: none;
         }
 
         .log-content {
             flex: 1;
             padding: 10px;
             overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
             line-height: 1.4;
         }
 
-        .log-entry {
-            margin-bottom: 2px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .log-time {
-            color: #666;
-            min-width: 60px;
-        }
-
-        .log-type {
-            color: #888;
-            min-width: 50px;
-            font-weight: bold;
-        }
-
+        .log-entry { margin-bottom: 2px; display: flex; gap: 8px; }
+        .log-time { color: var(--text-muted); }
+        .log-type { color: #888; font-weight: bold; }
         .log-type.sent { color: #4a9eff; }
-        .log-type.received { color: #4aff9e; }
-        .log-type.error { color: #ff4a4a; }
-        .log-type.info { color: #cccccc; }
+        .log-type.received { color: #50e3c2; }
+        .log-type.error { color: #ff5252; }
+        .log-type.success { color: var(--accent-green); }
 
-        .log-message {
-            color: #ccc;
-        }
-
-        .manual-command-panel {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            background: #333;
-            padding: 8px 10px;
-            border-bottom: 1px solid #444;
-        }
-
-        #manualCommandInput {
-            background: #2a2a2a;
-            border: 1px solid #555;
-            color: #e0e0e0;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            width: 100%;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        #sendManualCommandBtn {
-            width: auto;
-            margin-bottom: 0;
-            flex-shrink: 0;
-        }
-
-        .chain-connector.is-last-connector {
-            visibility: hidden;
-        }
-
-        .global-volume-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 250px;
-        }
-
-        .global-volume-control .control-label {
-            font-size: 11px;
-            color: #ccc;
-            text-transform: uppercase;
-            min-width: fit-content;
-        }
-
-        /* New container for the patch volume slider */
-        .patch-volume-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px 20px;
-        }
-
-        .patch-volume-module {
-            width: 50%;
-            max-width: 500px;
-            height: 50px;
-            background: linear-gradient(145deg, #404040, #303030);
-            border: 2px solid #555;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            position: relative;
-            padding: 10px;
-            gap: 8px;
-        }
-
-        .patch-volume-module .module-name {
-            font-size: 14px;
-            font-weight: bold;
-            color: #ccc;
-        }
-
-        .patch-volume-module .slider-container {
-            width: 100%;
-        }
-        /* Add these new styles to your existing <style> block */
-        .settings-btn {
-            background: none;
-            border: none;
-            color: #ccc;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-            margin-left: 15px;
-        }
-        .settings-btn:hover {
-            color: #ff6b35;
-        }
-
-        .advanced-settings-panel {
-            position: fixed;
-            top: 65px; /* Position below the top bar */
-            right: 20px;
-            width: 300px;
-            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
-            border: 1px solid #444;
-            border-radius: 6px;
-            z-index: 1002;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            display: none; /* Hidden by default */
-        }
-
-        .advanced-settings-panel.visible {
-            display: block; /* Shown when this class is added */
-        }
-
-        .advanced-settings-panel h4 {
-            color: #ff6b35;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            letter-spacing: 0.5px;
-        }
-
-        .module-icon {
-            margin-top: 4px;
-            margin-bottom: 4px; /* Adds a little space between the icon and the text */
-        }
-
-        .patch-items-container.locked {
-            opacity: 0.5;
-            pointer-events: none;
-            cursor: wait;
-        }
-
-        .debug-buttons-panel {
-            padding: 8px 10px 0 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            background: #333;
-            border-bottom: 1px solid #444;
-        }
-
-        .debug-buttons-panel .btn {
-            width: auto;
-            flex-grow: 1;
-            margin-bottom: 0;
-            padding: 4px 6px; 
-        }
-
-      /* Main container for the entire tap tempo section */
-        .tap-tempo-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #555;
-        }
-
-        /* Grid layout for the main components */
-        .tap-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            align-items: center;
-        }
-
-        /* Styling for the BPM and Delay Time display boxes */
-        .tap-display {
-            background-color: #222;
-            border-radius: 6px;
-            padding: 10px;
-            border: 1px solid #444;
-        }
-
-        /* BPM and Delay Time text input styling */
-        .bpm-input {
-            width: 100%;
-            background-color: transparent;
-            border: none;
-            /* Color updated to match the slider's active color */
-            color: #ff6b35;
-            font-size: 1.5em;
-            font-weight: 700;
-            font-family: "Courier New", Courier, monospace;
-            text-align: center;
-            padding: 0;
-        }
-
-        /* Removes the number input arrows in Chrome/Safari */
-        .bpm-input::-webkit-outer-spin-button,
-        .bpm-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        /* Removes the number input arrows in Firefox */
-        .bpm-input[type=number] {
-            -moz-appearance: textfield;
-        }
-
-        /* Subtle background highlight when the BPM input is focused */
-        .bpm-input:focus {
-            outline: none;
-            background-color: rgba(247, 147, 30, 0.1);
-        }
-
-        /* "BPM" and "Delay Time" labels under the displays */
-        .display-label {
-            font-size: 0.7em;
-            color: #999;
-            text-transform: uppercase;
-            display: block;
-            margin-top: 2px;
-        }
-
-        /* Main "TAP" button styling */
-        .tap-button {
-            grid-column: 1 / -1;
-            padding: 1rem;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
-            /* Updated background to a neutral gray */
-            background-color: #555;
-            border: 1px solid #777;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.1s ease-out, box-shadow 0.1s ease-out, color 0.1s ease-out;
-        }
-
-        /* "TAP" button active (pressed) state */
-        .tap-button:active {
-            /* Updated to the primary slider color */
-            background-color: #ff6b35;
-            transform: scale(0.98);
-        }
-
-        /* Visual indicator for the BPM beat */
-       .tap-button.beat-flash {
-            /* The text will flash to the active orange color */
-            color: #ff6b35;
-        }
-
-        /* Container for the note division buttons (1/4, 1/8, etc.) */
-        .note-divisions {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        /* Individual note division button styling */
-        .note-btn {
-            flex-grow: 1;
-            padding: 0.6rem 0;
-            font-size: 0.9rem;
-            color: #ccc;
-            background-color: #4f4f4f;
-            border: 1px solid #555;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        /* Active note division button styling */
-        .note-btn.active {
-            /* Updated to the primary slider color */
-            background-color: #ff6b35;
-            color: #fff;
-            /* A slightly brighter orange for the border */
-            border-color: #ff6b35;
-            font-weight: bold;
-        }
-
-        .bpm-input.out-of-range {
-            /* This animation will run when the class is active */
-            animation: flash-red 0.8s infinite;
-        }
-
-        /* This defines the flashing animation itself */
-        @keyframes flash-red {
-            0% { background-color: transparent; }
-            50% { background-color: #9d2c2c; } /* A dark red flash */
-            100% { background-color: transparent; }
-        }
-
-        #delay-time-ms-7 {
-            font-size: 1.2em;
-            color: #ccc;
-            transition: color 0.2s ease; /* Optional: adds a smooth fade to red */
-        }
-
-        /* USB MIDI Device Selection Styles */
         .usb-device-pair {
-            padding: 12px;
+            padding: 10px;
             margin-bottom: 8px;
-            background: #2a2a2a;
-            border: 2px solid #444;
-            border-radius: 4px;
+            background: #242429;
+            border: 1.5px solid var(--border-medium);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .usb-device-pair:hover {
-            border-color: #666;
-            background: #333;
         }
 
         .usb-device-pair.selected {
-            border-color: #ff6b35;
-            background: rgba(255, 107, 53, 0.1);
+            border-color: var(--accent-orange);
+            background: rgba(255, 107, 53, 0.12);
         }
 
         .usb-device-pair-title {
             font-weight: bold;
-            color: #ff6b35;
-            margin-bottom: 6px;
+            color: var(--accent-orange);
             font-size: 12px;
         }
 
         .usb-device-io {
             font-size: 11px;
-            color: #aaa;
+            color: var(--text-secondary);
+        }
+
+        /* Portrait responsive adjustments */
+        @media (max-width: 768px) and (orientation: portrait) {
+            body {
+                overflow-y: auto;
+                height: auto;
+            }
+            .stage-content {
+                flex-direction: column;
+                height: auto;
+                overflow: visible;
+            }
+            .live-controls-panel {
+                width: 100%;
+                min-height: auto;
+            }
+            .effects-panel {
+                min-height: 280px;
+            }
+            .effect-controls > .control-section:last-child {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+
+        /* ======================================================== */
+        /* SNAPSHOTS PERFORMANCE MODE (HX Stomp style)             */
+        /* ======================================================== */
+        #snapshots-view {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background-color: #121215;
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #snapshots-view.active {
+            display: flex;
+        }
+
+        /* Snapshots Header */
+        .snapshots-header {
+            height: 44px;
+            background: #19191d;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .snapshots-back-btn, .snapshots-edit-btn {
+            background: #26262c;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            touch-action: manipulation;
+        }
+
+        .snapshots-back-btn:hover, .snapshots-edit-btn:hover {
+            border-color: var(--accent-orange);
+            background: #32323a;
+        }
+
+        .snapshots-back-btn:active, .snapshots-edit-btn:active {
+            transform: scale(0.95);
+        }
+
+        .snapshots-header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .snapshots-header-title .patch-num {
+            color: var(--accent-orange);
+        }
+
+        .snapshots-header-title .patch-title {
+            color: #ffffff;
+        }
+
+        /* Snapshots Grid / Columns (Screen Filling) */
+        .snapshots-grid {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            padding: 10px 14px;
+            height: calc(100% - 44px);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Individual Big Snapshot Button */
+        .snapshot-card {
+            flex: 1;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 10px 14px 10px;
+            cursor: pointer;
+            position: relative;
+            box-sizing: border-box;
+            transition: transform 0.12s ease, box-shadow 0.15s ease, filter 0.15s ease, border 0.15s ease;
+            touch-action: manipulation;
+            border: 2px solid transparent;
+            overflow: hidden;
+        }
+
+        .snapshot-card:active {
+            transform: scale(0.97);
+            filter: brightness(0.9);
+        }
+
+        .snapshot-card.active {
+            border-color: #ffffff !important;
+            box-shadow: 0 0 24px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.6) !important;
+            filter: brightness(1.08);
+            transform: translateY(-2px);
+        }
+
+        /* Specific snapshot vibrant theme colors with high contrast */
+        .snapshot-card[data-snap-id="1"] {
+            background: linear-gradient(155deg, #2563eb, #1d4ed8);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+        }
+
+        .snapshot-card[data-snap-id="1"].active {
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.85), 0 8px 25px rgba(0,0,0,0.6) !important;
+        }
+
+        .snapshot-card[data-snap-id="2"] {
+            background: linear-gradient(155deg, #e11d48, #be123c);
+            box-shadow: 0 4px 16px rgba(225, 29, 72, 0.4);
+        }
+
+        .snapshot-card[data-snap-id="2"].active {
+            box-shadow: 0 0 30px rgba(225, 29, 72, 0.85), 0 8px 25px rgba(0,0,0,0.6) !important;
+        }
+
+        .snapshot-card[data-snap-id="3"] {
+            background: linear-gradient(155deg, #d97706, #b45309);
+            box-shadow: 0 4px 16px rgba(217, 119, 6, 0.4);
+        }
+
+        .snapshot-card[data-snap-id="3"].active {
+            box-shadow: 0 0 30px rgba(217, 119, 6, 0.85), 0 8px 25px rgba(0,0,0,0.6) !important;
+        }
+
+        .snapshot-card[data-snap-id="4"] {
+            background: linear-gradient(155deg, #059669, #047857);
+            box-shadow: 0 4px 16px rgba(5, 150, 105, 0.4);
+        }
+
+        .snapshot-card[data-snap-id="4"].active {
+            box-shadow: 0 0 30px rgba(5, 150, 105, 0.85), 0 8px 25px rgba(0,0,0,0.6) !important;
+        }
+
+        /* Snapshot Header (SNAP 1, SNAP 2, etc.) */
+        .snap-badge-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.75);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+
+        /* Large Snapshot Name in Center */
+        .snap-main-name {
+            font-size: 30px;
+            font-weight: 900;
+            color: #ffffff;
+            text-align: center;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            line-height: 1.1;
+            margin: auto 0;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 4px;
+        }
+
+        /* Foot pedal micro-grid in each Snapshot card */
+        .snap-pedals-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .snap-pedals-row {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .snap-pedal-chip {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2.5px 5px;
+            border-radius: 4px;
+            line-height: 1;
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.25);
+            color: rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .snap-pedal-chip.on {
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+        }
+
+        /* Large Vertical Tap Tempo Column in Snapshots View */
+        .snap-tap-tempo-column {
+            flex: 0 0 135px;
+            background: linear-gradient(145deg, #ff6b35, #f0501f);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 8px;
+            cursor: pointer;
+            box-sizing: border-box;
+            user-select: none;
+            touch-action: manipulation;
+            box-shadow: 0 4px 18px var(--accent-orange-glow);
+            transition: transform 0.08s ease, filter 0.08s ease;
+        }
+
+        .snap-tap-tempo-column:active {
+            transform: scale(0.96);
+            filter: brightness(0.92);
+        }
+
+        .snap-tap-tempo-column.beat-flash {
+            filter: brightness(1.4);
+            box-shadow: 0 0 35px #ffffff, 0 0 50px var(--accent-orange) !important;
+        }
+
+        .snap-tap-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+            text-align: center;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            letter-spacing: 0.5px;
+        }
+
+        .snap-tap-bpm-num {
+            font-size: 38px;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
+            color: #ffffff;
+            margin: 12px 0 4px 0;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            line-height: 1;
+        }
+
+        .snap-tap-bpm-sub {
+            font-size: 12px;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Snapshots Nav Button in Main Header */
+        .snapshots-nav-btn {
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            height: 30px;
+        }
+
+        .snapshots-nav-btn:hover {
+            background: var(--accent-orange);
+            color: #ffffff;
+            box-shadow: 0 0 10px var(--accent-orange-glow);
+        }
+
+        /* Edit Snapshot Modal */
+        .edit-snap-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 380px;
+            max-width: 90vw;
+            background: #1c1c22;
+            border: 1.5px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            z-index: 2100;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.85);
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .edit-snap-modal.active {
+            display: flex;
+        }
+
+        .edit-snap-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .edit-snap-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .edit-snap-field label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .edit-snap-input {
+            background: #121215;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            outline: none;
+        }
+
+        .edit-snap-input:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .edit-snap-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+
+        /* ======================================================== */
+        /* COMPREHENSIVE SNAPSHOT VISUAL EDITOR                     */
+        /* ======================================================== */
+        .snapshot-editor-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 8, 12, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .snapshot-editor-overlay.active {
+            display: flex;
+        }
+
+        .snapshot-editor-window {
+            width: 100%;
+            max-width: 960px;
+            height: 94vh;
+            max-height: 600px;
+            background: #18181d;
+            border: 1.5px solid var(--border-medium);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 16px 50px rgba(0,0,0,0.9);
+        }
+
+        /* Editor Top Bar */
+        .snap-editor-header {
+            padding: 10px 16px;
+            background: #202026;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            gap: 12px;
+        }
+
+        .snap-editor-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .snap-editor-title {
+            font-size: 15px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .snap-editor-preset-badge {
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .snap-editor-header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 4 Snapshots Tabs Bar */
+        .snap-editor-tabs-bar {
+            display: flex;
+            padding: 8px 16px;
+            gap: 8px;
+            background: #1c1c22;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+        }
+
+        .snap-tab-btn {
+            flex: 1;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #25252c;
+            border: 1.5px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .snap-tab-btn:hover {
+            border-color: #555562;
+        }
+
+        .snap-tab-btn[data-snap-id="1"].active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-color: #ffffff;
+            box-shadow: 0 0 14px rgba(37, 99, 235, 0.6);
+        }
+
+        .snap-tab-btn[data-snap-id="2"].active {
+            background: linear-gradient(135deg, #e11d48, #be123c);
+            border-color: #ffffff;
+            box-shadow: 0 0 14px rgba(225, 29, 72, 0.6);
+        }
+
+        .snap-tab-btn[data-snap-id="3"].active {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            border-color: #ffffff;
+            box-shadow: 0 0 14px rgba(217, 119, 6, 0.6);
+        }
+
+        .snap-tab-btn[data-snap-id="4"].active {
+            background: linear-gradient(135deg, #059669, #047857);
+            border-color: #ffffff;
+            box-shadow: 0 0 14px rgba(5, 150, 105, 0.6);
+        }
+
+        .snap-tab-num {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            color: #ffffff;
+        }
+
+        .snap-tab-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        /* Snapshot Rename & Hint Bar */
+        .snap-editor-meta-bar {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #19191e;
+            border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+            gap: 14px;
+        }
+
+        .snap-rename-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .snap-rename-group label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .snap-rename-input {
+            background: #101014;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            width: 150px;
+            outline: none;
+        }
+
+        .snap-rename-input:focus {
+            border-color: var(--accent-orange);
+        }
+
+        .snap-meta-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 9 Pedals Grid */
+        .snap-editor-modules-grid {
+            flex: 1;
+            padding: 12px 16px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            align-content: start;
+        }
+
+        /* Individual Pedal Card in Snapshot Editor */
+        .snap-module-card {
+            background: #202026;
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .snap-module-card.on {
+            border-color: rgba(255, 107, 53, 0.4);
+            background: #24242c;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .snap-module-card.off {
+            opacity: 0.6;
+        }
+
+        .snap-module-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .snap-module-badge-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .snap-mod-pill {
+            background: #32323c;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .snap-module-card.on .snap-mod-pill {
+            background: var(--accent-orange);
+            color: #ffffff;
+        }
+
+        .snap-mod-name {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .snap-mod-fxname {
+            font-size: 10px;
+            color: var(--text-secondary);
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Parameters sliders list inside pedal card */
+        .snap-mod-params {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .snap-param-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-rows: auto auto;
+            row-gap: 2px;
+        }
+
+        .snap-param-row .param-label {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .snap-param-row .param-val {
+            font-size: 11px;
+            font-weight: 800;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            grid-column: 2;
+            grid-row: 1;
+            text-align: right;
+        }
+
+        .snap-param-row input[type="range"] {
+            grid-column: 1 / -1;
+            grid-row: 2;
+            width: 100%;
+            height: 4px;
             margin: 2px 0;
-            padding-left: 12px;
+            accent-color: var(--accent-orange);
+            cursor: pointer;
         }
 
-        .usb-device-io-label {
-            color: #888;
-            font-weight: bold;
-            min-width: 50px;
-            display: inline-block;
+        /* Footer */
+        .snap-editor-footer {
+            padding: 10px 16px;
+            background: #1c1c22;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            gap: 12px;
+        }
+
+        .snap-footer-info {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .snap-footer-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .snap-editor-modules-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .snap-meta-hint {
+                display: none;
+            }
         }
 
 
+        /* Quick Save Scene to Snapshot */
+        .quick-save-snap-btn {
+            background: #25252c;
+            border: 1px solid var(--border-medium);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            height: 30px;
+            white-space: nowrap;
+        }
 
-        /* Additional visual cue for hover-to-focus items */
-    .control-row.hover-focus {
-        background-color: rgba(255, 255, 255, 0.05); /* very subtle highlight */
-        border-radius: 4px;
-        transition: background-color 0.1s ease;
-    }
+        .quick-save-snap-btn:hover {
+            border-color: #00e676;
+            color: #00e676;
+            background: rgba(0, 230, 118, 0.12);
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.2);
+        }
+
+        .quick-save-snap-btn:active {
+            transform: scale(0.95);
+        }
+
+        .quick-save-snap-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(8, 8, 12, 0.78);
+            backdrop-filter: blur(6px);
+            z-index: 2150;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .quick-save-snap-overlay.active {
+            display: flex;
+        }
+
+        .quick-save-snap-window {
+            width: 100%;
+            max-width: 440px;
+            background: #1c1c22;
+            border: 1.5px solid var(--border-medium);
+            border-radius: 16px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.85);
+            position: relative;
+        }
+
+        .quick-save-snap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 10px;
+        }
+
+        .quick-save-snap-title {
+            font-size: 15px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-save-snap-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        .quick-save-snap-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quick-save-snap-item {
+            background: #24242c;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .quick-save-snap-item:hover {
+            border-color: #ffffff;
+            background: #2c2c36;
+            transform: translateY(-1px);
+        }
+
+        .quick-save-snap-item:active {
+            transform: scale(0.98);
+        }
+
+        .quick-snap-badge {
+            font-size: 10px;
+            font-weight: 900;
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-snap-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .quick-snap-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .quick-snap-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .quick-snap-save-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 12px;
+            pointer-events: none;
+            transition: all 0.15s ease;
+        }
+
+        .quick-save-snap-item:hover .quick-snap-save-btn {
+            background: #00e676;
+            color: #000000;
+            border-color: #00e676;
+            font-weight: 800;
+        }
+
+        .quick-save-toast {
+            display: none;
+            background: #00e676;
+            color: #000000;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
+        }
+
+        .quick-save-toast.active {
+            display: block;
+        }
+
+
+        /* Compact Snapshots Switcher Bar on Pedals Screen */
+        .pedals-snapshots-bar {
+            height: 34px;
+            background: #18181d;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            gap: 10px;
+            flex-shrink: 0;
+            z-index: 15;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .pedals-snap-left-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .pedals-snap-left-group::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pedals-snap-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .pedals-snap-label .icon {
+            color: var(--accent-orange);
+            font-size: 13px;
+        }
+
+        .pedals-snap-pills {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pedal-snap-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #232329;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            padding: 3px 9px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            touch-action: manipulation;
+            height: 25px;
+            white-space: nowrap;
+        }
+
+        .pedal-snap-pill:hover {
+            border-color: #6c6c7d;
+            background: #2b2b34;
+        }
+
+        .pedal-snap-pill:active {
+            transform: scale(0.96);
+        }
+
+        .pedal-snap-pill .pill-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .pedal-snap-pill .pill-num {
+            font-size: 10px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .pedal-snap-pill .pill-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: #ffffff;
+            max-width: 85px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Active Pill States */
+        .pedal-snap-pill.active {
+            border-color: #ffffff !important;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+        }
+
+        .pedal-snap-pill[data-snap-id="1"].active {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+        .pedal-snap-pill[data-snap-id="2"].active {
+            background: linear-gradient(135deg, #e11d48, #be123c);
+        }
+
+        .pedal-snap-pill[data-snap-id="3"].active {
+            background: linear-gradient(135deg, #d97706, #b45309);
+        }
+
+        .pedal-snap-pill[data-snap-id="4"].active {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .pedal-snap-pill.active .pill-num {
+            color: #ffffff;
+        }
+
+        .pedal-snap-pill.active .pill-dot {
+            background: #ffffff !important;
+            box-shadow: 0 0 6px #ffffff;
+        }
+
+        .pedals-snap-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pedals-snap-action-btn {
+            background: #25252c;
+            border: 1px solid var(--border-medium);
+            color: #d0d0dc;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            height: 25px;
+            white-space: nowrap;
+        }
+
+        .pedals-snap-action-btn:hover {
+            border-color: var(--accent-orange);
+            color: #ffffff;
+        }
+
+        .pedals-snap-action-btn:active {
+            transform: scale(0.96);
+        }
+
 </style>
 </head>
 <body>
-    <div class="main-container">
-        <div class="sidebar">
-            <div class="sidebar-header">
-                POCKET EDIT
-            </div>
+    <!-- Slide-out Presets Drawer -->
+    <div class="sidebar drawer">
+        <div class="drawer-header">
+            <span class="drawer-title">Presets</span>
+            <button id="closeDrawerBtn" class="close-drawer-btn" title="Fechar">&times;</button>
+        </div>
 
-            <div class="connection-panel">
-                <div class="connection-status">
-                    <div id="statusDot" class="status-dot"></div>
-                    <span id="statusText">Disconnected</span>
-                </div>
-                <button id="connectBtn" class="btn btn-primary">Connect</button>
-                <button id="disconnectBtn" class="btn" disabled>Disconnect</button>
+        <div class="connection-panel">
+            <div class="connection-status">
+                <div class="status-dot"></div>
+                <span>Sonicake Pocket Master</span>
             </div>
-
-            <div class="patch-list">
-                 <div class="patch-tabs">
-                    <button id="factoryTabBtn" class="patch-tab-btn">Factory</button>
-                    <button id="userTabBtn" class="patch-tab-btn active">User</button>
-                </div>
-                <div class="patch-search-container">
-                    <input type="text" id="patchSearchInput" placeholder="Search patches...">
-                </div>
-                <div id="patchListContainer" class="patch-items-container">
-                    </div>
+            <div style="display: flex; gap: 6px;">
+                <button id="connectBtn" class="btn btn-primary" style="flex:1;">Conectar</button>
+                <button id="disconnectBtn" class="btn" style="flex:1;" disabled>Desconectar</button>
             </div>
         </div>
 
-        <div class="main-content">
-            <div id="editor-container" style="display: none; height: 100%; flex-direction: column; flex: 1;">
-                <div class="top-bar">
-                <div class="patch-info">
-                    <div class="patch-number" id="patchNumber"></div>
-                    <div class="patch-name" id="patchName"></div>
-                </div>
+        <div class="patch-list">
+            <div class="patch-tabs">
+                <button id="factoryTabBtn" class="patch-tab-btn">Fábrica</button>
+                <button id="userTabBtn" class="patch-tab-btn active">Usuário</button>
+            </div>
+            <div class="patch-search-container">
+                <input type="text" id="patchSearchInput" placeholder="Buscar patches...">
+            </div>
+            <div id="patchListContainer" class="patch-items-container"></div>
+        </div>
+    </div>
+    <div class="drawer-overlay" id="drawerOverlay"></div>
 
-                <div style="display: flex; align-items: center;">
-                    <div class="global-volume-control">
-                        <div class="control-label">Global Vol</div>
-                        <div class="slider-container">
-                            <input type="range" min="0" max="100" value="75" class="slider" data-global-param="globalVolume">
-                            <span class="slider-value">75</span>
+    <!-- Main Workspace Area -->
+    <div class="main-container">
+        <div class="main-content">
+            <div id="editor-container" style="display: flex; height: 100%; flex-direction: column; flex: 1;">
+                
+                <!-- App Header -->
+                <header class="app-header">
+                    <div class="header-left">
+                        <div class="app-logo">POCKET EDIT</div>
+                        <div class="connection-badge" id="connectionBadge" title="Clique para Conectar/Desconectar">
+                            <div id="statusDot" class="status-dot"></div>
+                            <span id="statusText">Desconectado</span>
                         </div>
                     </div>
 
-                    <button id="advancedSettingsBtn" class="settings-btn">⚙️</button>
-                </div>
-            </div>
+                    <div class="header-center">
+                        <button id="prevPresetBtn" class="nav-preset-btn" title="Preset Anterior">&lsaquo;</button>
+                        <div class="patch-info-badge" id="patchInfoBadge" title="Abrir Lista de Presets">
+                            <span class="patch-number" id="patchNumber">P01</span>
+                            <span class="patch-name" id="patchName">Preset</span>
+                        </div>
+                        <button id="nextPresetBtn" class="nav-preset-btn" title="Próximo Preset">&rsaquo;</button>
+                    </div>
 
-            <div class="patch-volume-container">
-                <div class="patch-volume-module">
-                    <div class="module-name">🔊 Patch Vol</div>
-                    <div class="slider-container">
-                        <input type="range" min="0" max="100" value="75" class="slider" data-global-param="presetVolume">
-                        <span class="slider-value">75</span>
+                    <div class="header-right">
+                        <button id="quickSaveSnapBtn" class="quick-save-snap-btn" title="Salvar o som atual em um Snapshot deste preset">💾 Salvar no Snap</button>
+                        <button id="openSnapshotsBtn" class="snapshots-nav-btn" title="Entrar no Modo Snapshots de Palco">⚡ SNAPSHOTS</button>
+                        <div class="global-volume-control">
+                            <span class="control-label">Global</span>
+                            <div class="slider-container">
+                                <input type="range" min="0" max="100" value="75" class="slider" data-global-param="globalVolume">
+                                <span class="slider-value">75</span>
+                            </div>
+                        </div>
+
+                        <button id="openPresetsDrawerBtn" class="header-icon-btn" title="Lista de Presets">☰</button>
+                        <button id="logHeaderToggleBtn" class="header-icon-btn" title="Histórico de Logs">📋</button>
+                        <button id="advancedSettingsBtn" class="header-icon-btn settings-btn" title="Configurações">⚙️</button>
+                    </div>
+                </header>
+
+                <!-- Compact Snapshots Switcher Bar on Pedals Screen -->
+                <div class="pedals-snapshots-bar">
+                    <div class="pedals-snap-left-group">
+                        <div class="pedals-snap-label">
+                            <span class="icon">⚡</span>
+                            <span>SNAPSHOT:</span>
+                        </div>
+                        <div class="pedals-snap-pills">
+                            <button class="pedal-snap-pill active" data-snap-id="1" title="Ativar Snapshot 1">
+                                <span class="pill-dot" style="background:#2563eb;"></span>
+                                <span class="pill-num">1</span>
+                                <span class="pill-name" id="pedalSnapPillName1">Limpo</span>
+                            </button>
+                            <button class="pedal-snap-pill" data-snap-id="2" title="Ativar Snapshot 2">
+                                <span class="pill-dot" style="background:#e11d48;"></span>
+                                <span class="pill-num">2</span>
+                                <span class="pill-name" id="pedalSnapPillName2">Crunch</span>
+                            </button>
+                            <button class="pedal-snap-pill" data-snap-id="3" title="Ativar Snapshot 3">
+                                <span class="pill-dot" style="background:#d97706;"></span>
+                                <span class="pill-num">3</span>
+                                <span class="pill-name" id="pedalSnapPillName3">Solo</span>
+                            </button>
+                            <button class="pedal-snap-pill" data-snap-id="4" title="Ativar Snapshot 4">
+                                <span class="pill-dot" style="background:#059669;"></span>
+                                <span class="pill-num">4</span>
+                                <span class="pill-name" id="pedalSnapPillName4">Ambiente</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pedals-snap-actions">
+                        <button id="pedalsBarSaveSnapBtn" class="pedals-snap-action-btn" title="Gravar pedais e knobs atuais no snapshot selecionado">💾 Gravar no Snap Ativo</button>
+                        <button id="pedalsBarEditSnapBtn" class="pedals-snap-action-btn" title="Abrir editor visual completo de snapshots">⚙️ Configurar</button>
                     </div>
                 </div>
-            </div>
 
-            <div class="signal-chain">
-                <div class="chain-flow">
+                <!-- Signal Chain Strip -->
+                <div class="signal-chain">
+                                    <div class="chain-flow">
                     <div class="chain-module" data-module-id="0" draggable="true">
                         <svg class="module-icon" width="80" height="130" viewBox="0 0 80 130" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="2" y="2" width="76" height="126" rx="10" stroke="currentColor" stroke-width="3"/>
@@ -1037,7 +2308,7 @@
                         </svg>
                         <div class="module-status" id="module-status-1"></div>
                         <div class="module-name">FX1</div>
-                        <div class="module-type">Please sync</div>
+                        <div class="module-type">FX1</div>
                     </div>
                     <div class="chain-connector"></div>
 
@@ -1052,7 +2323,7 @@
                             <rect x="20" y="65" width="40" height="40" rx="6" stroke="currentColor" stroke-width="3"/>
                             <circle cx="40" cy="54" r="3" fill="currentColor"/>
                             </svg>
-                            <div class="module-status" id="module-status-2"></div><div class="module-name">DRV</div><div class="module-type">Please sync</div>
+                            <div class="module-status" id="module-status-2"></div><div class="module-name">DRV</div><div class="module-type">Drive</div>
                         </div>
                         <div class="chain-connector"></div>
                         <div class="chain-module" data-module-id="3" data-is-fixed="true">
@@ -1067,7 +2338,7 @@
                                   <rect x="13" y="70" width="10" height="4" rx="2" fill="currentColor"/>
                                   <rect x="69" y="70" width="10" height="4" rx="2" fill="currentColor"/>
                                 </svg>
-                            <div class="module-status" id="module-status-3"></div><div class="module-name">AMP</div><div class="module-type">Please sync</div>
+                            <div class="module-status" id="module-status-3"></div><div class="module-name">AMP</div><div class="module-type">TWD Deluxe</div>
                         </div>
                         <div class="chain-connector"></div>
                         <div class="chain-module" data-module-id="4" data-is-fixed="true">
@@ -1084,7 +2355,7 @@
                             <rect x="15" y="120" width="10" height="4" rx="2" fill="currentColor"/>
                             <rect x="95" y="120" width="10" height="4" rx="2" fill="currentColor"/>
                             </svg>
-                            <div class="module-status" id="module-status-4"></div><div class="module-name">IR</div><div class="module-type">Please sync</div>
+                            <div class="module-status" id="module-status-4"></div><div class="module-name">IR</div><div class="module-type">TWD 1x8</div>
                         </div>
                         <div class="chain-connector"></div>
                         <div class="chain-module" data-module-id="5" data-is-fixed="true">
@@ -1104,7 +2375,7 @@
                             <circle cx="50" cy="110" r="9" stroke="currentColor"/>
                             <circle cx="50" cy="110" r="12" stroke="currentColor" stroke-width="2"/>
                             </svg>
-                            <div class="module-status" id="module-status-5"></div><div class="module-name">EQ</div><div class="module-type">Please sync</div>
+                            <div class="module-status" id="module-status-5"></div><div class="module-name">EQ</div><div class="module-type">Equalizer</div>
                         </div>
                     </div>
                     <div class="chain-connector"></div>
@@ -1125,7 +2396,7 @@
                         </svg>
                         <div class="module-status" id="module-status-6"></div>
                         <div class="module-name">FX2</div>
-                        <div class="module-type">Please sync</div>
+                        <div class="module-type">Modulation</div>
                     </div>
                     <div class="chain-connector"></div>
                     <div class="chain-module" data-module-id="7" draggable="true">
@@ -1137,7 +2408,7 @@
                         </svg>
                         <div class="module-status" id="module-status-7"></div>
                         <div class="module-name">DLY</div>
-                        <div class="module-type">Please sync</div>
+                        <div class="module-type">Delay</div>
                     </div>
                     <div class="chain-connector"></div>
                     <div class="chain-module" data-module-id="8" draggable="true">
@@ -1154,15 +2425,17 @@
                         </svg>
                         <div class="module-status" id="module-status-8"></div>
                         <div class="module-name">RVB</div>
-                        <div class="module-type">Please sync</div>
+                        <div class="module-type">Reverb</div>
                     </div>
                     <div class="chain-connector"></div>
                     <div id="chain-terminator"></div>
                 </div>
-            </div>
+                </div>
 
-
-            <div class="effects-panel">
+                <!-- Stage Split Content -->
+                <div class="stage-content">
+                    <!-- Left: Active Module Parameters Panel -->
+                                <div class="effects-panel">
                 <div class="effect-controls" id="module-controls-0">
                     <div class="control-section">
                         <h4 class="module-title">...</h4>
@@ -1298,11 +2571,243 @@
                     <div class="control-section" id="module-params-8"></div>
                 </div>
             </div>
+
+                    <!-- Right: Live Controls Panel -->
+                    <div class="live-controls-panel">
+                        <!-- Big TAP TEMPO Button / Card -->
+                        <div class="live-tap-card" id="tap-button-7" title="Toque no ritmo para marcar o BPM">
+                            <div class="tap-card-header">TAP TEMPO</div>
+                            <div class="tap-card-bpm-display">
+                                <span id="tap-bpm-display" class="tap-bpm-number">--</span>
+                                <input type="number" id="tap-bpm-input-7" class="bpm-input-hidden" value="120.0" min="20" max="300" step="0.1">
+                            </div>
+                            <div class="tap-card-label">BPM</div>
+                            <div id="delay-time-ms-7" class="tap-delay-ms">500ms</div>
+                        </div>
+
+                        <!-- Rhythmic Figures Options (Directly below button) -->
+                        <div id="note-divisions-7" class="note-divisions">
+                            <button class="note-btn" data-multiplier="0.5" title="Colcheia (1/8)">
+                                <span class="note-symbol">♪</span>
+                                <span class="note-name">1/8</span>
+                            </button>
+                            <button class="note-btn" data-multiplier="0.75" title="Colcheia Pontuada (1/8 Dotted)">
+                                <span class="note-symbol">♪.</span>
+                                <span class="note-name">1/8d</span>
+                            </button>
+                            <button class="note-btn active" data-multiplier="1" title="Semínima (1/4)">
+                                <span class="note-symbol">♩</span>
+                                <span class="note-name">1/4</span>
+                            </button>
+                            <button class="note-btn" data-multiplier="2" title="Mínima (1/2)">
+                                <span class="note-symbol">𝅗</span>
+                                <span class="note-name">1/2</span>
+                            </button>
+                        </div>
+
+                        <!-- Patch Volume Module (Directly below rhythmic figures) -->
+                        <div class="patch-volume-container">
+                            <div class="patch-volume-module">
+                                <div class="patch-vol-info">
+                                    <span class="module-name">Patch vol</span>
+                                    <span class="slider-value" id="patchVolDisplay">75</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" min="0" max="100" value="75" class="slider" data-global-param="presetVolume">
+                                    <span class="slider-value" style="display:none;">75</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+                <!-- Snapshots Performance Screen (HX Stomp style) -->
+                <div id="snapshots-view">
+                    <!-- Snapshots Header -->
+                    <header class="snapshots-header">
+                        <button id="closeSnapshotsBtn" class="snapshots-back-btn" title="Voltar para a tela de Pedais">&lsaquo; Pedais</button>
+                        <div class="snapshots-header-title">
+                            <span class="patch-num" id="snapHeaderPatchNum">P01</span>
+                            <span class="patch-title" id="snapHeaderPatchName">Preset</span>
+                        </div>
+                        <button id="editSnapshotsBtn" class="snapshots-edit-btn" title="Editar Snapshot atual">Editar</button>
+                    </header>
+
+                    <!-- 4 Big Snapshots Buttons + 1 Tap Tempo Column -->
+                    <div class="snapshots-grid">
+                        <!-- SNAP 1 -->
+                        <div class="snapshot-card active" data-snap-id="1">
+                            <div class="snap-badge-label">SNAP 1</div>
+                            <div class="snap-main-name" id="snapName1">Limpo</div>
+                            <div class="snap-pedals-container">
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="0">NR</span>
+                                    <span class="snap-pedal-chip" data-module-id="1">FX1</span>
+                                    <span class="snap-pedal-chip" data-module-id="2">DRV</span>
+                                    <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
+                                    <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                </div>
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
+                                    <span class="snap-pedal-chip" data-module-id="6">FX2</span>
+                                    <span class="snap-pedal-chip" data-module-id="7">DLY</span>
+                                    <span class="snap-pedal-chip on" data-module-id="8">RVB</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SNAP 2 -->
+                        <div class="snapshot-card" data-snap-id="2">
+                            <div class="snap-badge-label">SNAP 2</div>
+                            <div class="snap-main-name" id="snapName2">Crunch</div>
+                            <div class="snap-pedals-container">
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip on" data-module-id="0">NR</span>
+                                    <span class="snap-pedal-chip" data-module-id="1">FX1</span>
+                                    <span class="snap-pedal-chip on" data-module-id="2">DRV</span>
+                                    <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
+                                    <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                </div>
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
+                                    <span class="snap-pedal-chip" data-module-id="6">FX2</span>
+                                    <span class="snap-pedal-chip" data-module-id="7">DLY</span>
+                                    <span class="snap-pedal-chip" data-module-id="8">RVB</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SNAP 3 -->
+                        <div class="snapshot-card" data-snap-id="3">
+                            <div class="snap-badge-label">SNAP 3</div>
+                            <div class="snap-main-name" id="snapName3">Solo</div>
+                            <div class="snap-pedals-container">
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip on" data-module-id="0">NR</span>
+                                    <span class="snap-pedal-chip" data-module-id="1">FX1</span>
+                                    <span class="snap-pedal-chip on" data-module-id="2">DRV</span>
+                                    <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
+                                    <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                </div>
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
+                                    <span class="snap-pedal-chip" data-module-id="6">FX2</span>
+                                    <span class="snap-pedal-chip on" data-module-id="7">DLY</span>
+                                    <span class="snap-pedal-chip" data-module-id="8">RVB</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SNAP 4 -->
+                        <div class="snapshot-card" data-snap-id="4">
+                            <div class="snap-badge-label">SNAP 4</div>
+                            <div class="snap-main-name" id="snapName4">Ambiente</div>
+                            <div class="snap-pedals-container">
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="0">NR</span>
+                                    <span class="snap-pedal-chip on" data-module-id="1">FX1</span>
+                                    <span class="snap-pedal-chip" data-module-id="2">DRV</span>
+                                    <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
+                                    <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                </div>
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
+                                    <span class="snap-pedal-chip" data-module-id="6">FX2</span>
+                                    <span class="snap-pedal-chip on" data-module-id="7">DLY</span>
+                                    <span class="snap-pedal-chip on" data-module-id="8">RVB</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Big Vertical TAP TEMPO Column -->
+                        <div class="snap-tap-tempo-column" id="snapTapColumn" title="Toque no ritmo para marcar o BPM">
+                            <div class="snap-tap-title">TAP<br>TEMPO</div>
+                            <div class="snap-tap-bpm-num" id="snapTapBpmNum">120</div>
+                            <div class="snap-tap-bpm-sub">BPM</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Snapshot Modal -->
+                <!-- Comprehensive Snapshot Visual Editor Modal -->
+                <div id="snapshotEditorModal" class="snapshot-editor-overlay">
+                    <div class="snapshot-editor-window">
+                        <!-- Top Bar -->
+                        <div class="snap-editor-header">
+                            <div class="snap-editor-header-left">
+                                <span class="snap-editor-title">Configurar Snapshots</span>
+                                <span class="snap-editor-preset-badge" id="snapEditorPresetBadge">P01 Preset</span>
+                            </div>
+                            <div class="snap-editor-header-right">
+                                <button id="snapEditorListenBtn" class="btn" title="Aplicar e ouvir agora este snapshot na pedaleira">▶️ Testar no Pedal</button>
+                                <button id="snapEditorCaptureBtn" class="btn" title="Copiar os pedais e knobs atuais da pedaleira para este snapshot">📸 Capturar da Pedaleira</button>
+                                <button id="snapEditorCloseBtn" class="btn btn-primary" style="padding: 6px 14px; font-weight: 800;">Salvar e Fechar</button>
+                            </div>
+                        </div>
+
+                        <!-- 4 Snapshots Tabs Selector -->
+                        <div class="snap-editor-tabs-bar">
+                            <div class="snap-tab-btn active" data-snap-id="1">
+                                <span class="snap-tab-num">SNAP 1</span>
+                                <span class="snap-tab-name" id="snapTabName1">Limpo</span>
+                            </div>
+                            <div class="snap-tab-btn" data-snap-id="2">
+                                <span class="snap-tab-num">SNAP 2</span>
+                                <span class="snap-tab-name" id="snapTabName2">Crunch</span>
+                            </div>
+                            <div class="snap-tab-btn" data-snap-id="3">
+                                <span class="snap-tab-num">SNAP 3</span>
+                                <span class="snap-tab-name" id="snapTabName3">Solo</span>
+                            </div>
+                            <div class="snap-tab-btn" data-snap-id="4">
+                                <span class="snap-tab-num">SNAP 4</span>
+                                <span class="snap-tab-name" id="snapTabName4">Ambiente</span>
+                            </div>
+                        </div>
+
+                        <!-- Rename & Instruction Bar -->
+                        <div class="snap-editor-meta-bar">
+                            <div class="snap-rename-group">
+                                <label for="snapEditorNameInput">Nome deste Snapshot:</label>
+                                <input type="text" id="snapEditorNameInput" class="snap-rename-input" maxlength="15" placeholder="Ex: Limpo, Solo...">
+                            </div>
+                            <div class="snap-meta-hint">
+                                Toque nos interruptores ON/OFF para ligar ou desligar os pedais, e ajuste os sliders para este snapshot.
+                            </div>
+                        </div>
+
+                        <!-- 9 Pedals Grid with Sliders & Toggles -->
+                        <div class="snap-editor-modules-grid" id="snapEditorModulesGrid">
+                            <!-- Populated dynamically by renderSnapshotEditorModules() -->
+                        </div>
+
+                        <!-- Footer with backup -->
+                        <div class="snap-editor-footer">
+                            <div class="snap-footer-info">
+                                💾 Salvo automaticamente para este preset (<strong><span id="snapEditorPresetName">P01</span></strong>). Cada preset possui seus 4 snapshots exclusivos.
+                            </div>
+                            <div class="snap-footer-actions">
+                                <button id="exportSnapshotsBackupBtn" class="btn" style="font-size: 11px;">📤 Exportar Backup</button>
+                                <button id="importSnapshotsBackupBtn" class="btn" style="font-size: 11px;">📥 Importar Backup</button>
+                                <input type="file" id="snapshotsBackupFileInput" accept=".json" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
         </div>
     </div>
     <div id="advancedSettingsPanel" class="advanced-settings-panel">
-    <h4>Advanced Settings</h4>
+    <h4>Configurações</h4>
+
+    <div class="control-row" style="margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <div class="control-label" style="font-weight: 700; color: #fff; font-size: 12px;">Tap Tempo Global</div>
+            <div style="font-size: 10px; color: var(--text-secondary); margin-top: 2px;">Manter o mesmo BPM ao trocar de presets</div>
+        </div>
+        <div id="globalTempoSettingsToggle" class="toggle-switch on" title="Ativar/Desativar Tap Tempo Global"></div>
+    </div>
 
     <div class="control-row">
         <div class="control-label">Input Lvl</div>
@@ -11264,6 +12769,10 @@
                     this.setupControlListeners();
                     this.setupAmpCloneMode();
                     this.setupDragAndDrop();
+                    this.setupTapTempo();
+                    this.setupLiveUI();
+                    this.initSnapshotsSystem();
+                    this.initQuickSaveSceneSystem();
 
                     document.getElementById('editor-container').style.display = 'flex';
 
@@ -11571,9 +13080,16 @@
 
                 document.getElementById('patchNumber').textContent = baseName;
                 document.getElementById('patchName').textContent = displayName;
+                if (this.updateSnapshotsHeaderInfo) {
+                    this.updateSnapshotsHeaderInfo();
+                    this.renderSnapshotsForCurrentPreset();
+                }
 
                 if (!sendCommand) {
                      this.syncCurrentPresetState();
+                     if (!this.isConnected && this.globalTapTempo && this.globalTapTempo.enabled) {
+                         this.reapplyGlobalTempo();
+                     }
                 } else {
                     this.selectModule(0);
                 }
@@ -11610,7 +13126,8 @@
                                 typeSelect.appendChild(option);
                             }
                         });
-                        typeSelect.dispatchEvent(new Event('change'));
+                        const firstFxId = moduleDef.effects[0];
+                        this.createParameterControls(moduleId, firstFxId);
                     } else if (controlPanel) {
                         const firstFxId = moduleDef.effects[0];
                         this.createParameterControls(moduleId, firstFxId);
@@ -11739,7 +13256,19 @@
                             // Click was on the status indicator, so we ignore it here and let the status click handler manage it.
                             return;
                         }
-                        this.selectModule(parseInt(module.dataset.moduleId, 10));
+                        const moduleId = parseInt(module.dataset.moduleId, 10);
+                        if (this.activeModuleId === moduleId) {
+                            // Se já estiver selecionado, clicar novamente liga/desliga o efeito
+                            const enableToggle = document.getElementById(`module-enable-${moduleId}`);
+                            if (enableToggle && !enableToggle.classList.contains('locked')) {
+                                enableToggle.classList.toggle('on');
+                                const isOn = enableToggle.classList.contains('on');
+                                this.sendModuleState(moduleId, isOn);
+                                this.updateModuleStatus(moduleId);
+                            }
+                        } else {
+                            this.selectModule(moduleId);
+                        }
                     });
                 });
                 this.sendManualCommandBtn.addEventListener('click', () => this.sendManualCommand());
@@ -11961,10 +13490,7 @@
                     moduleTypeElement.textContent = effectDef.name;
                 }
 
-                let content = `<h4 style="color: #ccc;">${effectDef.name}</h4>`;
-                if (effectDef.descriptionEn) {
-                    content += `<p class="effect-description">${effectDef.descriptionEn.replace(/\n/g, '<br>')}</p>`;
-                }
+                let content = '';
 
                 effectDef.alg.forEach(param => {
                     const label = `<div class="control-label">${param.name}</div>`;
@@ -11998,40 +13524,8 @@
                     content += `<div class="control-row">${controlHtml}</div>`;
                 });
 
-                // ✨ CHANGE 1: If it's the DELAY module, append the tap tempo HTML to the 'content' string.
-                if (moduleId == '7') {
-                    const tapTempoHTML = `
-                        <div class="tap-tempo-section">
-                            <div class="tap-grid">
-                                <div class="tap-display">
-                                    <input type="number" id="tap-bpm-input-7" class="bpm-input" value="120.0" min="20" max="300" step="0.1">
-                                    <span class="display-label">BPM</span>
-                                </div>
-                                <div class="tap-display">
-                                    <span id="delay-time-ms-7" class="bpm-input">500ms</span>
-                                    <span class="display-label">Calculated delay time</span>
-                                </div>
-                                <button id="tap-button-7" class="tap-button">TAP TEMPO</button>
-                                <div id="note-divisions-7" class="note-divisions">
-                                    <button class="note-btn" data-multiplier="0.5">1/8</button>
-                                    <button class="note-btn" data-multiplier="0.75">1/8 dotted</button>
-                                    <button class="note-btn active" data-multiplier="1">1/4</button>
-                                    <button class="note-btn" data-multiplier="2">1/2</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    content += tapTempoHTML;
-                }
-
                 paramsSection.innerHTML = content;
 
-                // ✨ CHANGE 2: After rendering, if it was the DELAY module, call the setup logic.
-                if (moduleId == '7') {
-                    this.setupTapTempo();
-                }
-
-                // After creating the controls, initialize the progress style for the new sliders.
                 paramsSection.querySelectorAll('.slider').forEach(slider => {
                     this.updateSliderProgress(slider);
                 });
@@ -12041,44 +13535,87 @@
                 const tapButton = document.getElementById('tap-button-7');
                 const bpmInput = document.getElementById('tap-bpm-input-7');
                 const divisionButtonsContainer = document.getElementById('note-divisions-7');
+                const globalTempoSettingsToggle = document.getElementById('globalTempoSettingsToggle');
 
                 if (!tapButton || !bpmInput || !divisionButtonsContainer) {
                     return;
                 }
 
+                // Check saved preference or default to true
+                const isGlobalEnabled = localStorage.getItem('pocketedit_global_tap_tempo') !== '0';
+
+                this.globalTapTempo = {
+                    enabled: isGlobalEnabled,
+                    bpm: 120.0,
+                    multiplier: 1.0
+                };
+
+                if (globalTempoSettingsToggle) {
+                    globalTempoSettingsToggle.classList.toggle('on', this.globalTapTempo.enabled);
+                    globalTempoSettingsToggle.addEventListener('click', () => {
+                        this.globalTapTempo.enabled = !this.globalTapTempo.enabled;
+                        globalTempoSettingsToggle.classList.toggle('on', this.globalTapTempo.enabled);
+                        localStorage.setItem('pocketedit_global_tap_tempo', this.globalTapTempo.enabled ? '1' : '0');
+                        this.log(`Configuração: Tap Tempo Global ${this.globalTapTempo.enabled ? 'ativado' : 'desativado'}`, 'info');
+                    });
+                }
+
                 const divisionButtons = divisionButtonsContainer.querySelectorAll('.note-btn');
-                let tapTimestamps = [], currentBpm = 120.0;
+                let tapTimestamps = [];
                 let timeoutId = null, beatIntervalId = null;
 
-                const updateDelayFromBpm = () => {
+                const updateDelayFromBpm = (shouldSendCommand = true) => {
                     const delayTimeSlider = document.querySelector('#module-params-7 .slider[data-alg-id="1"]');
                     const delayTimeDisplay = document.getElementById('delay-time-ms-7');
-                    if (!delayTimeSlider || !delayTimeDisplay) return;
+                    const tapBpmDisplay = document.getElementById('tap-bpm-display');
 
                     const activeMultiplierBtn = divisionButtonsContainer.querySelector('.note-btn.active');
                     const noteMultiplier = activeMultiplierBtn ? parseFloat(activeMultiplierBtn.dataset.multiplier) : 1.0;
 
-                    currentBpm = Math.max(20, Math.min(currentBpm, 300));
-                    currentBpm = Math.round(currentBpm * 2) / 2;
+                    this.globalTapTempo.multiplier = noteMultiplier;
+                    this.globalTapTempo.bpm = Math.max(20, Math.min(this.globalTapTempo.bpm, 300));
+                    this.globalTapTempo.bpm = Math.round(this.globalTapTempo.bpm * 2) / 2;
 
-                    const finalDelayTimeMs = ((60 * 1000) / currentBpm) * noteMultiplier;
+                    const finalDelayTimeMs = ((60 * 1000) / this.globalTapTempo.bpm) * noteMultiplier;
+                    const roundedMs = Math.round(finalDelayTimeMs);
 
-                    const minTime = parseFloat(delayTimeSlider.min);
-                    const maxTime = parseFloat(delayTimeSlider.max);
+                    const minTime = delayTimeSlider ? parseFloat(delayTimeSlider.min) : 20;
+                    const maxTime = delayTimeSlider ? parseFloat(delayTimeSlider.max) : 1000;
 
-                    delayTimeDisplay.textContent = `${Math.round(finalDelayTimeMs)}ms`;
-
-                    if (finalDelayTimeMs > maxTime) {
-                        delayTimeDisplay.classList.add('out-of-range');
-                    } else {
-                        delayTimeDisplay.classList.remove('out-of-range');
+                    if (delayTimeDisplay) {
+                        delayTimeDisplay.textContent = `${roundedMs}ms`;
+                        if (roundedMs > maxTime) {
+                            delayTimeDisplay.classList.add('out-of-range');
+                        } else {
+                            delayTimeDisplay.classList.remove('out-of-range');
+                        }
                     }
 
-                    const sliderValue = Math.max(minTime, Math.min(Math.round(finalDelayTimeMs), maxTime));
+                    if (tapBpmDisplay) {
+                        tapBpmDisplay.textContent = Math.round(this.globalTapTempo.bpm);
+                    }
+                    bpmInput.value = this.globalTapTempo.bpm.toFixed(1);
 
-                    delayTimeSlider.value = sliderValue;
-                    delayTimeSlider.dispatchEvent(new Event('input', { bubbles: true }));
-                    bpmInput.value = currentBpm.toFixed(1);
+                    const sliderValue = Math.max(minTime, Math.min(roundedMs, maxTime));
+
+                    if (delayTimeSlider) {
+                        delayTimeSlider.value = sliderValue;
+                        const valueDisplay = delayTimeSlider.nextElementSibling;
+                        if (valueDisplay && valueDisplay.classList.contains('slider-value')) {
+                            valueDisplay.textContent = sliderValue;
+                        }
+                        this.updateSliderProgress(delayTimeSlider);
+
+                        if (shouldSendCommand) {
+                            delayTimeSlider.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    } else if (shouldSendCommand && this.isConnected) {
+                        const command = this.commands?.parameters?.[7]?.[1]?.[sliderValue];
+                        if (command) {
+                            this.writeCommand(command);
+                        }
+                    }
+
                     startBeatIndicator();
                 };
 
@@ -12087,15 +13624,15 @@
                     const intervals = tapTimestamps.slice(1).map((t, i) => t - tapTimestamps[i]);
                     const avg = intervals.reduce((s, v) => s + v, 0) / intervals.length;
                     if (avg > 0 && avg < 3000) {
-                        currentBpm = (60 * 1000) / avg;
-                        updateDelayFromBpm();
+                        this.globalTapTempo.bpm = (60 * 1000) / avg;
+                        updateDelayFromBpm(true);
                     }
                 };
 
                 const startBeatIndicator = () => {
                     clearInterval(beatIntervalId);
-                    if(currentBpm <= 0) return;
-                    const intervalMs = (60 * 1000) / currentBpm;
+                    if (this.globalTapTempo.bpm <= 0) return;
+                    const intervalMs = (60 * 1000) / this.globalTapTempo.bpm;
                     beatIntervalId = setInterval(() => {
                         tapButton.classList.add('beat-flash');
                         setTimeout(() => tapButton.classList.remove('beat-flash'), 100);
@@ -12113,8 +13650,8 @@
                 bpmInput.addEventListener('change', () => {
                     const val = parseFloat(bpmInput.value);
                     if (!isNaN(val)) {
-                        currentBpm = val;
-                        updateDelayFromBpm();
+                        this.globalTapTempo.bpm = val;
+                        updateDelayFromBpm(true);
                     }
                 });
 
@@ -12126,14 +13663,18 @@
                     button.addEventListener('click', e => {
                         divisionButtons.forEach(btn => btn.classList.remove('active'));
                         e.currentTarget.classList.add('active');
-                        updateDelayFromBpm();
+                        updateDelayFromBpm(true);
                     });
                 });
 
-                currentBpm = parseFloat(bpmInput.value);
+                // Inicializar visualmente e com delay time padrão sem disparar SysEx se não conectado
+                this.globalTapTempo.bpm = parseFloat(bpmInput.value) || 120.0;
+                updateDelayFromBpm(false);
                 startBeatIndicator();
-            }
 
+                // Tornar a função updateDelayFromBpm acessível na instância da classe
+                this._updateDelayFromBpm = updateDelayFromBpm;
+            }
 
             selectModule(moduleId) {
                 if (this.activeModuleId === moduleId) return;
@@ -12598,6 +14139,793 @@
                 }
             }
 
+            
+            setupLiveUI() {
+                const prevBtn = document.getElementById('prevPresetBtn');
+                const nextBtn = document.getElementById('nextPresetBtn');
+                const patchInfoBadge = document.getElementById('patchInfoBadge');
+                const openDrawerBtn = document.getElementById('openPresetsDrawerBtn');
+                const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+                const drawerOverlay = document.getElementById('drawerOverlay');
+                const sidebar = document.querySelector('.sidebar.drawer');
+                const logBtn = document.getElementById('logHeaderToggleBtn');
+
+                const toggleDrawer = (show) => {
+                    if (!sidebar) return;
+                    const isOpen = show !== undefined ? show : !sidebar.classList.contains('open');
+                    sidebar.classList.toggle('open', isOpen);
+                    if (drawerOverlay) drawerOverlay.classList.toggle('open', isOpen);
+                };
+
+                if (prevBtn) prevBtn.addEventListener('click', () => this.navigatePreset(-1));
+                if (nextBtn) nextBtn.addEventListener('click', () => this.navigatePreset(1));
+                if (patchInfoBadge) patchInfoBadge.addEventListener('click', () => toggleDrawer(true));
+                if (openDrawerBtn) openDrawerBtn.addEventListener('click', () => toggleDrawer(true));
+                if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', () => toggleDrawer(false));
+                if (drawerOverlay) drawerOverlay.addEventListener('click', () => toggleDrawer(false));
+
+                if (logBtn) {
+                    logBtn.addEventListener('click', () => {
+                        this.logPanel.classList.toggle('visible');
+                    });
+                }
+
+                // Connection badge click handler
+                const connectionBadge = document.getElementById('connectionBadge');
+                if (connectionBadge) {
+                    connectionBadge.addEventListener('click', (e) => {
+                        if (!this.isConnected) {
+                            this.connect();
+                        } else {
+                            if (confirm('Deseja desconectar da pedaleira Sonicake?')) {
+                                this.disconnect();
+                            }
+                        }
+                    });
+                }
+
+                // Patch Volume display sync
+                const patchVolSlider = document.querySelector('.patch-volume-module .slider');
+                const patchVolDisplay = document.getElementById('patchVolDisplay');
+                if (patchVolSlider && patchVolDisplay) {
+                    patchVolSlider.addEventListener('input', (e) => {
+                        patchVolDisplay.textContent = e.target.value;
+                    });
+                }
+
+                // BPM direct entry on click
+                const tapBpmDisplay = document.getElementById('tap-bpm-display');
+                if (tapBpmDisplay) {
+                    tapBpmDisplay.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const currentBpm = parseFloat(document.getElementById('tap-bpm-input-7')?.value || '120');
+                        const entered = prompt('Digite o BPM desejado (20 a 300):', Math.round(currentBpm));
+                        if (entered !== null) {
+                            const val = parseFloat(entered);
+                            if (!isNaN(val) && val >= 20 && val <= 300) {
+                                const bpmInput = document.getElementById('tap-bpm-input-7');
+                                if (bpmInput) {
+                                    bpmInput.value = val;
+                                    bpmInput.dispatchEvent(new Event('change'));
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            
+            reapplyGlobalTempo() {
+                if (!this.globalTapTempo || !this.globalTapTempo.enabled) return;
+                if (typeof this._updateDelayFromBpm === 'function') {
+                    this._updateDelayFromBpm(true);
+                    this.log(`🌐 Tempo Global aplicado: ${Math.round(this.globalTapTempo.bpm)} BPM`, 'info');
+                }
+            }
+
+            syncTapTempoFromCurrentPreset(decodedData) {
+                const delaySlider = document.querySelector('#module-params-7 .slider[data-alg-id="1"]');
+                const savedMs = decodedData?.parameters?.[7]?.[1] || (delaySlider ? parseFloat(delaySlider.value) : 500);
+                if (savedMs > 0) {
+                    const activeMultiplierBtn = document.querySelector('#note-divisions-7 .note-btn.active');
+                    const noteMultiplier = activeMultiplierBtn ? parseFloat(activeMultiplierBtn.dataset.multiplier) : 1.0;
+                    const calculatedBpm = Math.round(((60 * 1000) / savedMs) * noteMultiplier);
+                    const clampedBpm = Math.max(20, Math.min(calculatedBpm, 300));
+
+                    if (this.globalTapTempo) {
+                        this.globalTapTempo.bpm = clampedBpm;
+                    }
+                    const tapBpmDisplay = document.getElementById('tap-bpm-display');
+                    if (tapBpmDisplay) tapBpmDisplay.textContent = clampedBpm;
+                    const bpmInput = document.getElementById('tap-bpm-input-7');
+                    if (bpmInput) bpmInput.value = clampedBpm.toFixed(1);
+                    const delayTimeDisplay = document.getElementById('delay-time-ms-7');
+                    if (delayTimeDisplay) delayTimeDisplay.textContent = `${Math.round(savedMs)}ms`;
+                }
+            }
+
+            
+            // ============================================================================
+            // SNAPSHOTS SYSTEM (HX STOMP STYLE)
+            // ============================================================================
+            
+            // ============================================================================
+            // QUICK SAVE SCENE TO SNAPSHOT
+            // ============================================================================
+            initQuickSaveSceneSystem() {
+                const quickSaveBtn = document.getElementById('quickSaveSnapBtn');
+                const modal = document.getElementById('quickSaveSnapModal');
+                const closeBtn = document.getElementById('closeQuickSaveModalBtn');
+
+                if (quickSaveBtn) {
+                    quickSaveBtn.addEventListener('click', () => this.openQuickSaveSnapModal());
+                }
+
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => this.closeQuickSaveSnapModal());
+                }
+
+                if (modal) {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) this.closeQuickSaveSnapModal();
+                    });
+                }
+
+                document.querySelectorAll('.quick-save-snap-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const targetSnapId = parseInt(item.dataset.targetSnap, 10);
+                        this.saveCurrentSceneToTargetSnap(targetSnapId);
+                    });
+                });
+            }
+
+            openQuickSaveSnapModal() {
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const patchName = document.getElementById('patchName')?.textContent.trim() || 'Preset';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+
+                const presetNumEl = document.getElementById('quickSavePresetNum');
+                if (presetNumEl) {
+                    presetNumEl.textContent = `${presetBaseName} (${patchName})`;
+                }
+
+                snaps.forEach(s => {
+                    const nameEl = document.getElementById(`quickSnapName${s.id}`);
+                    if (nameEl) nameEl.textContent = s.name;
+                });
+
+                const modal = document.getElementById('quickSaveSnapModal');
+                const toast = document.getElementById('quickSaveToast');
+                if (toast) toast.classList.remove('active');
+                if (modal) modal.classList.add('active');
+            }
+
+            closeQuickSaveSnapModal() {
+                const modal = document.getElementById('quickSaveSnapModal');
+                if (modal) modal.classList.remove('active');
+            }
+
+            saveCurrentSceneToTargetSnap(snapId) {
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+                const targetSnap = snaps.find(s => s.id === snapId);
+                if (!targetSnap) return;
+
+                // 1. Capture current module ON/OFF states
+                const states = {};
+                for (let i = 0; i <= 8; i++) {
+                    const toggle = document.getElementById(`module-enable-${i}`);
+                    states[i] = toggle ? toggle.classList.contains('on') : false;
+                }
+                targetSnap.states = states;
+
+                // 2. Capture current knob/parameter values
+                const params = {};
+                for (let i = 0; i <= 8; i++) {
+                    const sliders = document.querySelectorAll(`#module-params-${i} .slider`);
+                    if (sliders.length > 0) {
+                        params[i] = {};
+                        sliders.forEach(s => {
+                            const algId = s.dataset.algId;
+                            if (algId !== undefined) {
+                                params[i][algId] = parseFloat(s.value);
+                            }
+                        });
+                    }
+                }
+                targetSnap.params = params;
+
+                // Save to localStorage
+                this.saveAllSnapshotsData();
+                this.renderSnapshotsForCurrentPreset();
+
+                // Show success toast
+                const toast = document.getElementById('quickSaveToast');
+                if (toast) {
+                    toast.textContent = `✅ Som atual gravado com sucesso no ${targetSnap.title} ("${targetSnap.name}")!`;
+                    toast.classList.add('active');
+                }
+
+                this.log(`✅ Cena salva da tela de pedais para ${targetSnap.title} ("${targetSnap.name}") em ${presetBaseName}`, 'success');
+
+                setTimeout(() => {
+                    this.closeQuickSaveSnapModal();
+                }, 750);
+            }
+
+            initSnapshotsSystem() {
+                this.activeSnapshotId = 1;
+                this.snapshotsData = this.loadAllSnapshotsData();
+
+                const openBtn = document.getElementById('openSnapshotsBtn');
+                const closeBtn = document.getElementById('closeSnapshotsBtn');
+                const editBtn = document.getElementById('editSnapshotsBtn');
+                const closeEditModalBtn = document.getElementById('closeEditSnapModalBtn');
+                const saveStateBtn = document.getElementById('saveCurrentStateToSnapBtn');
+                const snapTapCol = document.getElementById('snapTapColumn');
+                const exportBackupBtn = document.getElementById('exportSnapshotsBackupBtn');
+                const importBackupBtn = document.getElementById('importSnapshotsBackupBtn');
+                const backupFileInput = document.getElementById('snapshotsBackupFileInput');
+
+                if (exportBackupBtn) {
+                    exportBackupBtn.addEventListener('click', () => this.exportSnapshotsBackup());
+                }
+
+                if (importBackupBtn && backupFileInput) {
+                    importBackupBtn.addEventListener('click', () => backupFileInput.click());
+                    backupFileInput.addEventListener('change', (e) => this.onSnapshotsBackupFileSelected(e));
+                }
+
+                if (openBtn) {
+                    openBtn.addEventListener('click', () => this.toggleSnapshotsView(true));
+                }
+
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => this.toggleSnapshotsView(false));
+                }
+
+                // Snapshots Cards Click Listeners
+                document.querySelectorAll('.snapshot-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const snapId = parseInt(card.dataset.snapId, 10);
+                        this.activateSnapshot(snapId);
+                    });
+                });
+
+                // Visual Snapshot Editor Listeners
+                if (editBtn) {
+                    editBtn.addEventListener('click', () => this.openEditSnapshotModal());
+                }
+
+                const snapEditorCloseBtn = document.getElementById('snapEditorCloseBtn');
+                if (snapEditorCloseBtn) {
+                    snapEditorCloseBtn.addEventListener('click', () => this.closeSnapshotVisualEditor());
+                }
+
+                const snapEditorCaptureBtn = document.getElementById('snapEditorCaptureBtn');
+                if (snapEditorCaptureBtn) {
+                    snapEditorCaptureBtn.addEventListener('click', () => this.captureLiveToEditingSnapshot());
+                }
+
+                const snapEditorListenBtn = document.getElementById('snapEditorListenBtn');
+                if (snapEditorListenBtn) {
+                    snapEditorListenBtn.addEventListener('click', () => this.listenEditingSnapshotNow());
+                }
+
+                // Snap Editor Tabs Switching
+                document.querySelectorAll('.snap-tab-btn').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const snapId = parseInt(tab.dataset.snapId, 10);
+                        this.selectSnapshotEditorTab(snapId);
+                    });
+                });
+
+                // Tap Tempo directly inside Snapshots View
+                if (snapTapCol) {
+                    let tapTimestamps = [];
+                    let timeoutId = null;
+                    snapTapCol.addEventListener('click', () => {
+                        clearTimeout(timeoutId);
+                        tapTimestamps.push(Date.now());
+                        if (tapTimestamps.length > 4) tapTimestamps.shift();
+                        if (tapTimestamps.length >= 2) {
+                            const intervals = tapTimestamps.slice(1).map((t, i) => t - tapTimestamps[i]);
+                            const avg = intervals.reduce((s, v) => s + v, 0) / intervals.length;
+                            if (avg > 0 && avg < 3000) {
+                                const newBpm = Math.round(((60 * 1000) / avg) * 2) / 2;
+                                if (this.globalTapTempo) {
+                                    this.globalTapTempo.bpm = newBpm;
+                                }
+                                if (typeof this._updateDelayFromBpm === 'function') {
+                                    this._updateDelayFromBpm(true);
+                                }
+                                this.updateSnapshotsTapDisplay();
+                            }
+                        }
+                        snapTapCol.classList.add('beat-flash');
+                        setTimeout(() => snapTapCol.classList.remove('beat-flash'), 90);
+                        timeoutId = setTimeout(() => tapTimestamps = [], 2000);
+                    });
+                }
+
+                // Compact Snapshots Bar on Pedals Screen Listeners
+                document.querySelectorAll('.pedal-snap-pill').forEach(pill => {
+                    pill.addEventListener('click', () => {
+                        const snapId = parseInt(pill.dataset.snapId, 10);
+                        this.activateSnapshot(snapId);
+                    });
+                });
+
+                const pedalsBarSaveBtn = document.getElementById('pedalsBarSaveSnapBtn');
+                if (pedalsBarSaveBtn) {
+                    pedalsBarSaveBtn.addEventListener('click', () => {
+                        this.saveCurrentSceneToTargetSnap(this.activeSnapshotId);
+                    });
+                }
+
+                const pedalsBarEditBtn = document.getElementById('pedalsBarEditSnapBtn');
+                if (pedalsBarEditBtn) {
+                    pedalsBarEditBtn.addEventListener('click', () => {
+                        this.openEditSnapshotModal(this.activeSnapshotId);
+                    });
+                }
+
+                // Initial render of compact bar pills for active preset
+                this.renderSnapshotsForCurrentPreset();
+            }
+
+            toggleSnapshotsView(show) {
+                const snapshotsView = document.getElementById('snapshots-view');
+                const editorContainer = document.getElementById('editor-container');
+                if (!snapshotsView || !editorContainer) return;
+
+                if (show) {
+                    this.updateSnapshotsHeaderInfo();
+                    this.renderSnapshotsForCurrentPreset();
+                    this.updateSnapshotsTapDisplay();
+                    editorContainer.style.display = 'none';
+                    snapshotsView.classList.add('active');
+                } else {
+                    snapshotsView.classList.remove('active');
+                    editorContainer.style.display = 'flex';
+                }
+            }
+
+            updateSnapshotsHeaderInfo() {
+                const patchNumber = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const patchName = document.getElementById('patchName')?.textContent.trim() || 'Preset';
+
+                const hNum = document.getElementById('snapHeaderPatchNum');
+                const hName = document.getElementById('snapHeaderPatchName');
+                if (hNum) hNum.textContent = patchNumber;
+                if (hName) hName.textContent = patchName;
+            }
+
+            updateSnapshotsTapDisplay() {
+                const tapNum = document.getElementById('snapTapBpmNum');
+                const mainBpmDisplay = document.getElementById('tap-bpm-display');
+                if (tapNum) {
+                    tapNum.textContent = mainBpmDisplay ? mainBpmDisplay.textContent : (this.globalTapTempo ? Math.round(this.globalTapTempo.bpm) : '120');
+                }
+            }
+
+            loadAllSnapshotsData() {
+                try {
+                    const raw = localStorage.getItem('pocketedit_snapshots_v1');
+                    if (raw) return JSON.parse(raw);
+                } catch (e) {
+                    console.error('Error loading snapshots from localStorage:', e);
+                }
+                return {};
+            }
+
+            saveAllSnapshotsData() {
+                try {
+                    localStorage.setItem('pocketedit_snapshots_v1', JSON.stringify(this.snapshotsData));
+                } catch (e) {
+                    console.error('Error saving snapshots to localStorage:', e);
+                }
+            }
+
+            getPresetSnapshots(presetBaseName) {
+                if (!this.snapshotsData[presetBaseName]) {
+                    // Default snapshots template matching user's design
+                    this.snapshotsData[presetBaseName] = [
+                        {
+                            id: 1,
+                            title: 'SNAP 1',
+                            name: 'Limpo',
+                            states: { 0: false, 1: false, 2: false, 3: true, 4: true, 5: false, 6: false, 7: false, 8: true },
+                            params: {}
+                        },
+                        {
+                            id: 2,
+                            title: 'SNAP 2',
+                            name: 'Crunch',
+                            states: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: false, 6: false, 7: false, 8: false },
+                            params: {}
+                        },
+                        {
+                            id: 3,
+                            title: 'SNAP 3',
+                            name: 'Solo',
+                            states: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: false, 6: false, 7: true, 8: false },
+                            params: {}
+                        },
+                        {
+                            id: 4,
+                            title: 'SNAP 4',
+                            name: 'Ambiente',
+                            states: { 0: false, 1: true, 2: false, 3: true, 4: true, 5: false, 6: false, 7: true, 8: true },
+                            params: {}
+                        }
+                    ];
+                    this.saveAllSnapshotsData();
+                }
+                return this.snapshotsData[presetBaseName];
+            }
+
+            renderSnapshotsForCurrentPreset() {
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+
+                snaps.forEach(snap => {
+                    const card = document.querySelector(`.snapshot-card[data-snap-id="${snap.id}"]`);
+                    if (card) {
+                        const nameEl = document.getElementById(`snapName${snap.id}`);
+                        if (nameEl) nameEl.textContent = snap.name;
+                        card.classList.toggle('active', snap.id === this.activeSnapshotId);
+
+                        // Update pedal micro-chips
+                        if (snap.states) {
+                            card.querySelectorAll('.snap-pedal-chip').forEach(chip => {
+                                const modId = parseInt(chip.dataset.moduleId, 10);
+                                const isOn = !!snap.states[modId];
+                                chip.classList.toggle('on', isOn);
+                            });
+                        }
+                    }
+
+                    // Also sync compact bar pills on pedals screen
+                    const pill = document.querySelector(`.pedal-snap-pill[data-snap-id="${snap.id}"]`);
+                    if (pill) {
+                        const pillName = document.getElementById(`pedalSnapPillName${snap.id}`);
+                        if (pillName) pillName.textContent = snap.name;
+                        pill.classList.toggle('active', snap.id === this.activeSnapshotId);
+                    }
+                });
+            }
+
+            async activateSnapshot(snapId) {
+                this.activeSnapshotId = snapId;
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+                const snap = snaps.find(s => s.id === snapId);
+                if (!snap) return;
+
+                // Update UI selection immediately
+                document.querySelectorAll('.snapshot-card').forEach(card => {
+                    card.classList.toggle('active', parseInt(card.dataset.snapId, 10) === snapId);
+                });
+                document.querySelectorAll('.pedal-snap-pill').forEach(pill => {
+                    pill.classList.toggle('active', parseInt(pill.dataset.snapId, 10) === snapId);
+                });
+
+                // Apply Module States (turn pedals ON/OFF smoothly without switching preset)
+                if (snap.states) {
+                    for (const [modIdStr, targetIsOn] of Object.entries(snap.states)) {
+                        const modId = parseInt(modIdStr, 10);
+                        const enableToggle = document.getElementById(`module-enable-${modId}`);
+                        if (enableToggle && !enableToggle.classList.contains('locked')) {
+                            const currentIsOn = enableToggle.classList.contains('on');
+                            if (currentIsOn !== targetIsOn) {
+                                enableToggle.classList.toggle('on', targetIsOn);
+                                if (this.isConnected) {
+                                    await this.sendModuleState(modId, targetIsOn);
+                                }
+                                this.updateModuleStatus(modId);
+                            }
+                        }
+                    }
+                }
+
+                // Apply Parameters (knob values smoothly without preset reload)
+                if (snap.params) {
+                    for (const [modIdStr, algs] of Object.entries(snap.params)) {
+                        const modId = parseInt(modIdStr, 10);
+                        for (const [algIdStr, val] of Object.entries(algs)) {
+                            const algId = parseInt(algIdStr, 10);
+                            const slider = document.querySelector(`#module-params-${modId} .slider[data-alg-id="${algId}"]`);
+                            if (slider) {
+                                if (parseFloat(slider.value) !== val) {
+                                    slider.value = val;
+                                    const valSpan = slider.nextElementSibling;
+                                    if (valSpan && valSpan.classList.contains('slider-value')) {
+                                        valSpan.textContent = val;
+                                    }
+                                    this.updateSliderProgress(slider);
+                                    if (this.isConnected) {
+                                        this.onParameterChange(slider);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                this.log(`⚡ Snapshot Ativado: ${snap.name} (Snap ${snapId})`, 'info');
+            }
+
+            openEditSnapshotModal(targetSnapId = null) {
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const patchName = document.getElementById('patchName')?.textContent.trim() || 'Preset';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+
+                this.editingSnapshotId = targetSnapId !== null ? targetSnapId : this.activeSnapshotId;
+
+                // Update Header info
+                const presetBadge = document.getElementById('snapEditorPresetBadge');
+                const presetNameFooter = document.getElementById('snapEditorPresetName');
+                if (presetBadge) presetBadge.textContent = `${presetBaseName} - ${patchName}`;
+                if (presetNameFooter) presetNameFooter.textContent = presetBaseName;
+
+                // Render tab headers
+                snaps.forEach(s => {
+                    const tabNameEl = document.getElementById(`snapTabName${s.id}`);
+                    if (tabNameEl) tabNameEl.textContent = s.name;
+                });
+
+                this.selectSnapshotEditorTab(this.editingSnapshotId);
+
+                const modal = document.getElementById('snapshotEditorModal');
+                if (modal) modal.classList.add('active');
+            }
+
+            selectSnapshotEditorTab(snapId) {
+                this.editingSnapshotId = snapId;
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+                const currentSnap = snaps.find(s => s.id === snapId) || snaps[0];
+
+                // Update active tab styling
+                document.querySelectorAll('.snap-tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', parseInt(btn.dataset.snapId, 10) === snapId);
+                });
+
+                // Update rename input
+                const nameInput = document.getElementById('snapEditorNameInput');
+                if (nameInput) {
+                    nameInput.value = currentSnap.name;
+                    nameInput.oninput = () => {
+                        currentSnap.name = nameInput.value.trim() || `Snap ${snapId}`;
+                        const tabNameEl = document.getElementById(`snapTabName${snapId}`);
+                        if (tabNameEl) tabNameEl.textContent = currentSnap.name;
+                        const snapCardName = document.getElementById(`snapName${snapId}`);
+                        if (snapCardName) snapCardName.textContent = currentSnap.name;
+                        this.saveAllSnapshotsData();
+                    };
+                }
+
+                // Render modules list with pedals toggles and knobs
+                this.renderSnapshotEditorModules(currentSnap);
+            }
+
+            renderSnapshotEditorModules(currentSnap) {
+                const grid = document.getElementById('snapEditorModulesGrid');
+                if (!grid || !this.definitions || !this.definitions.modules) return;
+
+                if (!currentSnap.states) currentSnap.states = {};
+                if (!currentSnap.params) currentSnap.params = {};
+
+                let html = '';
+
+                this.definitions.modules.forEach(modDef => {
+                    const modId = modDef.moduleId;
+                    if (modId === 9) return; // Handled under Amp (3)
+
+                    const isCurrentlyOn = currentSnap.states[modId] !== undefined 
+                        ? !!currentSnap.states[modId] 
+                        : (document.getElementById(`module-enable-${modId}`)?.classList.contains('on') || false);
+
+                    // Determine active effect definition
+                    let fxId = modDef.effects[0];
+                    const typeSelect = document.getElementById(`module-type-${modId}`);
+                    if (typeSelect && typeSelect.value) {
+                        fxId = parseInt(typeSelect.value, 10);
+                    }
+                    const effectDef = this.definitions.effectLibrary[fxId];
+                    const effectName = effectDef ? effectDef.name : modDef.name;
+
+                    html += `
+                        <div class="snap-module-card ${isCurrentlyOn ? 'on' : 'off'}" data-module-id="${modId}">
+                            <div class="snap-module-card-header">
+                                <div class="snap-module-badge-title">
+                                    <span class="snap-mod-pill">${modDef.name}</span>
+                                    <span class="snap-mod-fxname" title="${effectName}">${effectName}</span>
+                                </div>
+                                <div class="toggle-switch ${isCurrentlyOn ? 'on' : ''}" data-mod-toggle="${modId}" title="Ligar/Desligar pedal neste snapshot"></div>
+                            </div>
+                            <div class="snap-mod-params">`;
+
+                    if (effectDef && effectDef.alg) {
+                        effectDef.alg.forEach(param => {
+                            if (param.widgetType === 0 || param.widgetType === 3) {
+                                // Slider parameter
+                                const currentSavedVal = currentSnap.params[modId]?.[param.algId] !== undefined
+                                    ? currentSnap.params[modId][param.algId]
+                                    : (document.querySelector(`#module-params-${modId} .slider[data-alg-id="${param.algId}"]`)?.value || param.defaultValue);
+
+                                html += `
+                                    <div class="snap-param-row">
+                                        <span class="param-label">${param.name}</span>
+                                        <span class="param-val" id="snapValDisplay_${modId}_${param.algId}">${currentSavedVal}</span>
+                                        <input type="range" min="${param.min}" max="${param.max}" step="${param.step || 1}" 
+                                            value="${currentSavedVal}" data-mod-id="${modId}" data-alg-id="${param.algId}">
+                                    </div>`;
+                            }
+                        });
+                    }
+
+                    html += `</div></div>`;
+                });
+
+                grid.innerHTML = html;
+
+                // Attach Listeners to Module Toggles
+                grid.querySelectorAll('.toggle-switch[data-mod-toggle]').forEach(toggle => {
+                    toggle.addEventListener('click', () => {
+                        const modId = parseInt(toggle.dataset.modToggle, 10);
+                        toggle.classList.toggle('on');
+                        const isNowOn = toggle.classList.contains('on');
+
+                        const card = toggle.closest('.snap-module-card');
+                        if (card) {
+                            card.classList.toggle('on', isNowOn);
+                            card.classList.toggle('off', !isNowOn);
+                        }
+
+                        currentSnap.states[modId] = isNowOn;
+                        this.saveAllSnapshotsData();
+                        this.renderSnapshotsForCurrentPreset();
+                    });
+                });
+
+                // Attach Listeners to Parameter Sliders
+                grid.querySelectorAll('input[type="range"][data-mod-id]').forEach(slider => {
+                    slider.addEventListener('input', (e) => {
+                        const modId = parseInt(slider.dataset.modId, 10);
+                        const algId = parseInt(slider.dataset.algId, 10);
+                        const val = parseFloat(slider.value);
+
+                        const display = document.getElementById(`snapValDisplay_${modId}_${algId}`);
+                        if (display) display.textContent = val;
+
+                        if (!currentSnap.params[modId]) currentSnap.params[modId] = {};
+                        currentSnap.params[modId][algId] = val;
+
+                        this.saveAllSnapshotsData();
+                    });
+                });
+            }
+
+            closeSnapshotVisualEditor() {
+                const modal = document.getElementById('snapshotEditorModal');
+                if (modal) modal.classList.remove('active');
+                this.renderSnapshotsForCurrentPreset();
+            }
+
+            captureLiveToEditingSnapshot() {
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+                const currentSnap = snaps.find(s => s.id === this.editingSnapshotId);
+                if (!currentSnap) return;
+
+                // 1. Capture current module ON/OFF states
+                const states = {};
+                for (let i = 0; i <= 8; i++) {
+                    const toggle = document.getElementById(`module-enable-${i}`);
+                    states[i] = toggle ? toggle.classList.contains('on') : false;
+                }
+                currentSnap.states = states;
+
+                // 2. Capture current knob/parameter values
+                const params = {};
+                for (let i = 0; i <= 8; i++) {
+                    const sliders = document.querySelectorAll(`#module-params-${i} .slider`);
+                    if (sliders.length > 0) {
+                        params[i] = {};
+                        sliders.forEach(s => {
+                            const algId = s.dataset.algId;
+                            if (algId !== undefined) {
+                                params[i][algId] = parseFloat(s.value);
+                            }
+                        });
+                    }
+                }
+                currentSnap.params = params;
+
+                this.saveAllSnapshotsData();
+                this.renderSnapshotEditorModules(currentSnap);
+                this.renderSnapshotsForCurrentPreset();
+                alert(`✅ Som e pedais atuais capturados com sucesso para o ${currentSnap.title} ("${currentSnap.name}")!`);
+            }
+
+            listenEditingSnapshotNow() {
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+                const currentSnap = snaps.find(s => s.id === this.editingSnapshotId);
+                if (!currentSnap) return;
+
+                this.activateSnapshot(this.editingSnapshotId);
+                this.renderSnapshotEditorModules(currentSnap);
+            }
+
+            exportSnapshotsBackup() {
+                try {
+                    const dataStr = JSON.stringify(this.snapshotsData, null, 2);
+                    const blob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const timestamp = new Date().toISOString().slice(0, 10);
+                    a.href = url;
+                    a.download = `pocketedit_snapshots_${timestamp}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    this.log('📤 Backup de Snapshots exportado com sucesso!', 'success');
+                } catch (e) {
+                    alert('Erro ao exportar backup: ' + e.message);
+                }
+            }
+
+            onSnapshotsBackupFileSelected(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const parsed = JSON.parse(e.target.result);
+                        if (typeof parsed === 'object' && parsed !== null) {
+                            this.snapshotsData = parsed;
+                            this.saveAllSnapshotsData();
+                            this.renderSnapshotsForCurrentPreset();
+                            alert('✅ Snapshots restaurados com sucesso a partir do arquivo de backup!');
+                            this.log('📥 Snapshots restaurados com sucesso do arquivo', 'success');
+                        } else {
+                            throw new Error('Arquivo de formato inválido');
+                        }
+                    } catch (err) {
+                        alert('❌ Falha ao importar backup: ' + err.message);
+                    }
+                    event.target.value = '';
+                };
+                reader.readAsText(file);
+            }
+
+
+            navigatePreset(direction) {
+                const sourceData = this.activePatchTab === 'factory' ? this.factoryPatchesData : this.userPatchesData;
+                if (!sourceData || sourceData.length === 0) return;
+
+                const currentBaseName = document.getElementById('patchNumber').textContent.trim();
+                let currentIndex = sourceData.findIndex(p => p.baseName === currentBaseName);
+                if (currentIndex === -1) currentIndex = 0;
+
+                let targetIndex = currentIndex + direction;
+                if (targetIndex < 0) targetIndex = sourceData.length - 1;
+                if (targetIndex >= sourceData.length) targetIndex = 0;
+
+                const targetPatch = sourceData[targetIndex];
+                if (!targetPatch) return;
+
+                const patchItem = document.querySelector(`.patch-item[data-base-name="${targetPatch.baseName}"]`);
+                if (patchItem) {
+                    this.updatePatchInfo(patchItem, true);
+                }
+            }
+
             async disconnect() {
                 // Handle BLE disconnection
                 if (this.device && this.device.gatt.connected) {
@@ -12622,7 +14950,7 @@
 
             updateConnectionUI() {
                 const isConnected = this.isConnected;
-                const statusLabel = this.connectionType === 'usb' ? 'USB Connected' : this.connectionType === 'ble' ? 'BLE Connected' : 'Disconnected';
+                const statusLabel = this.connectionType === 'usb' ? 'USB Conectado' : this.connectionType === 'ble' ? 'BLE Conectado' : 'Desconectado';
 
                 this.connectBtn.disabled = isConnected;
                 this.disconnectBtn.disabled = !isConnected;
@@ -14599,6 +16927,14 @@
                         }, 150); // A small delay is sufficient.
                     }
 
+                    if (this.globalTapTempo && this.globalTapTempo.enabled) {
+                        setTimeout(() => {
+                            this.reapplyGlobalTempo();
+                        }, 70);
+                    } else {
+                        this.syncTapTempoFromCurrentPreset(decodedData);
+                    }
+
                     this.log('✅ UI sync complete. Command sending re-enabled.', 'info');
                 }
             }
@@ -15071,5 +17407,59 @@
             window.bleEditor.startEditor(); // Automatically start the editor on page load
         });
     </script>
+
+    <!-- Quick Save Scene to Snapshot Modal -->
+    <div id="quickSaveSnapModal" class="quick-save-snap-overlay">
+        <div class="quick-save-snap-window">
+            <div class="quick-save-snap-header">
+                <div>
+                    <div class="quick-save-snap-title">Salvar Cena no Snapshot</div>
+                    <div class="quick-save-snap-subtitle">Escolha em qual Snapshot de <strong id="quickSavePresetNum" style="color:var(--accent-orange);">P01</strong> você deseja gravar o som atual:</div>
+                </div>
+                <button id="closeQuickSaveModalBtn" class="close-drawer-btn" title="Fechar" style="color:#aaa;">&times;</button>
+            </div>
+
+            <div class="quick-save-snap-options">
+                <div class="quick-save-snap-item" data-target-snap="1">
+                    <div class="quick-snap-badge" style="background:#2563eb;">SNAP 1</div>
+                    <div class="quick-snap-info">
+                        <span class="quick-snap-name" id="quickSnapName1">Limpo</span>
+                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                    </div>
+                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                </div>
+
+                <div class="quick-save-snap-item" data-target-snap="2">
+                    <div class="quick-snap-badge" style="background:#e11d48;">SNAP 2</div>
+                    <div class="quick-snap-info">
+                        <span class="quick-snap-name" id="quickSnapName2">Crunch</span>
+                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                    </div>
+                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                </div>
+
+                <div class="quick-save-snap-item" data-target-snap="3">
+                    <div class="quick-snap-badge" style="background:#d97706;">SNAP 3</div>
+                    <div class="quick-snap-info">
+                        <span class="quick-snap-name" id="quickSnapName3">Solo</span>
+                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                    </div>
+                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                </div>
+
+                <div class="quick-save-snap-item" data-target-snap="4">
+                    <div class="quick-snap-badge" style="background:#059669;">SNAP 4</div>
+                    <div class="quick-snap-info">
+                        <span class="quick-snap-name" id="quickSnapName4">Ambiente</span>
+                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                    </div>
+                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                </div>
+            </div>
+
+            <div class="quick-save-toast" id="quickSaveToast">✅ Cena salva com sucesso!</div>
+        </div>
+    </div>
+
 </body>
 </html>
