@@ -1414,41 +1414,41 @@
             opacity: 1;
         }
 
-        /* Curated Refined Themes from User Reference Image */
+        /* Vibrant High-Contrast Snapshot Themes */
         .snapshot-card[data-snap-id="1"] {
-            background: linear-gradient(155deg, #536284, #424e6b);
-            box-shadow: 0 4px 16px rgba(66, 78, 107, 0.35);
+            background: linear-gradient(155deg, #1d68ff, #0f46d9);
+            box-shadow: 0 4px 18px rgba(29, 104, 255, 0.45);
         }
 
         .snapshot-card[data-snap-id="1"].active {
-            box-shadow: 0 0 26px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.5) !important;
+            box-shadow: 0 0 32px rgba(29, 104, 255, 0.8), 0 8px 25px rgba(0,0,0,0.6) !important;
         }
 
         .snapshot-card[data-snap-id="2"] {
-            background: linear-gradient(155deg, #8c5660, #73434b);
-            box-shadow: 0 4px 16px rgba(115, 67, 75, 0.35);
+            background: linear-gradient(155deg, #ff1a53, #c90938);
+            box-shadow: 0 4px 18px rgba(255, 26, 83, 0.45);
         }
 
         .snapshot-card[data-snap-id="2"].active {
-            box-shadow: 0 0 26px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.5) !important;
+            box-shadow: 0 0 32px rgba(255, 26, 83, 0.8), 0 8px 25px rgba(0,0,0,0.6) !important;
         }
 
         .snapshot-card[data-snap-id="3"] {
-            background: linear-gradient(155deg, #8a7c49, #6f6336);
-            box-shadow: 0 4px 16px rgba(111, 99, 54, 0.35);
+            background: linear-gradient(155deg, #ff9800, #cc7400);
+            box-shadow: 0 4px 18px rgba(255, 152, 0, 0.45);
         }
 
         .snapshot-card[data-snap-id="3"].active {
-            box-shadow: 0 0 26px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.5) !important;
+            box-shadow: 0 0 32px rgba(255, 152, 0, 0.8), 0 8px 25px rgba(0,0,0,0.6) !important;
         }
 
         .snapshot-card[data-snap-id="4"] {
-            background: linear-gradient(155deg, #477b67, #376150);
-            box-shadow: 0 4px 16px rgba(55, 97, 80, 0.35);
+            background: linear-gradient(155deg, #00c853, #008f3a);
+            box-shadow: 0 4px 18px rgba(0, 200, 83, 0.45);
         }
 
         .snapshot-card[data-snap-id="4"].active {
-            box-shadow: 0 0 26px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0,0,0,0.5) !important;
+            box-shadow: 0 0 32px rgba(0, 200, 83, 0.8), 0 8px 25px rgba(0,0,0,0.6) !important;
         }
 
         /* Snapshot Header Label (SNAP 1, SNAP 2, etc.) */
@@ -1457,7 +1457,8 @@
             font-weight: 800;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: rgba(18, 22, 28, 0.6);
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
             text-align: center;
         }
 
@@ -1465,10 +1466,10 @@
         .snap-main-name {
             font-size: clamp(24px, 4.2vw, 36px);
             font-weight: 900;
-            color: #171c24;
+            color: #ffffff;
             text-align: center;
             letter-spacing: -0.5px;
-            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.15);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.55);
             line-height: 1.1;
             margin: auto 0;
             max-width: 100%;
@@ -2771,6 +2772,224 @@
 
             .patch-volume-module {
                 padding: 4px 8px;
+            }
+        }
+
+        /* Comprehensive Mobile Portrait Layout for Pedals Screen */
+        @media (max-width: 768px) and (orientation: portrait), (max-width: 680px) {
+            html, body {
+                overflow-y: auto !important;
+                height: 100% !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .main-container {
+                height: auto !important;
+                min-height: calc(100vh - 84px) !important;
+                overflow: visible !important;
+            }
+
+            #editor-container {
+                height: auto !important;
+                min-height: 100% !important;
+                overflow: visible !important;
+            }
+
+            .app-header {
+                height: auto !important;
+                padding: 8px 10px !important;
+                flex-wrap: wrap !important;
+                row-gap: 6px !important;
+            }
+
+            .header-left {
+                order: 1 !important;
+                gap: 8px !important;
+            }
+
+            .app-logo {
+                font-size: 14px !important;
+            }
+
+            .connection-badge {
+                padding: 3px 8px !important;
+                font-size: 10.5px !important;
+            }
+
+            .header-right {
+                order: 2 !important;
+                gap: 6px !important;
+                flex-shrink: 0 !important;
+            }
+
+            .quick-save-snap-btn, .snapshots-nav-btn {
+                height: 28px !important;
+                font-size: 11px !important;
+                padding: 0 8px !important;
+            }
+
+            .header-center {
+                order: 3 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                justify-content: space-between !important;
+                gap: 8px !important;
+                margin-top: 2px !important;
+            }
+
+            .nav-preset-btn {
+                width: 36px !important;
+                height: 32px !important;
+                font-size: 17px !important;
+            }
+
+            .patch-info-badge {
+                flex: 1 !important;
+                max-width: none !important;
+                height: 32px !important;
+            }
+
+            .pedals-snapshots-bar {
+                height: auto !important;
+                min-height: 38px !important;
+                padding: 6px 10px !important;
+                flex-wrap: wrap !important;
+                gap: 6px !important;
+            }
+
+            .pedals-snap-left-group {
+                flex: 1 !important;
+                min-width: 0 !important;
+                gap: 6px !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+
+            .pedals-snap-pills {
+                display: flex !important;
+                gap: 6px !important;
+            }
+
+            .pedal-snap-pill {
+                height: 26px !important;
+                padding: 2px 8px !important;
+                font-size: 11px !important;
+                flex-shrink: 0 !important;
+            }
+
+            .pedals-snap-actions {
+                display: flex !important;
+                gap: 6px !important;
+                flex-shrink: 0 !important;
+            }
+
+            .pedals-snap-action-btn {
+                height: 26px !important;
+                padding: 2px 8px !important;
+                font-size: 11px !important;
+            }
+
+            .signal-chain {
+                padding: 8px 10px !important;
+                background: #17171c !important;
+                border-bottom: 1px solid var(--border-subtle) !important;
+            }
+
+            .chain-flow {
+                display: flex !important;
+                gap: 8px !important;
+                overflow-x: auto !important;
+                scroll-snap-type: x mandatory !important;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding: 2px 0 !important;
+            }
+
+            .chain-module {
+                width: 66px !important;
+                height: 70px !important;
+                flex-shrink: 0 !important;
+                scroll-snap-align: start !important;
+            }
+
+            .stage-content {
+                flex-direction: column !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding: 10px !important;
+                gap: 12px !important;
+            }
+
+            .effects-panel {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                min-height: auto !important;
+                overflow: visible !important;
+                padding: 14px !important;
+            }
+
+            .effect-controls > .control-section:first-child {
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+            }
+
+            .effect-controls > .control-section:last-child {
+                grid-template-columns: 1fr !important;
+                gap: 14px !important;
+                overflow: visible !important;
+            }
+
+            .live-controls-panel {
+                width: 100% !important;
+                min-width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                flex-direction: column !important;
+                gap: 8px !important;
+                margin-bottom: 16px !important;
+            }
+
+            .live-tap-card {
+                width: 100% !important;
+                min-height: 66px !important;
+                height: 70px !important;
+                border-radius: 14px !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                padding: 10px 20px !important;
+                box-sizing: border-box !important;
+            }
+
+            .tap-card-header {
+                font-size: 15px !important;
+                letter-spacing: 1px !important;
+            }
+
+            .tap-card-bpm-display {
+                margin: 0 !important;
+            }
+
+            .tap-bpm-number {
+                font-size: 34px !important;
+            }
+
+            .tap-delay-ms {
+                font-size: 11px !important;
+            }
+
+            .note-divisions {
+                width: 100% !important;
+                display: flex !important;
+                gap: 6px !important;
+            }
+
+            .note-btn {
+                flex: 1 !important;
+                height: 38px !important;
+                font-size: 13px !important;
+                border-radius: 8px !important;
             }
         }
 
