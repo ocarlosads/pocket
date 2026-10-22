@@ -57,132 +57,6 @@
             box-sizing: border-box;
         }
 
-        /* iPhone 11 and Mobile Landscape fine-tuning */
-        @media (max-height: 450px) and (orientation: landscape) {
-            .app-header {
-                height: 38px;
-                padding: 0 10px;
-                gap: 6px;
-            }
-
-            .app-logo {
-                font-size: 13px;
-            }
-
-            .connection-badge {
-                padding: 3px 7px;
-                font-size: 10px;
-            }
-
-            .nav-preset-btn {
-                width: 26px;
-                height: 26px;
-                font-size: 14px;
-            }
-
-            .patch-info-badge {
-                height: 26px;
-                min-width: 105px;
-                padding: 2px 8px;
-            }
-
-            .patch-info-badge .patch-number,
-            .patch-info-badge .patch-name {
-                font-size: 11.5px;
-            }
-
-            .header-icon-btn {
-                width: 26px;
-                height: 26px;
-                font-size: 12px;
-            }
-
-            .quick-save-snap-btn, .snapshots-nav-btn {
-                height: 26px;
-                font-size: 10.5px;
-                padding: 2px 8px;
-            }
-
-            .global-volume-control {
-                padding: 2px 6px;
-            }
-
-            .global-volume-control .slider {
-                width: 55px;
-            }
-
-            .pedals-snapshots-bar {
-                height: 30px;
-                padding: 0 10px;
-            }
-
-            .pedal-snap-pill {
-                height: 23px;
-                padding: 2px 7px;
-                font-size: 10px;
-            }
-
-            .pedal-snap-pill .pill-name {
-                max-width: 70px;
-                font-size: 10.5px;
-            }
-
-            .pedals-snap-action-btn {
-                height: 23px;
-                font-size: 10px;
-                padding: 2px 6px;
-            }
-
-            .signal-chain {
-                padding: 4px 10px;
-            }
-
-            .chain-module {
-                width: 62px;
-                height: 64px;
-            }
-
-            .chain-module .module-icon {
-                height: 20px;
-                width: 20px;
-            }
-
-            .chain-module .module-name {
-                font-size: 11px;
-            }
-
-            .chain-module .module-type {
-                font-size: 8.5px;
-            }
-
-            .stage-content {
-                padding: 6px 10px;
-                gap: 8px;
-            }
-
-            .live-controls-panel {
-                width: 170px;
-                gap: 6px;
-            }
-
-            .live-tap-card {
-                min-height: 75px;
-                padding: 6px;
-            }
-
-            .tap-bpm-number {
-                font-size: 28px;
-            }
-
-            .note-btn {
-                height: 30px;
-            }
-
-            .patch-volume-module {
-                padding: 4px 8px;
-            }
-        }
-
         /* Top Navigation Header */
         .app-header {
             height: 44px;
@@ -253,9 +127,9 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            flex: 1;
+            flex: 0 1 auto;
             justify-content: center;
-            max-width: 360px;
+            max-width: 240px;
         }
 
         .nav-preset-btn {
@@ -2143,6 +2017,30 @@
             display: block;
         }
 
+        .floating-feedback-toast {
+            position: fixed;
+            top: 48px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(22, 22, 26, 0.96);
+            border: 1px solid var(--accent-orange);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 8px 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .floating-feedback-toast.active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
 
         /* Compact Snapshots Switcher Bar on Pedals Screen */
         .pedals-snapshots-bar {
@@ -2296,8 +2194,152 @@
             color: #ffffff;
         }
 
-        .pedals-snap-action-btn:active {
-            transform: scale(0.96);
+
+        /* iPhone 11 and Mobile Landscape fine-tuning (Cascaded at end of styles) */
+        @media (max-height: 520px), (max-width: 960px) {
+            .app-header {
+                height: 38px;
+                padding: 0 8px;
+                gap: 5px;
+            }
+
+            .header-left {
+                gap: 6px;
+            }
+
+            .app-logo {
+                font-size: 13px;
+            }
+
+            .connection-badge {
+                padding: 2px 6px;
+                font-size: 9.5px;
+            }
+
+            .nav-preset-btn {
+                width: 24px;
+                height: 24px;
+                font-size: 13px;
+            }
+
+            .header-center {
+                flex: 0 1 auto;
+                max-width: 175px;
+                gap: 3px;
+            }
+
+            .patch-info-badge {
+                height: 24px;
+                min-width: 90px;
+                max-width: 130px;
+                padding: 2px 6px;
+            }
+
+            .patch-info-badge .patch-number,
+            .patch-info-badge .patch-name {
+                font-size: 11px;
+            }
+
+            .header-right {
+                gap: 4px;
+                flex-shrink: 0;
+            }
+
+            .header-icon-btn {
+                width: 24px;
+                height: 24px;
+                font-size: 11px;
+            }
+
+            .quick-save-snap-btn, .snapshots-nav-btn {
+                height: 24px;
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+            .global-volume-control {
+                padding: 2px 4px;
+                gap: 4px;
+            }
+
+            .global-volume-control .control-label {
+                font-size: 9.5px;
+            }
+
+            .global-volume-control .slider {
+                width: 45px;
+            }
+
+            .pedals-snapshots-bar {
+                height: 30px;
+                padding: 0 8px;
+            }
+
+            .pedal-snap-pill {
+                height: 23px;
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+
+            .pedal-snap-pill .pill-name {
+                max-width: 70px;
+                font-size: 10.5px;
+            }
+
+            .pedals-snap-action-btn {
+                height: 23px;
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+
+            .signal-chain {
+                padding: 4px 8px;
+            }
+
+            .chain-module {
+                width: 62px;
+                height: 64px;
+            }
+
+            .chain-module .module-icon {
+                height: 20px;
+                width: 20px;
+            }
+
+            .chain-module .module-name {
+                font-size: 11px;
+            }
+
+            .chain-module .module-type {
+                font-size: 8.5px;
+            }
+
+            .stage-content {
+                padding: 6px 8px;
+                gap: 8px;
+            }
+
+            .live-controls-panel {
+                width: 170px;
+                gap: 6px;
+            }
+
+            .live-tap-card {
+                min-height: 75px;
+                padding: 6px;
+            }
+
+            .tap-bpm-number {
+                font-size: 28px;
+            }
+
+            .note-btn {
+                height: 30px;
+            }
+
+            .patch-volume-module {
+                padding: 4px 8px;
+            }
         }
 
 </style>
@@ -2359,8 +2401,8 @@
                     </div>
 
                     <div class="header-right">
-                        <button id="quickSaveSnapBtn" class="quick-save-snap-btn" title="Salvar o som atual em um Snapshot deste preset">💾 Salvar no Snap</button>
-                        <button id="openSnapshotsBtn" class="snapshots-nav-btn" title="Entrar no Modo Snapshots de Palco">⚡ SNAPSHOTS</button>
+                        <button id="quickSaveSnapBtn" class="quick-save-snap-btn" title="Salvar o som atual em um Snapshot deste preset">Salvar no Snap</button>
+                        <button id="openSnapshotsBtn" class="snapshots-nav-btn" title="Entrar no Modo Snapshots de Palco">SNAPSHOTS</button>
                         <div class="global-volume-control">
                             <span class="control-label">Global</span>
                             <div class="slider-container">
@@ -2369,9 +2411,27 @@
                             </div>
                         </div>
 
-                        <button id="openPresetsDrawerBtn" class="header-icon-btn" title="Lista de Presets">☰</button>
-                        <button id="logHeaderToggleBtn" class="header-icon-btn" title="Histórico de Logs">📋</button>
-                        <button id="advancedSettingsBtn" class="header-icon-btn settings-btn" title="Configurações">⚙️</button>
+                        <button id="openPresetsDrawerBtn" class="header-icon-btn" title="Lista de Presets" aria-label="Lista de Presets">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </button>
+                        <button id="logHeaderToggleBtn" class="header-icon-btn" title="Histórico de Logs" aria-label="Histórico de Logs">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                        </button>
+                        <button id="advancedSettingsBtn" class="header-icon-btn settings-btn" title="Configurações" aria-label="Configurações">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </button>
                     </div>
                 </header>
 
@@ -2379,7 +2439,6 @@
                 <div class="pedals-snapshots-bar">
                     <div class="pedals-snap-left-group">
                         <div class="pedals-snap-label">
-                            <span class="icon">⚡</span>
                             <span>SNAPSHOT:</span>
                         </div>
                         <div class="pedals-snap-pills">
@@ -2407,7 +2466,7 @@
                     </div>
 
                     <div class="pedals-snap-actions">
-                        <button id="pedalsBarSaveSnapBtn" class="pedals-snap-action-btn" title="Gravar pedais e knobs atuais no snapshot selecionado">💾 Gravar no Snap Ativo</button>
+                        <button id="pedalsBarSaveSnapBtn" class="pedals-snap-action-btn" title="Gravar pedais e knobs atuais no snapshot selecionado">Gravar no Snap Ativo</button>
                     </div>
                 </div>
 
@@ -2768,7 +2827,7 @@
                             <span class="patch-num" id="snapHeaderPatchNum">P01</span>
                             <span class="patch-title" id="snapHeaderPatchName">Preset</span>
                         </div>
-                        <button id="editSnapshotsBtn" class="snapshots-edit-btn" title="Editar Snapshot atual">Editar</button>
+                        <div style="width: 70px;"></div>
                     </header>
 
                     <!-- 4 Big Snapshots Buttons + 1 Tap Tempo Column -->
@@ -2877,8 +2936,8 @@
                                 <span class="snap-editor-preset-badge" id="snapEditorPresetBadge">P01 Preset</span>
                             </div>
                             <div class="snap-editor-header-right">
-                                <button id="snapEditorListenBtn" class="btn" title="Aplicar e ouvir agora este snapshot na pedaleira">▶️ Testar no Pedal</button>
-                                <button id="snapEditorCaptureBtn" class="btn" title="Copiar os pedais e knobs atuais da pedaleira para este snapshot">📸 Capturar da Pedaleira</button>
+                                <button id="snapEditorListenBtn" class="btn" title="Aplicar e ouvir agora este snapshot na pedaleira">Testar no Pedal</button>
+                                <button id="snapEditorCaptureBtn" class="btn" title="Copiar os pedais e knobs atuais da pedaleira para este snapshot">Capturar da Pedaleira</button>
                                 <button id="snapEditorCloseBtn" class="btn btn-primary" style="padding: 6px 14px; font-weight: 800;">Salvar e Fechar</button>
                             </div>
                         </div>
@@ -2922,11 +2981,11 @@
                         <!-- Footer with backup -->
                         <div class="snap-editor-footer">
                             <div class="snap-footer-info">
-                                💾 Salvo automaticamente para este preset (<strong><span id="snapEditorPresetName">P01</span></strong>). Cada preset possui seus 4 snapshots exclusivos.
+                                Salvo automaticamente para este preset (<strong><span id="snapEditorPresetName">P01</span></strong>). Cada preset possui seus 4 snapshots exclusivos.
                             </div>
                             <div class="snap-footer-actions">
-                                <button id="exportSnapshotsBackupBtn" class="btn" style="font-size: 11px;">📤 Exportar Backup</button>
-                                <button id="importSnapshotsBackupBtn" class="btn" style="font-size: 11px;">📥 Importar Backup</button>
+                                <button id="exportSnapshotsBackupBtn" class="btn" style="font-size: 11px;">Exportar Backup</button>
+                                <button id="importSnapshotsBackupBtn" class="btn" style="font-size: 11px;">Importar Backup</button>
                                 <input type="file" id="snapshotsBackupFileInput" accept=".json" style="display: none;">
                             </div>
                         </div>
@@ -12893,12 +12952,12 @@
                     this.commands = COMMAND_LIBRARY_DATA;
 
                     if (!this.definitions || !this.commands) {
-                        this.log('❌ Error: Hardcoded library data is missing.', 'error');
+                        this.log('Error: Hardcoded library data is missing.', 'error');
                         alert('Error: Library data is missing. Check the script tag.');
                         return;
                     }
 
-                    this.log('✅ Libraries loaded successfully.', 'info');
+                    this.log('Libraries loaded successfully.', 'info');
 
                     this.buildFxIdMaps();
                     this.populatePatchLists();
@@ -12941,7 +13000,7 @@
 
                         this.definitions = definitionsContent;
                         this.commands = commandsContent;
-                        this.log('✅ Libraries loaded successfully from files.', 'info');
+                        this.log('Libraries loaded successfully from files.', 'info');
 
                         this.buildFxIdMaps();
                         this.populatePatchLists();
@@ -12971,7 +13030,7 @@
                         });
 
                     } catch (error) {
-                        this.log(`❌ Error loading files: ${error.message}`, 'error');
+                        this.log(`Error loading files: ${error.message}`, 'error');
                         alert(`Error loading files: ${error.message}`);
                     }
                 }
@@ -12997,7 +13056,7 @@
                         }
                     }
                 }
-                this.log('✅ Signature maps built.', 'info');
+                this.log('Signature maps built.', 'info');
             }
 
             initializeUI() {
@@ -14038,7 +14097,7 @@
                     const outputName = pair.outputName || 'Unknown';
 
                     deviceItem.innerHTML = `
-                        <div class="usb-device-pair-title">🎛️ ${deviceName}</div>
+                        <div class="usb-device-pair-title">${deviceName}</div>
                         <div class="usb-device-io">
                             <span class="usb-device-io-label">Input:</span> ${inputName}
                         </div>
@@ -14099,7 +14158,7 @@
 
                     this.isConnected = true;
                     this.updateConnectionUI();
-                    this.log(`✅ USB MIDI Connected: ${usbDevice.name}`, 'received');
+                    this.log(`USB MIDI Connected: ${usbDevice.name}`, 'received');
 
                     await this.runInitialSyncSequence();
                 } catch (error) {
@@ -14132,7 +14191,7 @@
                     this.connectionType = 'ble';
                     this.isConnected = true;
                     this.updateConnectionUI();
-                    this.log('✅ Connected successfully!', 'received');
+                    this.log('Connected successfully!', 'received');
 
                     this.runInitialSyncSequence();
                 } catch (error) {
@@ -14219,7 +14278,7 @@
 
 
                     if (allPacketsReceived) {
-                        this.log(`✅ All ${totalPackets} packets received for [${responseId}]`, 'info');
+                        this.log(`All ${totalPackets} packets received for [${responseId}]`, 'info');
 
                         // Reassemble payload from all packets
                         const reassembledPayload = [];
@@ -14264,7 +14323,7 @@
                         setTimeout(() => {
                             if (this.usbMultiPacketResponses && this.usbMultiPacketResponses[responseId]) {
                                 const received = Object.keys(this.usbMultiPacketResponses[responseId].packets).length;
-                                this.log(`⚠️ Timeout waiting for multi-packet response [${responseId}]: received ${received}/${totalPackets}`, 'warn');
+                                this.log(`Timeout waiting for multi-packet response [${responseId}]: received ${received}/${totalPackets}`, 'warn');
                                 delete this.usbMultiPacketResponses[responseId];
                             }
                         }, 2000);
@@ -14343,7 +14402,7 @@
                 if (!this.globalTapTempo || !this.globalTapTempo.enabled) return;
                 if (typeof this._updateDelayFromBpm === 'function') {
                     this._updateDelayFromBpm(true);
-                    this.log(`🌐 Tempo Global aplicado: ${Math.round(this.globalTapTempo.bpm)} BPM`, 'info');
+                    this.log(`Tempo Global aplicado: ${Math.round(this.globalTapTempo.bpm)} BPM`, 'info');
                 }
             }
 
@@ -14463,14 +14522,16 @@
                 this.saveAllSnapshotsData();
                 this.renderSnapshotsForCurrentPreset();
 
-                // Show success toast
+                // Show success toast and floating notification
+                this.showFloatingFeedback(`Som salvo no ${targetSnap.title} ("${targetSnap.name}")!`);
+
                 const toast = document.getElementById('quickSaveToast');
                 if (toast) {
-                    toast.textContent = `✅ Som atual gravado com sucesso no ${targetSnap.title} ("${targetSnap.name}")!`;
+                    toast.textContent = `Som gravado com sucesso no ${targetSnap.title} ("${targetSnap.name}")!`;
                     toast.classList.add('active');
                 }
 
-                this.log(`✅ Cena salva da tela de pedais para ${targetSnap.title} ("${targetSnap.name}") em ${presetBaseName}`, 'success');
+                this.log(`Cena salva da tela de pedais para ${targetSnap.title} ("${targetSnap.name}") em ${presetBaseName}`, 'success');
 
                 setTimeout(() => {
                     this.closeQuickSaveSnapModal();
@@ -14583,14 +14644,73 @@
                 const pedalsBarSaveBtn = document.getElementById('pedalsBarSaveSnapBtn');
                 if (pedalsBarSaveBtn) {
                     pedalsBarSaveBtn.addEventListener('click', () => {
+                        this.openConfirmActiveSnapModal();
+                    });
+                }
+
+                const cancelConfirmBtn = document.getElementById('cancelConfirmActiveSnapBtn');
+                if (cancelConfirmBtn) {
+                    cancelConfirmBtn.addEventListener('click', () => this.closeConfirmActiveSnapModal());
+                }
+
+                const okConfirmBtn = document.getElementById('okConfirmActiveSnapBtn');
+                if (okConfirmBtn) {
+                    okConfirmBtn.addEventListener('click', () => {
+                        this.closeConfirmActiveSnapModal();
                         this.saveCurrentSceneToTargetSnap(this.activeSnapshotId);
                     });
                 }
 
-                // Removed pedalsBarEditBtn
+                const confirmModal = document.getElementById('confirmSaveActiveSnapModal');
+                if (confirmModal) {
+                    confirmModal.addEventListener('click', (e) => {
+                        if (e.target === confirmModal) this.closeConfirmActiveSnapModal();
+                    });
+                }
 
                 // Initial render of compact bar pills for active preset
                 this.renderSnapshotsForCurrentPreset();
+            }
+
+            openConfirmActiveSnapModal() {
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const patchName = document.getElementById('patchName')?.textContent.trim() || 'Preset';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+                const currentSnap = snaps.find(s => s.id === this.activeSnapshotId) || snaps[0];
+
+                const badgeEl = document.getElementById('confirmActiveSnapBadge');
+                if (badgeEl) {
+                    badgeEl.textContent = `${currentSnap.title} (${currentSnap.name})`;
+                }
+
+                const presetEl = document.getElementById('confirmActivePresetName');
+                if (presetEl) {
+                    presetEl.textContent = `${presetBaseName} (${patchName})`;
+                }
+
+                const modal = document.getElementById('confirmSaveActiveSnapModal');
+                if (modal) modal.classList.add('active');
+            }
+
+            closeConfirmActiveSnapModal() {
+                const modal = document.getElementById('confirmSaveActiveSnapModal');
+                if (modal) modal.classList.remove('active');
+            }
+
+            showFloatingFeedback(message) {
+                let toast = document.getElementById('floatingFeedbackToast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'floatingFeedbackToast';
+                    toast.className = 'floating-feedback-toast';
+                    document.body.appendChild(toast);
+                }
+                toast.textContent = message;
+                toast.classList.add('active');
+                clearTimeout(this._floatingToastTimer);
+                this._floatingToastTimer = setTimeout(() => {
+                    toast.classList.remove('active');
+                }, 2500);
             }
 
             toggleSnapshotsView(show) {
@@ -14772,7 +14892,7 @@
                     }
                 }
 
-                this.log(`⚡ Snapshot Ativado: ${snap.name} (Snap ${snapId})`, 'info');
+                this.log(`Snapshot Ativado: ${snap.name} (Snap ${snapId})`, 'info');
             }
 
             openEditSnapshotModal(targetSnapId = null) {
@@ -14966,7 +15086,7 @@
                 this.saveAllSnapshotsData();
                 this.renderSnapshotEditorModules(currentSnap);
                 this.renderSnapshotsForCurrentPreset();
-                alert(`✅ Som e pedais atuais capturados com sucesso para o ${currentSnap.title} ("${currentSnap.name}")!`);
+                alert(`Som e pedais atuais capturados com sucesso para o ${currentSnap.title} ("${currentSnap.name}")!`);
             }
 
             listenEditingSnapshotNow() {
@@ -14992,7 +15112,7 @@
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                    this.log('📤 Backup de Snapshots exportado com sucesso!', 'success');
+                    this.log('Backup de Snapshots exportado com sucesso!', 'success');
                 } catch (e) {
                     alert('Erro ao exportar backup: ' + e.message);
                 }
@@ -15010,13 +15130,13 @@
                             this.snapshotsData = parsed;
                             this.saveAllSnapshotsData();
                             this.renderSnapshotsForCurrentPreset();
-                            alert('✅ Snapshots restaurados com sucesso a partir do arquivo de backup!');
-                            this.log('📥 Snapshots restaurados com sucesso do arquivo', 'success');
+                            alert('Snapshots restaurados com sucesso a partir do arquivo de backup!');
+                            this.log('Snapshots restaurados com sucesso do arquivo', 'success');
                         } else {
                             throw new Error('Arquivo de formato inválido');
                         }
                     } catch (err) {
-                        alert('❌ Falha ao importar backup: ' + err.message);
+                        alert('Falha ao importar backup: ' + err.message);
                     }
                     event.target.value = '';
                 };
@@ -15306,7 +15426,7 @@
                             const writable = await handle.createWritable();
                             await writable.write(jsonString);
                             await writable.close();
-                            this.log(`✅ Preset exported: ${handle.name}`, 'success');
+                            this.log(`Preset exported: ${handle.name}`, 'success');
                         } catch (err) {
                             if (err.name !== 'AbortError') throw err;
                             this.log('Export cancelled by user.', 'info');
@@ -15322,11 +15442,11 @@
                         link.click();
                         document.body.removeChild(link);
                         URL.revokeObjectURL(url);
-                        this.log(`✅ Preset exported: ${defaultFileName}`, 'success');
+                        this.log(`Preset exported: ${defaultFileName}`, 'success');
                     }
 
                 } catch (error) {
-                    this.log(`❌ Export failed: ${error.message}`, 'error');
+                    this.log(`Export failed: ${error.message}`, 'error');
                 }
             }
 
@@ -15361,7 +15481,7 @@
                     for (const [moduleName, moduleData] of Object.entries(jsonData.modules)) {
                         const moduleId = REVERSE_MODULE_MAP[moduleName];
                         if (moduleId === undefined) {
-                            this.log(`⚠ Unknown module: ${moduleName}, skipping`, 'warning');
+                            this.log(`Unknown module: ${moduleName}, skipping`, 'warning');
                             continue;
                         }
 
@@ -15430,15 +15550,15 @@
                             }
 
                             fullPresetData.parameters[moduleId][algId] = finalValue;
-                            this.log(`✔ Loaded M${moduleId}.A${algId} (${paramName}) = ${finalValue}`, 'info');
+                            this.log(`Loaded M${moduleId}.A${algId} (${paramName}) = ${finalValue}`, 'info');
                         }
                     }
 
-                    this.log('✅ Conversion successful', 'success');
+                    this.log('Conversion successful', 'success');
                     return fullPresetData;
 
                 } catch (error) {
-                    this.log(`❌ Conversion failed: ${error.message}`, 'error');
+                    this.log(`Conversion failed: ${error.message}`, 'error');
                     throw error;
                 }
             }
@@ -15458,7 +15578,7 @@
                     fileInput.click();
 
                 } catch (error) {
-                    this.log(`❌ Import failed: ${error.message}`, 'error');
+                    this.log(`Import failed: ${error.message}`, 'error');
                 }
             }
 
@@ -15471,7 +15591,7 @@
                 reader.onload = async (e) => {
                     try {
                         const jsonData = JSON.parse(e.target.result);
-                        this.log(`📁 Loaded preset file: ${file.name}`, 'info');
+                        this.log(`Loaded preset file: ${file.name}`, 'info');
 
                         // Convert and validate
                         const fullPresetData = this.convertHumanReadableToFullPresetData(jsonData);
@@ -15482,11 +15602,11 @@
                         // Sync COMPLETE preset state to device (not just parameters)
                         await this.syncPresetStateToDevice(fullPresetData);
 
-                        this.log(`✅ Preset imported successfully: ${jsonData.presetName}`, 'success');
+                        this.log(`Preset imported successfully: ${jsonData.presetName}`, 'success');
                         alert(`Preset "${jsonData.presetName}" imported and synced to device!`);
 
                     } catch (error) {
-                        this.log(`❌ Import error: ${error.message}`, 'error');
+                        this.log(`Import error: ${error.message}`, 'error');
                         alert(`Failed to import preset: ${error.message}`);
                     }
 
@@ -15495,7 +15615,7 @@
                 };
 
                 reader.onerror = () => {
-                    this.log('❌ Failed to read preset file', 'error');
+                    this.log('Failed to read preset file', 'error');
                 };
 
                 reader.readAsText(file);
@@ -15521,7 +15641,7 @@
                             await new Promise(resolve => setTimeout(resolve, this.syncDelayMs));
                             this.log(`[SYNC] Preset volume: ${value}`, 'received');
                         } else {
-                            this.log(`⚠ No command for preset volume = ${value}`, 'warning');
+                            this.log(`No command for preset volume = ${value}`, 'warning');
                         }
                     }
 
@@ -15575,7 +15695,7 @@
                                 await new Promise(resolve => setTimeout(resolve, this.syncDelayMs));
                                 this.log(`[SYNC] Module ${lookupModuleId} effect: ${fxId}`, 'received');
                             } else {
-                                this.log(`⚠ No command for module ${lookupModuleId} effect ${fxId}`, 'warning');
+                                this.log(`No command for module ${lookupModuleId} effect ${fxId}`, 'warning');
                             }
                         }
                     }
@@ -15594,10 +15714,10 @@
                         syncedCount += paramCount;
                     }
 
-                    this.log(`✅ Complete preset state synced to device (${syncedCount} commands sent)`, 'success');
+                    this.log(`Complete preset state synced to device (${syncedCount} commands sent)`, 'success');
 
                 } catch (error) {
-                    this.log(`❌ Preset state sync failed: ${error.message}`, 'error');
+                    this.log(`Preset state sync failed: ${error.message}`, 'error');
                     throw error;
                 }
             }
@@ -15628,7 +15748,7 @@
                             );
 
                             if (!control) {
-                                this.log(`⚠ Control not found for M${moduleId}.A${algId}, skipping`, 'warning');
+                                this.log(`Control not found for M${moduleId}.A${algId}, skipping`, 'warning');
                                 syncedCount++;
                                 continue;
                             }
@@ -15662,11 +15782,11 @@
                         }
                     }
 
-                    this.log(`✅ All ${totalParams} parameters synced to device`, 'success');
+                    this.log(`All ${totalParams} parameters synced to device`, 'success');
                     return syncedCount;
 
                 } catch (error) {
-                    this.log(`❌ Parameter sync failed: ${error.message}`, 'error');
+                    this.log(`Parameter sync failed: ${error.message}`, 'error');
                     throw error;
                 }
             }
@@ -15715,7 +15835,7 @@
                     await this.syncPresetNames(true);
 
                 } catch (error) {
-                    this.log(`❌ Auto-sync sequence failed: ${error.message}`, 'error');
+                    this.log(`Auto-sync sequence failed: ${error.message}`, 'error');
                     alert(`Initial sync failed: ${error.message}. You may need to sync manually.`);
                     // If it fails, we must still reset the flag and hide the overlay
                     this.isInitialSyncing = false;
@@ -15972,7 +16092,7 @@
                     const wasSuccessful = await this.waitForAck();
 
                     if (wasSuccessful) {
-                        this.log(`✅ PRESET SAVED! Checksum: ${crc8.toUpperCase()}`, 'success');
+                        this.log(`PRESET SAVED! Checksum: ${crc8.toUpperCase()}`, 'success');
                         wasSaved = true;
 
                         this.updateUIAfterSave(presetNumber, presetName);
@@ -16040,11 +16160,11 @@
                     clearTimeout(this.nameSyncTimeoutId);
 
                     if (this.connectionType === 'usb') {
-                       this.log(`✅ Processing 1 USB SysEx data packet.`, 'info');
+                       this.log(`Processing 1 USB SysEx data packet.`, 'info');
                        this.dumpPackets.push(hexString);
                        this.processAndDisplayDump();
                     } else if (hexString === TERMINATOR_PACKET) {
-                        this.log(`✅ Terminator packet received. Processing ${this.dumpPackets.length} data packets.`, 'success              ');
+                        this.log(`Terminator packet received. Processing ${this.dumpPackets.length} data packets.`, 'success              ');
                         this.processAndDisplayDump();
                     } else {
                         this.dumpPackets.push(hexString);
@@ -16091,7 +16211,7 @@
 
                             this.applyPresetState(fullPresetData);
                         } catch (error) {
-                            this.log(`❌ Failed to decode preset state: ${error.message}`, 'error');
+                            this.log(`Failed to decode preset state: ${error.message}`, 'error');
                         } finally {
                             this.log(`--- Raw 5-Packet Preset Dump ---`, 'info');
                             this.dumpPackets.forEach((packet, index) => {
@@ -16104,7 +16224,7 @@
                                 this.isInitialSyncing = false; // Reset the flag
                                 const overlay = document.getElementById('lockingOverlay');
                                 overlay.style.display = 'none'; // Hide overlay
-                                this.log('✅ Initial auto-sync sequence complete.', 'info');
+                                this.log('Initial auto-sync sequence complete.', 'info');
 
                                 // Restore overlay text for the save function
                                 overlay.querySelector('p:first-child').textContent = 'Trying to save preset...';
@@ -16186,11 +16306,11 @@
 
                     // ACK / NACK detection
                     if (hexString === '8080F00B02000100000003010400080000F7') {
-                        this.log('📡 ACK', 'received');
+                        this.log('ACK', 'received');
                         return true;
                     }
                     if (hexString === '8080F00B05000100000003010400080001F7') {
-                        this.log('📡 NACK', 'received');
+                        this.log('NACK', 'received');
                         return true;
                     }
 
@@ -16243,7 +16363,7 @@
                             const moduleId = decNE(8);
                             const value = decNE(24);
                             if (moduleId === 9) {
-                                this.log(`📡 Amp Mode → ${value ? 'Clone' : 'Factory'}`, 'received');
+                                this.log(`Amp Mode → ${value ? 'Clone' : 'Factory'}`, 'received');
                                 this.withUISuppression(() => {
                                     const cloneModeToggle = document.getElementById('amp-clone-mode');
                                     const shouldBeClone = value === 1;
@@ -16254,7 +16374,7 @@
                                     this.updateIRModuleForCloneMode(shouldBeClone);
                                 });
                             } else {
-                                this.log(`📡 ${modName(moduleId)} → ${value ? 'ON' : 'OFF'}`, 'received');
+                                this.log(`${modName(moduleId)} → ${value ? 'ON' : 'OFF'}`, 'received');
                                 this.withUISuppression(() => {
                                     const toggleId = moduleId;
                                     const enableToggle = document.getElementById(`module-enable-${toggleId}`);
@@ -16273,7 +16393,7 @@
                             const fpKey = recvMod + ':' + recvTail.toUpperCase();
                             const effectName = this.effectFingerprintToName?.[fpKey];
                             const fxId = this.effectFingerprintToFxId?.[fpKey];
-                            this.log(`📡 Effect: ${modName(moduleId)} → ${effectName || 'unknown'}`, 'received');
+                            this.log(`Effect: ${modName(moduleId)} → ${effectName || 'unknown'}`, 'received');
 
                             if (fxId !== undefined) {
                                 this.withUISuppression(() => {
@@ -16302,7 +16422,7 @@
                             const moduleId = decNE(8);
                             const algId = decNE(24);
                             let decodedValue;
-                            let msg = `📡 Param: ${modName(moduleId)} AlgID ${algId}`;
+                            let msg = `Param: ${modName(moduleId)} AlgID ${algId}`;
                             if (payload.length >= 56) {
                                 const valueHex = payload.substring(44, 56);
                                 decodedValue = this.eqReverseLookup?.[valueHex];
@@ -16347,7 +16467,7 @@
                                 }
                             }
                             const chainNames = chainIds.map(id => modName(id));
-                            this.log(`📡 Chain: ${chainNames.join(' → ')}`, 'received');
+                            this.log(`Chain: ${chainNames.join(' → ')}`, 'received');
 
                             this.withUISuppression(() => {
                                 const container = document.querySelector('.chain-flow');
@@ -16393,14 +16513,14 @@
                             const label = idx < 50
                                 ? `P${String(idx + 1).padStart(2, '0')}`
                                 : `F${String(idx - 49).padStart(2, '0')}`;
-                            this.log(`📡 Preset: ${label} (index ${idx})`, 'received');
+                            this.log(`Preset: ${label} (index ${idx})`, 'received');
 
                             this.selectPresetByIndex(idx);
                             return true;
                         }
                         case '0402': { // Preset Volume
                             const value = decNE(24);
-                            this.log(`📡 Preset Volume: ${value}`, 'received');
+                            this.log(`Preset Volume: ${value}`, 'received');
 
                             this.withUISuppression(() => {
                                 const volumeSlider = document.querySelector('.patch-volume-module .slider');
@@ -16428,7 +16548,7 @@
                             const paramLabel = paramInfo?.label || `Global ${group}:${sub}`;
                             const value = this.decodeDbValue(payload.substring(24, 26), payload.substring(26, 28));
                             const unit = (sub === 2) ? '' : 'dB';
-                            this.log(`📡 ${paramLabel}: ${value}${unit}`, 'received');
+                            this.log(`${paramLabel}: ${value}${unit}`, 'received');
 
                             if (paramInfo?.slider) {
                                 this.withUISuppression(() => {
@@ -16447,13 +16567,13 @@
                             const formatted = hexString.match(/.{1,2}/g).join(' ');
                             const parts = [`prefix=${prefix}`, `command=${command}`];
                             if (payload.length >= 12) parts.push(`moduleId=${decNE(8)}`);
-                            this.log(`📡 Undecoded SysEx [${parts.join(', ')}]: ${formatted}`, 'received');
+                            this.log(`Undecoded SysEx [${parts.join(', ')}]: ${formatted}`, 'received');
                             return false;
                         }
                     }
                 } catch (e) {
                     const formatted = hexString.match(/.{1,2}/g).join(' ');
-                    this.log(`📡 SysEx decode error: ${e.message} | Raw: ${formatted}`, 'received');
+                    this.log(`SysEx decode error: ${e.message} | Raw: ${formatted}`, 'received');
                     return false;
                 }
             }
@@ -16479,7 +16599,7 @@
                             this.syncPresetNamesBtn.disabled = !this.isConnected;
                             this.syncPresetNamesBtn.textContent = 'Sync Preset Names';
                             const errorMsg = 'Preset name sync timed out: Terminator packet not received.';
-                            this.log(`❌ ${errorMsg}`, 'error');
+                            this.log(`${errorMsg}`, 'error');
                             if (isAutomated) {
                                reject(new Error(errorMsg));
                             } else {
@@ -16508,7 +16628,7 @@
                         // Even if we don't find all names, we can still proceed with what we have.
                         this.log(`Warning: Found only ${allNames.length} names.`, 'error');
                     }
-                    this.log(`✅ Successfully decoded ${allNames.length} preset names.`, 'info');
+                    this.log(`Successfully decoded ${allNames.length} preset names.`, 'info');
                     this.populatePatchLists(allNames);
 
                     // This is the crucial change:
@@ -16851,10 +16971,10 @@
                                 const finalValue = this.decodeParameterValue(hexBlock);
 
                                 if (finalValue !== null) {
-                                    this.log(`✔ Decoded Param: M${moduleId}.A${algId} (${param.name}) -> ${finalValue}`, 'info');
+                                    this.log(`Decoded Param: M${moduleId}.A${algId} (${param.name}) -> ${finalValue}`, 'info');
                                     decodedParams[moduleId][algId] = finalValue;
                                 } else {
-                                    this.log(`❌ Could not decode hex '${hexBlock}' for M${moduleId}.A${algId}`, 'error');
+                                    this.log(`Could not decode hex '${hexBlock}' for M${moduleId}.A${algId}`, 'error');
                                 }
                             }
                         }
@@ -17042,7 +17162,7 @@
                             overlay.querySelector('p:first-child').textContent = 'Trying to save preset...';
                             overlay.querySelector('p:last-child').textContent = 'This could take up to 2 minutes!';
 
-                            this.log('✅ Initial auto-sync sequence complete.', 'info');
+                            this.log('Initial auto-sync sequence complete.', 'info');
                         }, 150); // A small delay is sufficient.
                     }
 
@@ -17054,7 +17174,7 @@
                         this.syncTapTempoFromCurrentPreset(decodedData);
                     }
 
-                    this.log('✅ UI sync complete. Command sending re-enabled.', 'info');
+                    this.log('UI sync complete. Command sending re-enabled.', 'info');
                 }
             }
 
@@ -17171,10 +17291,13 @@
 
             log(message, type = 'info') {
                 if (!this.logContent) { console.log(`Early log: [${type}] ${message}`); return; }
+                const cleanMsg = typeof message === 'string'
+                    ? message.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1FA00}-\u{1FAFF}\u{FE00}-\u{FE0F}]/gu, '').trim()
+                    : message;
                 const timestamp = new Date().toLocaleTimeString();
                 const entry = document.createElement('div');
                 entry.className = 'log-entry';
-                entry.innerHTML = `<span class="log-time">${timestamp}</span><span class="log-type ${type}">[${type.toUpperCase()}]</span><span class="log-message">${message}</span>`;
+                entry.innerHTML = `<span class="log-time">${timestamp}</span><span class="log-type ${type}">[${type.toUpperCase()}]</span><span class="log-message">${cleanMsg}</span>`;
                 this.logContent.appendChild(entry);
                 this.logContent.scrollTop = this.logContent.scrollHeight;
             }
@@ -17576,7 +17699,21 @@
                 </div>
             </div>
 
-            <div class="quick-save-toast" id="quickSaveToast">✅ Cena salva com sucesso!</div>
+            <div class="quick-save-toast" id="quickSaveToast">Cena salva com sucesso!</div>
+        </div>
+    </div>
+
+    <!-- Confirm Save to Active Snapshot Modal -->
+    <div id="confirmSaveActiveSnapModal" class="quick-save-snap-overlay">
+        <div class="quick-save-snap-window" style="max-width: 400px; text-align: center; padding: 22px 24px;">
+            <div style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Gravar no Snap Ativo?</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;">
+                Deseja salvar a regulagem atual dos pedais e parâmetros no <strong id="confirmActiveSnapBadge" style="color: var(--accent-orange);">SNAP 1 (Limpo)</strong> do preset <strong id="confirmActivePresetName" style="color: #ffffff;">P01</strong>?
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button id="cancelConfirmActiveSnapBtn" class="btn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ccc; padding: 8px 18px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancelar</button>
+                <button id="okConfirmActiveSnapBtn" class="btn" style="background: var(--accent-orange); border: none; color: #000; padding: 8px 22px; border-radius: 6px; font-weight: 800; cursor: pointer;">Confirmar</button>
+            </div>
         </div>
     </div>
 
