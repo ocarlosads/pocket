@@ -15458,7 +15458,12 @@
             getRhythmLabel(multiplier) {
                 const mult = parseFloat(multiplier) || 1.0;
                 if (Math.abs(mult - 0.5) < 0.05) return '1/8';
-                if (Math.abs(mult - 0.75) < 0.05) return '1/8            hasPresetSnapshots(presetBaseName) {
+                if (Math.abs(mult - 0.75) < 0.05) return '1/8d';
+                if (Math.abs(mult - 2.0) < 0.05) return '1/2';
+                return '1/4';
+            }
+
+            hasPresetSnapshots(presetBaseName) {
                 return true; // Todos os presets agora possuem snapshots disponíveis por padrão
             }
 
