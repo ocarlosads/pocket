@@ -1234,20 +1234,27 @@
             -webkit-user-select: none;
         }
 
-        /* DUAL ORIENTATION: Portrait (2x3 + Tap Bar below) vs Landscape (6 cols + Tap Col right) */
-        @media (orientation: portrait), (max-width: 680px) {
+        /* Snapshots Grid: Mesma estrutura do modo vertical no celular horizontal e vertical */
+        @media (max-width: 950px), (orientation: portrait), (max-height: 600px) {
+            #snapshots-view {
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
             .snapshots-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: 1fr 1fr 1fr auto;
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                grid-template-rows: auto auto auto auto !important;
                 grid-template-areas:
                     "snap1 snap2"
                     "snap3 snap4"
                     "snap5 snap6"
-                    "tap   tap";
-                gap: 8px;
-                padding: 8px 10px;
-                height: calc(100% - 46px);
+                    "tap   tap" !important;
+                gap: 10px !important;
+                padding: 10px 12px 24px 12px !important;
+                height: auto !important;
+                min-height: calc(100% - 46px) !important;
+                overflow-y: visible !important;
             }
 
             .snapshot-card[data-snap-id="1"] { grid-area: snap1; }
@@ -1257,70 +1264,95 @@
             .snapshot-card[data-snap-id="5"] { grid-area: snap5; }
             .snapshot-card[data-snap-id="6"] { grid-area: snap6; }
 
+            .snapshot-card {
+                min-height: 110px !important;
+                padding: 14px 10px 12px 10px !important;
+                writing-mode: horizontal-tb !important;
+                transform: none !important;
+            }
+
+            .snap-main-name {
+                writing-mode: horizontal-tb !important;
+                transform: none !important;
+                font-size: clamp(20px, 3.8vw, 32px) !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            /* Botão de TAP TEMPO Aumentado no Celular (Largura Total e Altura Generosa) */
             .snap-tap-tempo-column {
-                grid-area: tap;
-                width: 100%;
-                height: 64px;
-                min-height: 58px;
-                max-height: 74px;
-                border-radius: 14px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 6px 16px;
+                grid-area: tap !important;
+                width: 100% !important;
+                min-height: 76px !important;
+                height: 82px !important;
+                border-radius: 18px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 10px 20px !important;
+                box-shadow: 0 6px 22px rgba(255, 87, 34, 0.45) !important;
+                background: linear-gradient(145deg, #ff6029, #f24e18) !important;
+                margin-top: 4px !important;
             }
 
             .snap-tap-content {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 16px;
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 22px !important;
+                writing-mode: horizontal-tb !important;
+                transform: none !important;
             }
 
             .snap-tap-title-block {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-end;
-                line-height: 0.95;
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                gap: 8px !important;
+                line-height: 1 !important;
             }
 
             .snap-tap-title-tap, .snap-tap-title-tempo {
-                font-size: 18px;
-                font-weight: 900;
-                color: #ffffff;
-                letter-spacing: 0.5px;
+                font-size: 22px !important;
+                font-weight: 900 !important;
+                color: #ffffff !important;
+                letter-spacing: 1px !important;
             }
 
             .snap-tap-bpm-block {
-                display: flex;
-                align-items: baseline;
-                gap: 6px;
+                display: flex !important;
+                align-items: baseline !important;
+                gap: 6px !important;
             }
 
             .snap-tap-bpm-num {
-                font-size: 30px;
-                font-weight: 900;
-                font-family: 'JetBrains Mono', monospace;
-                color: #ffffff;
-                line-height: 1;
+                font-size: 40px !important;
+                font-weight: 900 !important;
+                font-family: 'JetBrains Mono', monospace !important;
+                color: #ffffff !important;
+                line-height: 1 !important;
             }
 
             .snap-tap-bpm-unit {
-                font-size: 12px;
-                font-weight: 800;
-                color: rgba(255, 255, 255, 0.95);
-                letter-spacing: 1px;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                color: rgba(255, 255, 255, 0.95) !important;
+                letter-spacing: 1.5px !important;
             }
         }
 
-        @media (orientation: landscape) and (min-width: 681px) {
+        /* Layout para Telas Grandes / Monitores (Desktop acima de 950px e altura > 600px) */
+        @media (min-width: 951px) and (min-height: 601px) {
             .snapshots-grid {
                 display: grid;
-                grid-template-columns: repeat(6, 1fr) 130px;
+                grid-template-columns: repeat(6, 1fr) 140px;
                 grid-template-rows: 1fr;
                 grid-template-areas: "snap1 snap2 snap3 snap4 snap5 snap6 tap";
-                gap: 8px;
-                padding: 8px 12px;
+                gap: 10px;
+                padding: 10px 14px;
                 height: calc(100% - 46px);
             }
 
@@ -1373,7 +1405,7 @@
             }
 
             .snap-tap-bpm-num {
-                font-size: 38px;
+                font-size: 40px;
                 font-weight: 900;
                 font-family: 'JetBrains Mono', monospace;
                 color: #ffffff;
@@ -1381,7 +1413,7 @@
             }
 
             .snap-tap-bpm-unit {
-                font-size: 12px;
+                font-size: 13px;
                 font-weight: 800;
                 color: rgba(255, 255, 255, 0.95);
                 letter-spacing: 2px;
@@ -12304,6 +12336,7 @@
                 this.ackPromiseResolve = null;
                 this.isSyncingState = false;
                 this.syncTimeoutId = null;
+                this.presetOrders = this.loadPresetOrders();
 
                 // USB MIDI connection properties
                 this.connectionType = null; // 'ble' or 'usb'
@@ -13973,6 +14006,13 @@
                 document.getElementById('patchNumber').textContent = baseName;
                 document.getElementById('patchName').textContent = displayName;
                 this.activeSnapshotId = 1;
+
+                // Aplica imediatamente a ordem salva dos efeitos para este preset
+                const cachedOrder = this.presetOrders?.[baseName] || (this.snapshotsData?.[baseName]?.[0]?.order);
+                if (cachedOrder && Array.isArray(cachedOrder)) {
+                    this.applyChainOrderUI(cachedOrder, !sendCommand && this.isConnected);
+                }
+
                 if (this.updateSnapshotsHeaderInfo) {
                     this.updateSnapshotsHeaderInfo();
                     this.renderSnapshotsForCurrentPreset();
@@ -15284,7 +15324,14 @@
                 // 2. Capture complete knob and switch parameter values (individual per snapshot)
                 targetSnap.params = this.captureCurrentPresetFullParameters();
 
-                // 3. Capture current rhythmic subdivision
+                // 3. Capture current effect chain order
+                const currentChainOrder = this.getCurrentChainOrder();
+                targetSnap.order = currentChainOrder;
+                if (!this.presetOrders) this.presetOrders = {};
+                this.presetOrders[presetBaseName] = currentChainOrder;
+                this.savePresetOrders();
+
+                // 4. Capture current rhythmic subdivision
                 const activeMultiplierBtn = document.querySelector('#note-divisions-7 .note-btn.active');
                 const noteMultiplier = activeMultiplierBtn ? parseFloat(activeMultiplierBtn.dataset.multiplier) : (this.globalTapTempo.multiplier || 1.0);
                 targetSnap.rhythmicMultiplier = noteMultiplier;
@@ -15489,13 +15536,15 @@
                     : ['SNAP 1', 'SNAP 2', 'SNAP 3', 'SNAP 4', 'SNAP 5', 'SNAP 6'];
                 const defaultMults = [1.0, 1.0, 0.75, 0.5, 1.0, 1.0];
 
+                const liveOrder = this.presetOrders?.[presetBaseName] || this.getCurrentChainOrder();
+
                 this.snapshotsData[presetBaseName] = [
-                    { id: 1, title: 'SNAP 1', name: defaultNames[0], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), rhythmicMultiplier: defaultMults[0], saved: true },
-                    { id: 2, title: 'SNAP 2', name: defaultNames[1], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), rhythmicMultiplier: defaultMults[1], saved: true },
-                    { id: 3, title: 'SNAP 3', name: defaultNames[2], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), rhythmicMultiplier: defaultMults[2], saved: true },
-                    { id: 4, title: 'SNAP 4', name: defaultNames[3], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), rhythmicMultiplier: defaultMults[3], saved: true },
-                    { id: 5, title: 'SNAP 5', name: defaultNames[4], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), rhythmicMultiplier: defaultMults[4], saved: true },
-                    { id: 6, title: 'SNAP 6', name: defaultNames[5], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), rhythmicMultiplier: defaultMults[5], saved: true }
+                    { id: 1, title: 'SNAP 1', name: defaultNames[0], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[0], saved: true },
+                    { id: 2, title: 'SNAP 2', name: defaultNames[1], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[1], saved: true },
+                    { id: 3, title: 'SNAP 3', name: defaultNames[2], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[2], saved: true },
+                    { id: 4, title: 'SNAP 4', name: defaultNames[3], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[3], saved: true },
+                    { id: 5, title: 'SNAP 5', name: defaultNames[4], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[4], saved: true },
+                    { id: 6, title: 'SNAP 6', name: defaultNames[5], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[5], saved: true }
                 ];
                 this.saveAllSnapshotsData();
                 return this.snapshotsData[presetBaseName];
@@ -15717,6 +15766,9 @@
                             }
                         }
                     });
+
+                    const currentOrder = this.presetOrders?.[presetBaseName] || (snaps && snaps[0]?.order) || this.getCurrentChainOrder();
+                    this.updateSnapshotCardsPedalChipsOrder(currentOrder);
                 }
             }
 
@@ -15811,7 +15863,13 @@
                     }
                 }
 
-                // 3. Apply Rhythmic Figure (subdivision)
+                // 3. Apply Effect Chain Order (se o snapshot ou preset tiver ordem salva)
+                const targetOrder = snap.order || this.presetOrders?.[presetBaseName];
+                if (targetOrder && Array.isArray(targetOrder) && targetOrder.length > 0) {
+                    this.applyChainOrderUI(targetOrder, this.isConnected);
+                }
+
+                // 4. Apply Rhythmic Figure (subdivision)
                 const multiplier = snap.rhythmicMultiplier !== undefined ? snap.rhythmicMultiplier : 1.0;
                 this.globalTapTempo.multiplier = multiplier;
                 document.querySelectorAll('#note-divisions-7 .note-btn').forEach(btn => {
@@ -17961,46 +18019,8 @@
                             });
                         }
 
-                        if (decodedData.order) {
-                            const container = document.querySelector('.chain-flow');
-                            const newOrderFragment = document.createDocumentFragment();
-                            const fixedBlock = document.getElementById('fixed-chain-block');
-                            const fixedBlockConnector = fixedBlock.nextElementSibling;
-                            const moduleAndConnectorMap = new Map();
-                            document.querySelectorAll('.chain-module[draggable="true"]').forEach(el => {
-                                const moduleName = this.getModuleNameById(el.dataset.moduleId);
-                                moduleAndConnectorMap.set(moduleName, { module: el, connector: el.nextElementSibling });
-                            });
-                            moduleAndConnectorMap.forEach(({ module, connector }) => {
-                                module.remove();
-                                if (connector) connector.remove();
-                            });
-                            fixedBlock.remove();
-                            if (fixedBlockConnector?.classList.contains('chain-connector')) {
-                                fixedBlockConnector.remove();
-                            }
-                            let fixedBlockPlaced = false;
-                            decodedData.order.forEach(moduleName => {
-                                if (['DRV', 'AMP', 'IR', 'EQ'].includes(moduleName) && !fixedBlockPlaced) {
-                                    newOrderFragment.appendChild(fixedBlock);
-                                    if (fixedBlockConnector) newOrderFragment.appendChild(fixedBlockConnector);
-                                    fixedBlockPlaced = true;
-                                } else if (moduleAndConnectorMap.has(moduleName)) {
-                                    const { module, connector } = moduleAndConnectorMap.get(moduleName);
-                                    newOrderFragment.appendChild(module);
-                                    if (connector) newOrderFragment.appendChild(connector);
-                                }
-                            });
-                            container.insertBefore(newOrderFragment, document.getElementById('chain-terminator'));
-                            const connectors = container.querySelectorAll('.chain-connector');
-                            connectors.forEach(connector => {
-                                const nextEl = connector.nextElementSibling;
-                                if (nextEl && (nextEl.classList.contains('chain-module') || nextEl.id === 'fixed-chain-block' )) {
-                                    connector.classList.remove('is-last-connector');
-                                } else {
-                                    connector.classList.add('is-last-connector');
-                                }
-                            });
+                        if (decodedData.order && Array.isArray(decodedData.order)) {
+                            this.applyChainOrderUI(decodedData.order, false);
                         }
 
                         if (decodedData.parameters) {
@@ -18280,33 +18300,201 @@
                 }, { offset: Number.NEGATIVE_INFINITY }).element;
             }
 
-            updateChainOrder() {
-                const chainItems = [...document.querySelector('.chain-flow').children];
+            loadPresetOrders() {
+                try {
+                    const raw = localStorage.getItem('pocketedit_preset_orders_v1');
+                    if (raw) return JSON.parse(raw);
+                } catch (e) {
+                    console.error('Error loading preset orders:', e);
+                }
+                return {};
+            }
+
+            savePresetOrders() {
+                try {
+                    localStorage.setItem('pocketedit_preset_orders_v1', JSON.stringify(this.presetOrders || {}));
+                } catch (e) {
+                    console.error('Error saving preset orders:', e);
+                }
+            }
+
+            getCurrentChainOrder() {
+                const chainFlow = document.querySelector('.chain-flow');
+                if (!chainFlow) return ['NR', 'FX1', 'DRV', 'AMP', 'IR', 'EQ', 'FX2', 'DLY', 'RVB'];
+
+                const chainItems = [...chainFlow.children];
                 const fixedBlock = document.getElementById('fixed-chain-block');
                 const fixedBlockIndex = chainItems.indexOf(fixedBlock);
 
+                if (fixedBlockIndex === -1) return ['NR', 'FX1', 'DRV', 'AMP', 'IR', 'EQ', 'FX2', 'DLY', 'RVB'];
+
                 const before = chainItems.slice(0, fixedBlockIndex)
-                                         .filter(el => el.classList.contains('chain-module'))
+                                         .filter(el => el.classList.contains('chain-module') && el.dataset.moduleId)
                                          .map(el => this.getModuleNameById(el.dataset.moduleId));
 
                 const after = chainItems.slice(fixedBlockIndex + 1)
                                         .filter(el => el.classList.contains('chain-module') && el.dataset.moduleId)
                                         .map(el => this.getModuleNameById(el.dataset.moduleId));
 
-                const orderKey = [
+                return [
                     ...before,
                     'DRV', 'AMP', 'IR', 'EQ',
                     ...after
-                ].join('-');
+                ];
+            }
 
+            updateChainOrder() {
+                const orderArray = this.getCurrentChainOrder();
+                const orderKey = orderArray.join('-');
                 this.log(`New chain order: ${orderKey}`, 'info');
 
+                const currentPatchNumber = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                if (!this.presetOrders) this.presetOrders = {};
+                this.presetOrders[currentPatchNumber] = orderArray;
+                this.savePresetOrders();
+
+                this.updateSnapshotCardsPedalChipsOrder(orderArray);
+
                 const command = this.commands.chainOrderCommands?.[orderKey];
-                if (command) {
+                if (command && this.isConnected) {
                     this.writeCommand(command);
-                } else {
+                } else if (!command) {
                     this.log(`No command found for order: ${orderKey}`, 'error');
                 }
+            }
+
+            applyChainOrderUI(orderArray, sendCommand = false) {
+                if (!orderArray || !Array.isArray(orderArray) || orderArray.length === 0) return;
+                const container = document.querySelector('.chain-flow');
+                const fixedBlock = document.getElementById('fixed-chain-block');
+                const terminator = document.getElementById('chain-terminator');
+                if (!container || !fixedBlock) return;
+
+                // Collect modules and their connectors
+                const moduleAndConnectorMap = new Map();
+                document.querySelectorAll('.chain-module[draggable="true"]').forEach(el => {
+                    const moduleName = this.getModuleNameById(el.dataset.moduleId);
+                    let connector = el.nextElementSibling;
+                    if (!connector || !connector.classList.contains('chain-connector')) {
+                        connector = document.createElement('div');
+                        connector.className = 'chain-connector';
+                    }
+                    moduleAndConnectorMap.set(moduleName, { module: el, connector });
+                });
+
+                let fixedBlockConnector = fixedBlock.nextElementSibling;
+                if (!fixedBlockConnector || !fixedBlockConnector.classList.contains('chain-connector')) {
+                    fixedBlockConnector = document.createElement('div');
+                    fixedBlockConnector.className = 'chain-connector';
+                }
+
+                // Remove from DOM temporarily
+                moduleAndConnectorMap.forEach(({ module, connector }) => {
+                    module.remove();
+                    if (connector) connector.remove();
+                });
+                fixedBlock.remove();
+                if (fixedBlockConnector) fixedBlockConnector.remove();
+
+                const newOrderFragment = document.createDocumentFragment();
+                let fixedBlockPlaced = false;
+
+                orderArray.forEach(moduleName => {
+                    if (['DRV', 'AMP', 'IR', 'EQ'].includes(moduleName) && !fixedBlockPlaced) {
+                        newOrderFragment.appendChild(fixedBlock);
+                        if (fixedBlockConnector) newOrderFragment.appendChild(fixedBlockConnector);
+                        fixedBlockPlaced = true;
+                    } else if (moduleAndConnectorMap.has(moduleName)) {
+                        const { module, connector } = moduleAndConnectorMap.get(moduleName);
+                        newOrderFragment.appendChild(module);
+                        if (connector) newOrderFragment.appendChild(connector);
+                    }
+                });
+
+                // Guarantee fixed block is inserted if not present in orderArray
+                if (!fixedBlockPlaced) {
+                    newOrderFragment.appendChild(fixedBlock);
+                    if (fixedBlockConnector) newOrderFragment.appendChild(fixedBlockConnector);
+                }
+
+                // Guarantee any remaining draggable module is inserted
+                moduleAndConnectorMap.forEach(({ module, connector }, name) => {
+                    if (!orderArray.includes(name) && !newOrderFragment.contains(module)) {
+                        newOrderFragment.appendChild(module);
+                        if (connector) newOrderFragment.appendChild(connector);
+                    }
+                });
+
+                if (terminator) {
+                    container.insertBefore(newOrderFragment, terminator);
+                } else {
+                    container.appendChild(newOrderFragment);
+                }
+
+                // Update is-last-connector
+                const connectors = container.querySelectorAll('.chain-connector');
+                connectors.forEach(connector => {
+                    const nextEl = connector.nextElementSibling;
+                    if (nextEl && (nextEl.classList.contains('chain-module') || nextEl.id === 'fixed-chain-block')) {
+                        connector.classList.remove('is-last-connector');
+                    } else {
+                        connector.classList.add('is-last-connector');
+                    }
+                });
+
+                // Save to current preset
+                const currentPatchNumber = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                if (!this.presetOrders) this.presetOrders = {};
+                this.presetOrders[currentPatchNumber] = orderArray;
+                this.savePresetOrders();
+
+                // Update chips in snapshot cards
+                this.updateSnapshotCardsPedalChipsOrder(orderArray);
+
+                // Optionally send hardware SysEx command
+                if (sendCommand && this.isConnected) {
+                    const orderKey = orderArray.join('-');
+                    const command = this.commands.chainOrderCommands?.[orderKey];
+                    if (command) {
+                        this.writeCommand(command);
+                        this.log(`Ordem da cadeia aplicada no hardware: ${orderKey}`, 'info');
+                    }
+                }
+            }
+
+            updateSnapshotCardsPedalChipsOrder(orderArray) {
+                if (!orderArray || !Array.isArray(orderArray) || orderArray.length === 0) return;
+                const nameToId = { 'NR': 0, 'FX1': 1, 'DRV': 2, 'AMP': 3, 'IR': 4, 'EQ': 5, 'FX2': 6, 'DLY': 7, 'RVB': 8 };
+
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const snaps = this.getPresetSnapshots(presetBaseName);
+
+                document.querySelectorAll('.snapshot-card').forEach(card => {
+                    const snapId = parseInt(card.dataset.snapId, 10);
+                    const snap = snaps ? snaps.find(s => s.id === snapId) : null;
+                    const container = card.querySelector('.snap-pedals-container');
+                    if (!container) return;
+
+                    const row1 = orderArray.slice(0, 5);
+                    const row2 = orderArray.slice(5);
+
+                    container.innerHTML = `
+                        <div class="snap-pedals-row">
+                            ${row1.map(name => {
+                                const modId = nameToId[name] !== undefined ? nameToId[name] : 0;
+                                const isOn = snap && snap.states ? !!snap.states[modId] : (name === 'AMP' || name === 'IR');
+                                return `<span class="snap-pedal-chip ${isOn ? 'on' : ''}" data-module-id="${modId}">${name}</span>`;
+                            }).join('')}
+                        </div>
+                        <div class="snap-pedals-row">
+                            ${row2.map(name => {
+                                const modId = nameToId[name] !== undefined ? nameToId[name] : 0;
+                                const isOn = snap && snap.states ? !!snap.states[modId] : (name === 'AMP' || name === 'IR');
+                                return `<span class="snap-pedal-chip ${isOn ? 'on' : ''}" data-module-id="${modId}">${name}</span>`;
+                            }).join('')}
+                        </div>
+                    `;
+                });
             }
 
             getModuleNameById(moduleId) {
