@@ -3684,9 +3684,15 @@
                         <div class="snap-organizer-list" id="snapOrganizerList">
                             <!-- Populated dynamically: 4 rows with dot, number, name input, rhythm, and up/down reorder buttons -->
                         </div>
-                        <div class="snap-organizer-footer">
-                            <button id="cancelSnapOrganizerBtn" class="btn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ccc; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancelar</button>
-                            <button id="saveSnapOrganizerBtn" class="btn btn-primary" style="padding: 8px 20px; border-radius: 6px; font-weight: 800; cursor: pointer;">Salvar Alterações</button>
+                        <div class="snap-organizer-footer" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; gap: 6px;">
+                                <button id="exportSnapOrganizerBackupBtn" class="btn" style="background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.4); color: var(--accent-orange); padding: 7px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer;" title="Exportar arquivo .json com todos os snapshots">Backup (.json)</button>
+                                <button id="importSnapOrganizerBackupBtn" class="btn" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #ccc; padding: 7px 12px; border-radius: 6px; font-weight: 600; font-size: 11px; cursor: pointer;" title="Restaurar arquivo .json de snapshots">Restaurar</button>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button id="cancelSnapOrganizerBtn" class="btn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #ccc; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancelar</button>
+                                <button id="saveSnapOrganizerBtn" class="btn btn-primary" style="padding: 8px 20px; border-radius: 6px; font-weight: 800; cursor: pointer;">Salvar Alterações</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3757,6 +3763,23 @@
             <span class="slider-value">0dB</span>
         </div>
     </div>
+
+    <!-- Seção de Segurança & Backup dos Snapshots -->
+    <div class="control-row" style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="control-label" style="font-weight: 800; color: #fff; font-size: 12.5px;">Segurança & Backup dos Snapshots</div>
+            <span id="storageProtectionBadge" style="font-size: 10px; padding: 2px 8px; border-radius: 12px; background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.4); font-weight: 700;">Protegido</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.4;">
+            Salve todos os seus snapshots e ordens de efeitos em um arquivo <code>.json</code> no seu celular ou nuvem (Google Drive, WhatsApp) para nunca perder nada.
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 4px;">
+            <button id="exportSnapshotsBackupBtn" class="btn" style="flex: 1; background: #26262e; border: 1px solid rgba(255, 107, 53, 0.5); color: var(--accent-orange); padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer;">Exportar Backup (.json)</button>
+            <button id="importSnapshotsBackupBtn" class="btn" style="flex: 1; background: #26262e; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer;">Restaurar Backup (.json)</button>
+        </div>
+        <input type="file" id="snapshotsBackupFileInput" accept=".json" style="display: none;">
+    </div>
+
     <button id="savePresetBtn" class="btn" style="margin-top: 20px;">Save Current Preset</button>
     <button id="exportPresetBtn" class="btn" style="margin-top: 10px;">Export Preset</button>
     <button id="importPresetBtn" class="btn" style="margin-top: 10px;">Import Preset</button>
@@ -15363,6 +15386,7 @@
             initSnapshotsSystem() {
                 this.activeSnapshotId = 1;
                 this.snapshotsData = this.loadAllSnapshotsData();
+                this.initStorageProtectionAndIndexedDB();
 
                 const openBtn = document.getElementById('openSnapshotsBtn');
                 const closeBtn = document.getElementById('closeSnapshotsBtn');
@@ -15687,9 +15711,218 @@
             saveAllSnapshotsData() {
                 try {
                     localStorage.setItem('pocketedit_snapshots_v2', JSON.stringify(this.snapshotsData));
+                    this.saveToIndexedDB('all_snapshots_v2', this.snapshotsData);
                 } catch (e) {
                     console.error('Error saving snapshots to localStorage:', e);
                 }
+            }
+
+            // =========================================================================
+            // SEGURANÇA E BACKUP DOS SNAPSHOTS (Storage Permanente, IndexedDB e JSON)
+            // =========================================================================
+            initStorageProtectionAndIndexedDB() {
+                // 1. Solicita proteção permanente contra limpeza de dados pelo SO/navegador
+                if (navigator.storage && navigator.storage.persist) {
+                    navigator.storage.persist().then(isPersisted => {
+                        this.isStorageProtected = isPersisted;
+                        this.updateStorageProtectionBadge(isPersisted);
+                        this.log(`Armazenamento Persistente: ${isPersisted ? 'ATIVO (Protegido contra limpeza)' : 'Padrão'}`, 'info');
+                    }).catch(() => {
+                        this.updateStorageProtectionBadge(false);
+                    });
+                } else {
+                    this.updateStorageProtectionBadge(true);
+                }
+
+                // 2. Inicializa o banco de dados IndexedDB para redundância dupla
+                this.initIndexedDB();
+
+                // 3. Conecta listeners de backup e restauração
+                const exportBtns = [
+                    document.getElementById('exportSnapshotsBackupBtn'),
+                    document.getElementById('exportSnapOrganizerBackupBtn')
+                ];
+                exportBtns.forEach(btn => {
+                    if (btn) btn.addEventListener('click', () => this.exportSnapshotsBackup());
+                });
+
+                const fileInput = document.getElementById('snapshotsBackupFileInput');
+                const importBtns = [
+                    document.getElementById('importSnapshotsBackupBtn'),
+                    document.getElementById('importSnapOrganizerBackupBtn')
+                ];
+                importBtns.forEach(btn => {
+                    if (btn) btn.addEventListener('click', () => {
+                        if (fileInput) {
+                            fileInput.value = '';
+                            fileInput.click();
+                        }
+                    });
+                });
+
+                if (fileInput) {
+                    fileInput.addEventListener('change', (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) this.importSnapshotsBackup(file);
+                    });
+                }
+            }
+
+            updateStorageProtectionBadge(isProtected) {
+                const badge = document.getElementById('storageProtectionBadge');
+                if (!badge) return;
+                if (isProtected) {
+                    badge.textContent = 'Protegido';
+                    badge.style.background = 'rgba(0, 230, 118, 0.15)';
+                    badge.style.color = '#00e676';
+                    badge.style.borderColor = 'rgba(0, 230, 118, 0.4)';
+                    badge.title = 'Seus snapshots estão protegidos pelo navegador contra limpeza automática!';
+                } else {
+                    badge.textContent = 'Ativar Proteção';
+                    badge.style.background = 'rgba(255, 107, 53, 0.15)';
+                    badge.style.color = 'var(--accent-orange)';
+                    badge.style.borderColor = 'rgba(255, 107, 53, 0.4)';
+                    badge.style.cursor = 'pointer';
+                    badge.title = 'Clique para solicitar armazenamento protegido ao celular';
+                    badge.onclick = () => {
+                        if (navigator.storage && navigator.storage.persist) {
+                            navigator.storage.persist().then(granted => {
+                                this.updateStorageProtectionBadge(granted);
+                                if (granted) this.showFloatingFeedback('Proteção de armazenamento permanente ativada!');
+                            });
+                        }
+                    };
+                }
+            }
+
+            initIndexedDB() {
+                try {
+                    const request = indexedDB.open('PocketEditOfflineStore', 1);
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('snapshots_backup')) {
+                            db.createObjectStore('snapshots_backup');
+                        }
+                    };
+                    request.onsuccess = (e) => {
+                        this.indexedDBInstance = e.target.result;
+                        this.checkAndRestoreFromIndexedDB();
+                    };
+                    request.onerror = (e) => {
+                        console.warn('IndexedDB unavailable:', e);
+                    };
+                } catch (err) {
+                    console.warn('IndexedDB init error:', err);
+                }
+            }
+
+            saveToIndexedDB(key, data) {
+                if (!this.indexedDBInstance) return;
+                try {
+                    const tx = this.indexedDBInstance.transaction('snapshots_backup', 'readwrite');
+                    const store = tx.objectStore('snapshots_backup');
+                    store.put(data, key);
+                } catch (e) {
+                    console.warn('Error saving to IndexedDB:', e);
+                }
+            }
+
+            checkAndRestoreFromIndexedDB() {
+                if (!this.indexedDBInstance) return;
+                try {
+                    const tx = this.indexedDBInstance.transaction('snapshots_backup', 'readonly');
+                    const store = tx.objectStore('snapshots_backup');
+                    const getReq = store.get('all_snapshots_v2');
+                    getReq.onsuccess = () => {
+                        const dbData = getReq.result;
+                        const localRaw = localStorage.getItem('pocketedit_snapshots_v2');
+                        if (dbData && typeof dbData === 'object' && (!localRaw || Object.keys(dbData).length > Object.keys(this.snapshotsData || {}).length)) {
+                            this.snapshotsData = dbData;
+                            localStorage.setItem('pocketedit_snapshots_v2', JSON.stringify(dbData));
+                            this.renderSnapshotsForCurrentPreset();
+                            this.updateSnapshotsHeaderInfo();
+                            this.log('Snapshots recuperados automaticamente com sucesso do banco de segurança IndexedDB!', 'success');
+                        }
+                    };
+                } catch (e) {
+                    console.warn('Error checking IndexedDB:', e);
+                }
+            }
+
+            exportSnapshotsBackup() {
+                const totalPresets = Object.keys(this.snapshotsData || {}).length;
+                const dateStr = new Date().toISOString().split('T')[0];
+
+                const backupPayload = {
+                    app: "PocketEdit",
+                    type: "snapshots_backup",
+                    version: "2.0",
+                    exportedAt: new Date().toISOString(),
+                    totalPresets: totalPresets,
+                    presetOrders: this.presetOrders || {},
+                    snapshotsData: this.snapshotsData || {}
+                };
+
+                const jsonStr = JSON.stringify(backupPayload, null, 2);
+                const fileName = `PocketEdit_Backup_Snapshots_${dateStr}.json`;
+
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                this.showFloatingFeedback(`Backup gerado: ${fileName}! Guarde no seu Google Drive ou celular.`);
+                this.log(`Backup completo de snapshots exportado com sucesso: ${fileName} (${totalPresets} presets salvos)`, 'success');
+            }
+
+            importSnapshotsBackup(file) {
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const content = JSON.parse(e.target.result);
+                        let importedSnapshots = null;
+                        let importedOrders = null;
+
+                        if (content.snapshotsData && typeof content.snapshotsData === 'object') {
+                            importedSnapshots = content.snapshotsData;
+                            importedOrders = content.presetOrders || {};
+                        } else if (content && typeof content === 'object' && !content.modules) {
+                            importedSnapshots = content;
+                        }
+
+                        if (!importedSnapshots || Object.keys(importedSnapshots).length === 0) {
+                            alert('Arquivo de backup inválido. Certifique-se de selecionar um backup exportado pelo PocketEdit.');
+                            return;
+                        }
+
+                        if (!this.snapshotsData) this.snapshotsData = {};
+                        Object.assign(this.snapshotsData, importedSnapshots);
+
+                        if (importedOrders) {
+                            if (!this.presetOrders) this.presetOrders = {};
+                            Object.assign(this.presetOrders, importedOrders);
+                            this.savePresetOrders();
+                        }
+
+                        this.saveAllSnapshotsData();
+                        this.renderSnapshotsForCurrentPreset();
+                        if (this.updateSnapshotsHeaderInfo) this.updateSnapshotsHeaderInfo();
+
+                        const count = Object.keys(importedSnapshots).length;
+                        this.showFloatingFeedback(`Sucesso! ${count} presets e snapshots restaurados!`);
+                        this.log(`Backup de snapshots importado com sucesso: ${count} presets restaurados`, 'success');
+                    } catch (err) {
+                        alert('Erro ao processar o arquivo de backup: ' + err.message);
+                        this.log(`Erro ao importar backup de snapshots: ${err.message}`, 'error');
+                    }
+                };
+                reader.readAsText(file);
             }
 
             getPresetSnapshots(presetBaseName) {
@@ -18313,6 +18546,7 @@
             savePresetOrders() {
                 try {
                     localStorage.setItem('pocketedit_preset_orders_v1', JSON.stringify(this.presetOrders || {}));
+                    this.saveToIndexedDB('preset_orders_v1', this.presetOrders);
                 } catch (e) {
                     console.error('Error saving preset orders:', e);
                 }
