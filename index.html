@@ -1234,8 +1234,8 @@
             -webkit-user-select: none;
         }
 
-        /* Snapshots Grid: Mesma estrutura do modo vertical no celular horizontal e vertical */
-        @media (max-width: 950px), (orientation: portrait), (max-height: 600px) {
+        /* Modo Snapshots Vertical (Portrait / Mobile Em Pé): 2 colunas x 4 linhas + TAP TEMPO largo inferior */
+        @media (orientation: portrait) {
             #snapshots-view {
                 overflow-y: auto !important;
                 -webkit-overflow-scrolling: touch;
@@ -1244,11 +1244,12 @@
             .snapshots-grid {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
-                grid-template-rows: auto auto auto auto !important;
+                grid-template-rows: auto auto auto auto auto !important;
                 grid-template-areas:
                     "snap1 snap2"
                     "snap3 snap4"
                     "snap5 snap6"
+                    "snap7 snap8"
                     "tap   tap" !important;
                 gap: 10px !important;
                 padding: 10px 12px 24px 12px !important;
@@ -1263,6 +1264,8 @@
             .snapshot-card[data-snap-id="4"] { grid-area: snap4; }
             .snapshot-card[data-snap-id="5"] { grid-area: snap5; }
             .snapshot-card[data-snap-id="6"] { grid-area: snap6; }
+            .snapshot-card[data-snap-id="7"] { grid-area: snap7; }
+            .snapshot-card[data-snap-id="8"] { grid-area: snap8; }
 
             .snapshot-card {
                 min-height: 110px !important;
@@ -1281,7 +1284,7 @@
                 text-overflow: ellipsis !important;
             }
 
-            /* Botão de TAP TEMPO Aumentado no Celular (Largura Total e Altura Generosa) */
+            /* Botão de TAP TEMPO Aumentado no Modo Vertical (Largura Total e Altura Generosa) */
             .snap-tap-tempo-column {
                 grid-area: tap !important;
                 width: 100% !important;
@@ -1344,16 +1347,24 @@
             }
         }
 
-        /* Layout para Telas Grandes / Monitores (Desktop acima de 950px e altura > 600px) */
-        @media (min-width: 951px) and (min-height: 601px) {
+        /* Modo Snapshots Horizontal (Landscape / Deitado e Telas Largas): 4 colunas x 2 linhas + Coluna Lateral de TAP TEMPO */
+        @media (orientation: landscape) {
+            #snapshots-view {
+                overflow: hidden !important;
+            }
+
             .snapshots-grid {
-                display: grid;
-                grid-template-columns: repeat(6, 1fr) 140px;
-                grid-template-rows: 1fr;
-                grid-template-areas: "snap1 snap2 snap3 snap4 snap5 snap6 tap";
-                gap: 10px;
-                padding: 10px 14px;
-                height: calc(100% - 46px);
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) 115px !important;
+                grid-template-rows: 1fr 1fr !important;
+                grid-template-areas:
+                    "snap1 snap2 snap3 snap4 tap"
+                    "snap5 snap6 snap7 snap8 tap" !important;
+                gap: 8px !important;
+                padding: 8px 12px !important;
+                height: calc(100% - 46px) !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
             }
 
             .snapshot-card[data-snap-id="1"] { grid-area: snap1; }
@@ -1362,61 +1373,83 @@
             .snapshot-card[data-snap-id="4"] { grid-area: snap4; }
             .snapshot-card[data-snap-id="5"] { grid-area: snap5; }
             .snapshot-card[data-snap-id="6"] { grid-area: snap6; }
+            .snapshot-card[data-snap-id="7"] { grid-area: snap7; }
+            .snapshot-card[data-snap-id="8"] { grid-area: snap8; }
+
+            .snapshot-card {
+                padding: 6px 6px 5px 6px !important;
+                min-height: 0 !important;
+                height: 100% !important;
+                box-sizing: border-box !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+            }
+
+            .snap-main-name {
+                font-size: clamp(14px, 2.4vw, 24px) !important;
+                line-height: 1.1 !important;
+                text-align: center !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
 
             .snap-tap-tempo-column {
-                grid-area: tap;
-                width: 100%;
-                height: 100%;
-                border-radius: 18px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                padding: 16px 8px;
+                grid-area: tap !important;
+                width: 100% !important;
+                height: 100% !important;
+                min-height: 0 !important;
+                border-radius: 14px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                padding: 6px !important;
+                margin-top: 0 !important;
+                box-shadow: 0 4px 18px rgba(255, 87, 34, 0.45) !important;
             }
 
             .snap-tap-content {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                gap: 12px;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 6px !important;
             }
 
             .snap-tap-title-block {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                line-height: 1.1;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                line-height: 1.1 !important;
             }
 
             .snap-tap-title-tap, .snap-tap-title-tempo {
-                font-size: 22px;
-                font-weight: 900;
-                color: #ffffff;
-                text-align: center;
+                font-size: 14px !important;
+                font-weight: 900 !important;
+                color: #ffffff !important;
+                letter-spacing: 1px !important;
             }
 
             .snap-tap-bpm-block {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 2px;
+                display: flex !important;
+                align-items: baseline !important;
+                gap: 4px !important;
             }
 
             .snap-tap-bpm-num {
-                font-size: 40px;
-                font-weight: 900;
-                font-family: 'JetBrains Mono', monospace;
-                color: #ffffff;
-                line-height: 1;
+                font-size: 26px !important;
+                font-weight: 900 !important;
+                font-family: 'JetBrains Mono', monospace !important;
+                color: #ffffff !important;
+                line-height: 1 !important;
             }
 
             .snap-tap-bpm-unit {
-                font-size: 13px;
-                font-weight: 800;
-                color: rgba(255, 255, 255, 0.95);
-                letter-spacing: 2px;
+                font-size: 11px !important;
+                font-weight: 800 !important;
+                color: rgba(255, 255, 255, 0.95) !important;
             }
         }
 
@@ -1504,6 +1537,24 @@
 
         .snapshot-card[data-snap-id="6"].active {
             box-shadow: 0 0 32px rgba(6, 182, 212, 0.8), 0 8px 25px rgba(0,0,0,0.6) !important;
+        }
+
+        .snapshot-card[data-snap-id="7"] {
+            background: linear-gradient(155deg, #ea580c, #c2410c);
+            box-shadow: 0 4px 18px rgba(234, 88, 12, 0.45);
+        }
+
+        .snapshot-card[data-snap-id="7"].active {
+            box-shadow: 0 0 32px rgba(234, 88, 12, 0.8), 0 8px 25px rgba(0,0,0,0.6) !important;
+        }
+
+        .snapshot-card[data-snap-id="8"] {
+            background: linear-gradient(155deg, #db2777, #be185d);
+            box-shadow: 0 4px 18px rgba(219, 39, 119, 0.45);
+        }
+
+        .snapshot-card[data-snap-id="8"].active {
+            box-shadow: 0 0 32px rgba(219, 39, 119, 0.8), 0 8px 25px rgba(0,0,0,0.6) !important;
         }
 
         /* Snapshot Header Label (SNAP 1, SNAP 2, etc.) */
@@ -2578,6 +2629,14 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            max-width: 100%;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pedals-snap-pills::-webkit-scrollbar {
+            display: none;
         }
 
         .pedal-snap-pill {
@@ -2593,6 +2652,7 @@
             touch-action: manipulation;
             height: 25px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .pedal-snap-pill:hover {
@@ -2646,6 +2706,22 @@
 
         .pedal-snap-pill[data-snap-id="4"].active {
             background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .pedal-snap-pill[data-snap-id="5"].active {
+            background: linear-gradient(135deg, #9333ea, #6b21a8);
+        }
+
+        .pedal-snap-pill[data-snap-id="6"].active {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .pedal-snap-pill[data-snap-id="7"].active {
+            background: linear-gradient(135deg, #ea580c, #c2410c);
+        }
+
+        .pedal-snap-pill[data-snap-id="8"].active {
+            background: linear-gradient(135deg, #db2777, #be185d);
         }
 
         .pedal-snap-pill.active .pill-num {
@@ -3642,6 +3718,54 @@
                                     <span class="snap-pedal-chip" data-module-id="2">DRV</span>
                                     <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
                                     <span class="snap-pedal-chip" data-module-id="4">IR</span>
+                                    <span class="snap-pedal-chip" data-module-id="5">EQ</span>
+                                </div>
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip on" data-module-id="6">FX2</span>
+                                    <span class="snap-pedal-chip on" data-module-id="7">DLY</span>
+                                    <span class="snap-pedal-chip on" data-module-id="8">RVB</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SNAP 7 -->
+                        <div class="snapshot-card" data-snap-id="7">
+                            <div class="snap-card-top-row">
+                                <div class="snap-badge-label">SNAP 7</div>
+                                <div class="snap-rhythm-badge" id="snapRhythm7" style="display:none;">1/4</div>
+                            </div>
+                            <div class="snap-main-name" id="snapName7">Acústico</div>
+                            <div class="snap-pedals-container">
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="0">NR</span>
+                                    <span class="snap-pedal-chip" data-module-id="1">FX1</span>
+                                    <span class="snap-pedal-chip" data-module-id="2">DRV</span>
+                                    <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
+                                    <span class="snap-pedal-chip on" data-module-id="4">IR</span>
+                                    <span class="snap-pedal-chip on" data-module-id="5">EQ</span>
+                                </div>
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="6">FX2</span>
+                                    <span class="snap-pedal-chip" data-module-id="7">DLY</span>
+                                    <span class="snap-pedal-chip on" data-module-id="8">RVB</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SNAP 8 -->
+                        <div class="snapshot-card" data-snap-id="8">
+                            <div class="snap-card-top-row">
+                                <div class="snap-badge-label">SNAP 8</div>
+                                <div class="snap-rhythm-badge" id="snapRhythm8" style="display:none;">1/4</div>
+                            </div>
+                            <div class="snap-main-name" id="snapName8">Especial</div>
+                            <div class="snap-pedals-container">
+                                <div class="snap-pedals-row">
+                                    <span class="snap-pedal-chip" data-module-id="0">NR</span>
+                                    <span class="snap-pedal-chip on" data-module-id="1">FX1</span>
+                                    <span class="snap-pedal-chip on" data-module-id="2">DRV</span>
+                                    <span class="snap-pedal-chip on" data-module-id="3">AMP</span>
+                                    <span class="snap-pedal-chip on" data-module-id="4">IR</span>
                                     <span class="snap-pedal-chip" data-module-id="5">EQ</span>
                                 </div>
                                 <div class="snap-pedals-row">
@@ -15279,7 +15403,7 @@
                     presetNumEl.textContent = `${presetBaseName} (${patchName})`;
                 }
 
-                for (let i = 1; i <= 6; i++) {
+                for (let i = 1; i <= 8; i++) {
                     const snap = snaps ? snaps.find(s => s.id === i) : null;
                     const nameEl = document.getElementById(`quickSnapName${i}`);
                     if (nameEl) {
@@ -15556,9 +15680,9 @@
 
                 const isP01 = (presetBaseName === 'P01');
                 const defaultNames = isP01
-                    ? ['Limpo', 'Crunch', 'Solo', 'Ambiente', 'Lead', 'Modulado']
-                    : ['SNAP 1', 'SNAP 2', 'SNAP 3', 'SNAP 4', 'SNAP 5', 'SNAP 6'];
-                const defaultMults = [1.0, 1.0, 0.75, 0.5, 1.0, 1.0];
+                    ? ['Limpo', 'Crunch', 'Solo', 'Ambiente', 'Lead', 'Modulado', 'Acústico', 'Especial']
+                    : ['SNAP 1', 'SNAP 2', 'SNAP 3', 'SNAP 4', 'SNAP 5', 'SNAP 6', 'SNAP 7', 'SNAP 8'];
+                const defaultMults = [1.0, 1.0, 0.75, 0.5, 1.0, 1.0, 1.0, 0.75];
 
                 const liveOrder = this.presetOrders?.[presetBaseName] || this.getCurrentChainOrder();
 
@@ -15568,7 +15692,9 @@
                     { id: 3, title: 'SNAP 3', name: defaultNames[2], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[2], saved: true },
                     { id: 4, title: 'SNAP 4', name: defaultNames[3], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[3], saved: true },
                     { id: 5, title: 'SNAP 5', name: defaultNames[4], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[4], saved: true },
-                    { id: 6, title: 'SNAP 6', name: defaultNames[5], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[5], saved: true }
+                    { id: 6, title: 'SNAP 6', name: defaultNames[5], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[5], saved: true },
+                    { id: 7, title: 'SNAP 7', name: defaultNames[6], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[6], saved: true },
+                    { id: 8, title: 'SNAP 8', name: defaultNames[7], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[7], saved: true }
                 ];
                 this.saveAllSnapshotsData();
                 return this.snapshotsData[presetBaseName];
@@ -15668,12 +15794,12 @@
                     }
 
                     if (data && typeof data === 'object') {
-                        // Garante que todo preset salvo tenha 6 snapshots completos
+                        // Garante que todo preset salvo tenha 8 snapshots completos
                         for (const [presetKey, snaps] of Object.entries(data)) {
-                            if (Array.isArray(snaps) && snaps.length < 6) {
+                            if (Array.isArray(snaps) && snaps.length < 8) {
                                 const baseSnap = snaps[0] || {};
-                                const defaultExtraNames = ['SNAP 1', 'SNAP 2', 'SNAP 3', 'SNAP 4', 'Lead', 'Modulado'];
-                                while (snaps.length < 6) {
+                                const defaultExtraNames = ['SNAP 1', 'SNAP 2', 'SNAP 3', 'SNAP 4', 'Lead', 'Modulado', 'Acústico', 'Especial'];
+                                while (snaps.length < 8) {
                                     const newId = snaps.length + 1;
                                     snaps.push({
                                         id: newId,
@@ -15681,6 +15807,7 @@
                                         name: defaultExtraNames[newId - 1] || `SNAP ${newId}`,
                                         states: baseSnap.states ? JSON.parse(JSON.stringify(baseSnap.states)) : null,
                                         params: baseSnap.params ? JSON.parse(JSON.stringify(baseSnap.params)) : {},
+                                        order: baseSnap.order ? [...baseSnap.order] : (this.getCurrentChainOrder ? this.getCurrentChainOrder() : []),
                                         rhythmicMultiplier: 1.0,
                                         saved: true
                                     });
@@ -15694,7 +15821,7 @@
                     console.error('Error loading snapshots from localStorage:', e);
                 }
 
-                // Default initial dataset: P01 comes preconfigured with 6 scenes
+                // Default initial dataset: P01 comes preconfigured with 8 scenes
                 const initial = {
                     'P01': [
                         { id: 1, title: 'SNAP 1', name: 'Limpo', states: { 0: false, 1: false, 2: false, 3: true, 4: true, 5: false, 6: false, 7: false, 8: true }, params: {}, rhythmicMultiplier: 1.0, saved: true },
@@ -15702,7 +15829,9 @@
                         { id: 3, title: 'SNAP 3', name: 'Solo', states: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: false, 6: false, 7: true, 8: false }, params: {}, rhythmicMultiplier: 0.75, saved: true },
                         { id: 4, title: 'SNAP 4', name: 'Ambiente', states: { 0: false, 1: true, 2: false, 3: true, 4: true, 5: false, 6: false, 7: true, 8: true }, params: {}, rhythmicMultiplier: 0.5, saved: true },
                         { id: 5, title: 'SNAP 5', name: 'Lead', states: { 0: true, 1: false, 2: true, 3: true, 4: true, 5: true, 6: false, 7: true, 8: true }, params: {}, rhythmicMultiplier: 1.0, saved: true },
-                        { id: 6, title: 'SNAP 6', name: 'Modulado', states: { 0: false, 1: true, 2: false, 3: true, 4: true, 5: false, 6: true, 7: true, 8: true }, params: {}, rhythmicMultiplier: 1.0, saved: true }
+                        { id: 6, title: 'SNAP 6', name: 'Modulado', states: { 0: false, 1: true, 2: false, 3: true, 4: true, 5: false, 6: true, 7: true, 8: true }, params: {}, rhythmicMultiplier: 1.0, saved: true },
+                        { id: 7, title: 'SNAP 7', name: 'Acústico', states: { 0: false, 1: false, 2: false, 3: true, 4: true, 5: true, 6: false, 7: false, 8: true }, params: {}, rhythmicMultiplier: 1.0, saved: true },
+                        { id: 8, title: 'SNAP 8', name: 'Especial', states: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: false, 6: true, 7: true, 8: true }, params: {}, rhythmicMultiplier: 0.75, saved: true }
                     ]
                 };
                 return initial;
@@ -15928,7 +16057,7 @@
             getPresetSnapshots(presetBaseName) {
                 if (!this.snapshotsData) this.snapshotsData = {};
                 let snaps = this.snapshotsData[presetBaseName];
-                if (!snaps || !Array.isArray(snaps) || snaps.length < 6) {
+                if (!snaps || !Array.isArray(snaps) || snaps.length < 8) {
                     snaps = this.createDefaultSnapshotsForPreset(presetBaseName);
                 }
                 return snaps;
@@ -15939,10 +16068,10 @@
                 const patchName = document.getElementById('patchName')?.textContent.trim() || 'Preset';
                 const snaps = this.getPresetSnapshots(presetBaseName);
 
-                // 1. Update Compact Bar on Pedals Screen (6 pílulas com largura total)
+                // 1. Update Compact Bar on Pedals Screen (8 pílulas com suporte a scroll suave)
                 const pillsContainer = document.querySelector('.pedals-snap-pills');
                 if (pillsContainer && snaps) {
-                    const dotColors = ['#1d68ff', '#ff1a53', '#ff9800', '#00c853', '#9333ea', '#06b6d4'];
+                    const dotColors = ['#1d68ff', '#ff1a53', '#ff9800', '#00c853', '#9333ea', '#06b6d4', '#ea580c', '#db2777'];
                     pillsContainer.innerHTML = snaps.map((snap, idx) => {
                         const isActive = snap.id === this.activeSnapshotId;
                         const rhythmLabel = this.getRhythmLabel(snap.rhythmicMultiplier || 1.0);
@@ -16150,7 +16279,7 @@
                 const container = document.getElementById('snapOrganizerList');
                 if (!container || !this._tempOrganizerSnaps) return;
 
-                const dotColors = ['#1d68ff', '#ff1a53', '#ff9800', '#00c853', '#9333ea', '#06b6d4'];
+                const dotColors = ['#1d68ff', '#ff1a53', '#ff9800', '#00c853', '#9333ea', '#06b6d4', '#ea580c', '#db2777'];
 
                 container.innerHTML = this._tempOrganizerSnaps.map((snap, idx) => {
                     const dotColor = dotColors[idx] || '#ff6b35';
@@ -19054,6 +19183,24 @@
                     <div class="quick-snap-badge" style="background:#06b6d4;">SNAP 6</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName6">Modulado</span>
+                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                    </div>
+                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                </div>
+
+                <div class="quick-save-snap-item" data-target-snap="7">
+                    <div class="quick-snap-badge" style="background:#ea580c;">SNAP 7</div>
+                    <div class="quick-snap-info">
+                        <span class="quick-snap-name" id="quickSnapName7">Acústico</span>
+                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                    </div>
+                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                </div>
+
+                <div class="quick-save-snap-item" data-target-snap="8">
+                    <div class="quick-snap-badge" style="background:#db2777;">SNAP 8</div>
+                    <div class="quick-snap-info">
+                        <span class="quick-snap-name" id="quickSnapName8">Especial</span>
                         <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
                     </div>
                     <button class="quick-snap-save-btn">Salvar Aqui</button>
