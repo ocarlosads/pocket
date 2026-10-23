@@ -15327,10 +15327,12 @@
                 if (typeof this._updateDelayFromBpm === 'function') {
                     this._updateDelayFromBpm(true);
                     this.log(`Tempo Global aplicado: ${Math.round(this.globalTapTempo.bpm)} BPM`, 'info');
-                    if (this.isConnected) {
+                    if (this.isConnected && !this.isActivatingSnapshot) {
                         clearTimeout(this._autoSaveTimer);
                         this._autoSaveTimer = setTimeout(() => {
-                            this.autoSaveCurrentPreset();
+                            if (!this.isActivatingSnapshot) {
+                                this.autoSaveCurrentPreset();
+                            }
                         }, 250);
                     }
                 }
@@ -16151,98 +16153,105 @@
                 }
 
                 this.activeSnapshotId = snapId;
+                this.isActivatingSnapshot = true;
+                clearTimeout(this._autoSaveTimer); // NUNCA grava na Flash durante troca de cena ao vivo!
 
-                // Update UI selection immediately
-                document.querySelectorAll('.snapshot-card').forEach(card => {
-                    card.classList.toggle('active', parseInt(card.dataset.snapId, 10) === snapId);
-                });
-                document.querySelectorAll('.pedal-snap-pill').forEach(pill => {
-                    pill.classList.toggle('active', parseInt(pill.dataset.snapId, 10) === snapId);
-                });
+                try {
+                    // Update UI selection immediately
+                    document.querySelectorAll('.snapshot-card').forEach(card => {
+                        card.classList.toggle('active', parseInt(card.dataset.snapId, 10) === snapId);
+                    });
+                    document.querySelectorAll('.pedal-snap-pill').forEach(pill => {
+                        pill.classList.toggle('active', parseInt(pill.dataset.snapId, 10) === snapId);
+                    });
 
-                // 1. Apply Module States (turn pedals ON/OFF smoothly without switching preset)
-                if (snap.states) {
-                    for (const [modIdStr, targetIsOn] of Object.entries(snap.states)) {
-                        const modId = parseInt(modIdStr, 10);
-                        const enableToggle = document.getElementById(`module-enable-${modId}`);
-                        if (enableToggle && !enableToggle.classList.contains('locked')) {
-                            const currentIsOn = enableToggle.classList.contains('on');
-                            if (currentIsOn !== targetIsOn) {
-                                enableToggle.classList.toggle('on', targetIsOn);
-                                if (this.isConnected) {
-                                    await this.sendModuleState(modId, targetIsOn);
-                                    await new Promise(r => setTimeout(r, 20));
+                    // 1. Cirúrgico: Mudar ON/OFF apenas dos pedais que realmente mudaram de estado!
+                    // Se o pedal já está ligado (ex: Reverb ou Delay) e no snapshot de destino continua ligado,
+                    // NENHUM comando de estado é enviado para ele, preservando 100% da cauda (trails) sem corte de som!
+                    if (snap.states) {
+                        for (const [modIdStr, targetIsOn] of Object.entries(snap.states)) {
+                            const modId = parseInt(modIdStr, 10);
+                            const enableToggle = document.getElementById(`module-enable-${modId}`);
+                            if (enableToggle && !enableToggle.classList.contains('locked')) {
+                                const currentIsOn = enableToggle.classList.contains('on');
+                                if (currentIsOn !== targetIsOn) {
+                                    enableToggle.classList.toggle('on', targetIsOn);
+                                    if (this.isConnected) {
+                                        await this.sendModuleState(modId, targetIsOn);
+                                        await new Promise(r => setTimeout(r, 12));
+                                    }
+                                    this.updateModuleStatus(modId);
                                 }
-                                this.updateModuleStatus(modId);
                             }
                         }
                     }
-                }
 
-                // 2. Apply Parameters (knob values smoothly without preset reload)
-                if (snap.params && Object.keys(snap.params).length > 0) {
-                    for (const [modIdStr, algs] of Object.entries(snap.params)) {
-                        const modId = parseInt(modIdStr, 10);
-                        const uiModuleId = (modId === 9) ? 3 : modId;
-                        for (const [algIdStr, val] of Object.entries(algs)) {
-                            const algId = parseInt(algIdStr, 10);
-                            const numVal = parseFloat(val);
-                            const control = document.querySelector(
-                                `[data-module-id="${uiModuleId}"][data-alg-id="${algId}"]`
-                            ) || document.querySelector(`#module-params-${uiModuleId} [data-alg-id="${algId}"]`);
+                    // 2. Cirúrgico: Aplicar apenas knobs que foram alterados (evitando sobrecarga MIDI e resets)
+                    if (snap.params && Object.keys(snap.params).length > 0) {
+                        for (const [modIdStr, algs] of Object.entries(snap.params)) {
+                            const modId = parseInt(modIdStr, 10);
+                            const uiModuleId = (modId === 9) ? 3 : modId;
+                            for (const [algIdStr, val] of Object.entries(algs)) {
+                                const algId = parseInt(algIdStr, 10);
+                                const numVal = parseFloat(val);
+                                const control = document.querySelector(
+                                    `[data-module-id="${uiModuleId}"][data-alg-id="${algId}"]`
+                                ) || document.querySelector(`#module-params-${uiModuleId} [data-alg-id="${algId}"]`);
 
-                            if (control) {
-                                let hasChanged = false;
-                                if (control.classList.contains('slider')) {
-                                    if (parseFloat(control.value) !== numVal) {
-                                        control.value = numVal;
-                                        const valSpan = control.nextElementSibling;
-                                        if (valSpan && valSpan.classList.contains('slider-value')) {
-                                            valSpan.textContent = numVal;
+                                if (control) {
+                                    let hasChanged = false;
+                                    if (control.classList.contains('slider')) {
+                                        if (Math.abs(parseFloat(control.value) - numVal) > 0.01) {
+                                            control.value = numVal;
+                                            const valSpan = control.nextElementSibling;
+                                            if (valSpan && valSpan.classList.contains('slider-value')) {
+                                                valSpan.textContent = numVal;
+                                            }
+                                            this.updateSliderProgress(control);
+                                            hasChanged = true;
                                         }
-                                        this.updateSliderProgress(control);
-                                        hasChanged = true;
+                                    } else if (control.classList.contains('toggle-switch')) {
+                                        const shouldBeOn = (numVal === 1 || val === true);
+                                        if (control.classList.contains('on') !== shouldBeOn) {
+                                            control.classList.toggle('on', shouldBeOn);
+                                            hasChanged = true;
+                                        }
                                     }
-                                } else if (control.classList.contains('toggle-switch')) {
-                                    const shouldBeOn = (numVal === 1 || val === true);
-                                    if (control.classList.contains('on') !== shouldBeOn) {
-                                        control.classList.toggle('on', shouldBeOn);
-                                        hasChanged = true;
-                                    }
-                                } else if (control.tagName === 'SELECT') {
-                                    if (parseInt(control.value, 10) !== parseInt(val, 10)) {
-                                        control.value = val;
-                                        hasChanged = true;
-                                    }
-                                }
 
-                                if (hasChanged && this.isConnected) {
-                                    this.onParameterChange(control);
-                                    await new Promise(r => setTimeout(r, 20));
+                                    if (hasChanged && this.isConnected) {
+                                        this.onParameterChange(control);
+                                        await new Promise(r => setTimeout(r, 12));
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                // 3. Apply Effect Chain Order (se o snapshot ou preset tiver ordem salva)
-                const targetOrder = snap.order || this.presetOrders?.[presetBaseName];
-                if (targetOrder && Array.isArray(targetOrder) && targetOrder.length > 0) {
-                    this.applyChainOrderUI(targetOrder, this.isConnected);
-                }
+                    // 3. Ordem da cadeia: só envia comando se a ordem realmente for diferente da atual
+                    const currentOrder = this.getCurrentChainOrder();
+                    const targetOrder = snap.order || this.presetOrders?.[presetBaseName];
+                    if (targetOrder && Array.isArray(targetOrder) && targetOrder.length > 0) {
+                        const isDifferent = currentOrder.join('-') !== targetOrder.join('-');
+                        this.applyChainOrderUI(targetOrder, isDifferent && this.isConnected);
+                    }
 
-                // 4. Apply Rhythmic Figure (subdivision)
-                const multiplier = snap.rhythmicMultiplier !== undefined ? snap.rhythmicMultiplier : 1.0;
-                this.globalTapTempo.multiplier = multiplier;
-                document.querySelectorAll('#note-divisions-7 .note-btn').forEach(btn => {
-                    const btnMult = parseFloat(btn.dataset.multiplier);
-                    btn.classList.toggle('active', Math.abs(btnMult - multiplier) < 0.01);
-                });
-                if (typeof this._updateDelayFromBpm === 'function') {
-                    this._updateDelayFromBpm(this.isConnected);
-                }
+                    // 4. Divisão rítmica (Tap Tempo): aplica apenas se o multiplicador rítmico for diferente
+                    const multiplier = snap.rhythmicMultiplier !== undefined ? snap.rhythmicMultiplier : 1.0;
+                    if (Math.abs((this.globalTapTempo.multiplier || 1.0) - multiplier) > 0.01) {
+                        this.globalTapTempo.multiplier = multiplier;
+                        document.querySelectorAll('#note-divisions-7 .note-btn').forEach(btn => {
+                            const btnMult = parseFloat(btn.dataset.multiplier);
+                            btn.classList.toggle('active', Math.abs(btnMult - multiplier) < 0.01);
+                        });
+                        if (typeof this._updateDelayFromBpm === 'function') {
+                            this._updateDelayFromBpm(this.isConnected);
+                        }
+                    }
 
-                this.log(`Snapshot Ativado: ${snap.name} (${snap.title}) em ${presetBaseName} - Ritmo: ${this.getRhythmLabel(multiplier)}`, 'info');
+                    this.log(`Snapshot Ativado: ${snap.name} (${snap.title}) em ${presetBaseName} - Ritmo: ${this.getRhythmLabel(multiplier)}`, 'info');
+                } finally {
+                    this.isActivatingSnapshot = false;
+                }
             }
 
             promptRenameSnapshot(snapId) {
@@ -18814,13 +18823,16 @@
                 // Update chips in snapshot cards
                 this.updateSnapshotCardsPedalChipsOrder(orderArray);
 
-                // Optionally send hardware SysEx command
+                // Optionally send hardware SysEx command (ONLY if different from last hardware order)
                 if (sendCommand && this.isConnected) {
                     const orderKey = orderArray.join('-');
-                    const command = this.commands.chainOrderCommands?.[orderKey];
-                    if (command) {
-                        this.writeCommand(command);
-                        this.log(`Ordem da cadeia aplicada no hardware: ${orderKey}`, 'info');
+                    if (this._lastHardwareChainOrder !== orderKey) {
+                        const command = this.commands.chainOrderCommands?.[orderKey];
+                        if (command) {
+                            this.writeCommand(command);
+                            this._lastHardwareChainOrder = orderKey;
+                            this.log(`Ordem da cadeia aplicada no hardware: ${orderKey}`, 'info');
+                        }
                     }
                 }
             }
