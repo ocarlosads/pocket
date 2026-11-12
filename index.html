@@ -4652,6 +4652,72 @@
             100% { box-shadow: 0 0 0 10px rgba(0, 230, 118, 0); }
         }
 
+        /* Undo bar for auto-saved snapshot edits */
+        .snap-undo-wrap[hidden] {
+            display: none !important;
+        }
+
+        .snap-undo-wrap {
+            display: flex;
+            flex-shrink: 0;
+        }
+
+        .snap-undo-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            height: 26px;
+            padding: 0 12px;
+            border-radius: 8px;
+            background: rgba(255, 196, 0, 0.12);
+            border: 1px solid rgba(255, 196, 0, 0.45);
+            color: #ffd257;
+            font-family: inherit;
+            font-size: 11.5px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .snap-undo-btn:active {
+            transform: scale(0.97);
+            background: rgba(255, 196, 0, 0.22);
+        }
+
+        .snap-undo-btn span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 768px) and (orientation: portrait), (orientation: landscape) and (max-height: 520px) {
+            html body .pedals-snapshots-bar {
+                flex-wrap: wrap !important;
+                gap: 8px !important;
+            }
+
+            html body .snap-undo-wrap {
+                flex: 1 1 100%;
+                min-width: 0;
+            }
+
+            html body .snap-undo-btn {
+                width: 100%;
+                height: 38px;
+                border-radius: 12px;
+                font-size: 13px;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 520px) {
+            html body .snap-undo-btn {
+                height: 30px;
+                border-radius: 10px;
+                font-size: 12px;
+            }
+        }
+
 </style>
 </head>
 <body>
@@ -4711,7 +4777,7 @@
                     </div>
 
                     <div class="header-right">
-                        <button id="quickSaveSnapBtn" class="quick-save-snap-btn" title="Gravar pedais e knobs atuais no snapshot selecionado"><svg class="btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4" fill="currentColor"></circle></svg><span class="btn-lbl btn-lbl-desktop">Gravar Snap</span><span class="btn-lbl btn-lbl-mobile">Gravar</span></button>
+                        <button id="quickSaveSnapBtn" class="quick-save-snap-btn" title="Copiar o som atual (pedais e knobs) para outro snapshot"><svg class="btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V6a2 2 0 0 1 2-2h9"></path></svg><span class="btn-lbl btn-lbl-desktop">Copiar p/ Snap</span><span class="btn-lbl btn-lbl-mobile">Copiar</span></button>
                         <button id="headerEditSnapBtn" class="quick-save-snap-btn header-edit-snap-btn" title="Organizar e renomear os Snapshots deste preset"><svg class="btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg><span class="btn-lbl">Editar</span></button>
                         <button id="openSnapshotsBtn" class="snapshots-nav-btn" title="Entrar no Modo Snapshots de Palco"><svg class="btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg><span class="btn-lbl btn-lbl-desktop">SNAPSHOTS</span><span class="btn-lbl btn-lbl-mobile">Snapshots</span></button>
 
@@ -4748,6 +4814,12 @@
                         <div class="pedals-snap-pills">
                             <!-- Populated dynamically: 6 pills for SNAP 1..6 -->
                         </div>
+                    </div>
+                    <div class="snap-undo-wrap" id="snapUndoWrap" hidden>
+                        <button id="snapUndoBtn" class="snap-undo-btn" title="Voltar este snapshot ao estado de quando você entrou nele">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7v6h6"></path><path d="M3 13a9 9 0 1 0 3-6.7"></path></svg>
+                            <span id="snapUndoLabel">Desfazer alterações</span>
+                        </button>
                     </div>
                 </div>
 
@@ -17140,11 +17212,94 @@
                     if (!event.isTrusted) return;
                     const target = event.target;
                     if (!target || !target.closest || !target.closest(zones)) return;
+                    if (event.type === 'input' && target.matches && target.matches('#module-params-7 .slider[data-alg-id="1"]')) {
+                        this.syncBpmFromDelayTimeSlider(target);
+                    }
                     this.scheduleSnapAutoSave();
                 };
+
+                const undoBtn = document.getElementById('snapUndoBtn');
+                if (undoBtn) undoBtn.addEventListener('click', () => this.undoSnapshotChanges());
                 ['input', 'change', 'click', 'dragend', 'drop'].forEach(type => {
                     document.addEventListener(type, onUserEdit);
                 });
+            }
+
+            // ---- Undo: restores the preset's snapshots to how they were when the active
+            // snapshot was entered (shared knobs touch every snapshot, so all are kept). ----
+            captureSnapUndoBaseline(presetBaseName, snapId) {
+                const snaps = this.snapshotsData?.[presetBaseName] || [];
+                const data = {};
+                snaps.forEach(s => {
+                    data[s.id] = JSON.parse(JSON.stringify({
+                        states: s.states, params: s.params, order: s.order,
+                        rhythmicMultiplier: s.rhythmicMultiplier, amp: s.amp, saved: s.saved
+                    }));
+                });
+                return { key: `${presetBaseName}:${snapId}`, preset: presetBaseName, snapId, data };
+            }
+
+            clearSnapUndo() {
+                this._snapUndo = null;
+                this.updateSnapUndoUI();
+            }
+
+            updateSnapUndoUI() {
+                const wrap = document.getElementById('snapUndoWrap');
+                const label = document.getElementById('snapUndoLabel');
+                if (!wrap) return;
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const undo = this._snapUndo;
+                const visible = !!undo && undo.preset === presetBaseName && undo.snapId === this.activeSnapshotId;
+                wrap.hidden = !visible;
+                if (visible && label) {
+                    const snap = (this.snapshotsData?.[presetBaseName] || []).find(s => s.id === undo.snapId);
+                    label.textContent = `Desfazer alterações em “${snap ? snap.name : 'SNAP ' + undo.snapId}”`;
+                }
+            }
+
+            async undoSnapshotChanges() {
+                const undo = this._snapUndo;
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                const snaps = this.snapshotsData?.[presetBaseName];
+                if (!undo || undo.preset !== presetBaseName || !Array.isArray(snaps)) return;
+
+                // Drop any edit still waiting to be saved: it is part of what is being undone
+                clearTimeout(this._snapAutoSaveTimer);
+                this._snapAutoSaveCtx = null;
+
+                snaps.forEach(s => {
+                    const b = undo.data[s.id];
+                    if (!b) return;
+                    ['states', 'params', 'order', 'rhythmicMultiplier', 'amp', 'saved'].forEach(k => {
+                        if (b[k] === undefined) delete s[k]; else s[k] = JSON.parse(JSON.stringify(b[k]));
+                    });
+                });
+                this._snapUndo = null;
+                this.saveAllSnapshotsData();
+                this.renderSnapshotsForCurrentPreset();
+                this.updateSnapUndoUI();
+
+                // Re-apply the restored snapshot to the screen and to the pedal
+                await this.activateSnapshot(undo.snapId);
+                this.showFloatingFeedback('Alterações desfeitas');
+            }
+
+            // Dragging the delay Time knob by hand re-tunes the tempo, so BPM stays the single
+            // source of truth and the next snapshot switch keeps the time that was just set.
+            syncBpmFromDelayTimeSlider(slider) {
+                const ms = parseFloat(slider.value);
+                if (!(ms > 0) || !this.globalTapTempo) return;
+                const mult = this.globalTapTempo.multiplier || 1.0;
+                const bpm = Math.max(20, Math.min(((60 * 1000) / ms) * mult, 300));
+                this.globalTapTempo.bpm = Math.round(bpm * 2) / 2;
+                const bpmDisplay = document.getElementById('tap-bpm-display');
+                if (bpmDisplay) bpmDisplay.textContent = Math.round(this.globalTapTempo.bpm);
+                const bpmInput = document.getElementById('tap-bpm-input-7');
+                if (bpmInput) bpmInput.value = this.globalTapTempo.bpm.toFixed(1);
+                const msDisplay = document.getElementById('delay-time-ms-7');
+                if (msDisplay) msDisplay.textContent = `${Math.round(ms)}ms`;
+                if (this.updateSnapshotsTapDisplay) this.updateSnapshotsTapDisplay();
             }
 
             scheduleSnapAutoSave() {
@@ -17174,8 +17329,12 @@
 
                 const fingerprint = () => JSON.stringify(snaps.map(s => [s.states, s.params, s.order, s.rhythmicMultiplier, s.amp]));
                 const before = fingerprint();
+                const undoKey = `${presetBaseName}:${snap.id}`;
+                const baseline = (!this._snapUndo || this._snapUndo.key !== undoKey) ? this.captureSnapUndoBaseline(presetBaseName, snap.id) : null;
                 this.writeSceneIntoSnap(presetBaseName, snap);
                 if (fingerprint() === before) return false;
+                if (baseline) this._snapUndo = baseline;
+                this.updateSnapUndoUI();
 
                 this.saveAllSnapshotsData();
                 this.renderSnapshotsForCurrentPreset();
@@ -17228,6 +17387,7 @@
                 this._snapLiveKey = `${presetBaseName}:${snapId}`;
                 this._snapAutoSaveCtx = null;
                 clearTimeout(this._snapAutoSaveTimer);
+                this._snapUndo = null;
 
                 // Save to localStorage
                 this.saveAllSnapshotsData();
@@ -17883,9 +18043,34 @@
                     const currentOrder = this.presetOrders?.[presetBaseName] || (snaps && snaps[0]?.order) || this.getCurrentChainOrder();
                     this.updateSnapshotCardsPedalChipsOrder(currentOrder);
                 }
+                if (this.updateSnapUndoUI) this.updateSnapUndoUI();
             }
 
-            async activateSnapshot(snapId) {
+            // Snapshot switches never overlap: a switch requested while another one is still
+            // sending commands waits for it, and only the most recent request is applied.
+            activateSnapshot(snapId) {
+                this._pendingSnapId = snapId;
+                if (this._snapActivationPromise) return this._snapActivationPromise;
+
+                this._snapActivationPromise = (async () => {
+                    try {
+                        while (this._pendingSnapId !== null && this._pendingSnapId !== undefined) {
+                            const nextId = this._pendingSnapId;
+                            this._pendingSnapId = null;
+                            try {
+                                await this._activateSnapshotNow(nextId);
+                            } catch (e) {
+                                console.warn('activateSnapshot error', e);
+                            }
+                        }
+                    } finally {
+                        this._snapActivationPromise = null;
+                    }
+                })();
+                return this._snapActivationPromise;
+            }
+
+            async _activateSnapshotNow(snapId) {
                 const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
                 if (!this.hasPresetSnapshots(presetBaseName)) {
                     this.openConfirmActiveSnapModal(snapId);
@@ -17954,6 +18139,9 @@
                             for (const [algIdStr, val] of Object.entries(algs)) {
                                 const algId = parseInt(algIdStr, 10);
                                 const numVal = parseFloat(val);
+                                // O tempo do delay segue o BPM atual x figura rítmica do snap (passo 4),
+                                // nunca o valor em ms gravado: senão trocar de snap desfaz o Tap Tempo.
+                                if (uiModuleId === 7 && algId === 1) continue;
                                 const control = document.querySelector(
                                     `[data-module-id="${uiModuleId}"][data-alg-id="${algId}"]`
                                 ) || document.querySelector(`#module-params-${uiModuleId} [data-alg-id="${algId}"]`);
@@ -17998,20 +18186,30 @@
                         this.applyChainOrderUI(targetOrder, isDifferent && this.isConnected);
                     }
 
-                    // 4. Divisão rítmica (Tap Tempo): aplica apenas se o multiplicador rítmico for diferente
+                    // 4. Tap Tempo: tempo do delay = BPM atual x figura rítmica deste snap.
+                    // Só envia comando se o tempo resultante for diferente do que já está no delay.
                     const multiplier = snap.rhythmicMultiplier !== undefined ? snap.rhythmicMultiplier : 1.0;
-                    if (Math.abs((this.globalTapTempo.multiplier || 1.0) - multiplier) > 0.01) {
+                    const multiplierChanged = Math.abs((this.globalTapTempo.multiplier || 1.0) - multiplier) > 0.01;
+                    if (multiplierChanged) {
                         this.globalTapTempo.multiplier = multiplier;
                         document.querySelectorAll('#note-divisions-7 .note-btn').forEach(btn => {
                             const btnMult = parseFloat(btn.dataset.multiplier);
                             btn.classList.toggle('active', Math.abs(btnMult - multiplier) < 0.01);
                         });
-                        if (typeof this._updateDelayFromBpm === 'function') {
-                            this._updateDelayFromBpm(this.isConnected);
-                        }
+                    }
+                    let delayTimeIsOff = multiplierChanged;
+                    const delayTimeSlider = document.querySelector('#module-params-7 .slider[data-alg-id="1"]');
+                    if (delayTimeSlider && this.globalTapTempo.bpm > 0) {
+                        const wantedMs = Math.round(((60 * 1000) / this.globalTapTempo.bpm) * multiplier);
+                        const clampedMs = Math.max(parseFloat(delayTimeSlider.min), Math.min(wantedMs, parseFloat(delayTimeSlider.max)));
+                        if (Math.abs(parseFloat(delayTimeSlider.value) - clampedMs) > 0.5) delayTimeIsOff = true;
+                    }
+                    if (delayTimeIsOff && typeof this._updateDelayFromBpm === 'function') {
+                        this._updateDelayFromBpm(this.isConnected);
                     }
 
                     this._snapLiveKey = `${presetBaseName}:${snapId}`;
+                    this.clearSnapUndo();
                     this.log(`Snapshot Ativado: ${snap.name} (${snap.title}) em ${presetBaseName} - Ritmo: ${this.getRhythmLabel(multiplier)}`, 'info');
                 } finally {
                     this.isActivatingSnapshot = false;
@@ -20908,8 +21106,8 @@
         <div class="quick-save-snap-window">
             <div class="quick-save-snap-header">
                 <div>
-                    <div class="quick-save-snap-title">Salvar Cena no Snapshot</div>
-                    <div class="quick-save-snap-subtitle">Escolha em qual Snapshot de <strong id="quickSavePresetNum" style="color:var(--accent-orange);">P01</strong> você deseja gravar o som atual:</div>
+                    <div class="quick-save-snap-title">Copiar som para outro Snapshot</div>
+                    <div class="quick-save-snap-subtitle">Escolha em qual Snapshot de <strong id="quickSavePresetNum" style="color:var(--accent-orange);">P01</strong> deve receber uma cópia do som atual. As alterações no snapshot ativo já são salvas automaticamente.</div>
                 </div>
                 <button id="closeQuickSaveModalBtn" class="close-drawer-btn" title="Fechar" style="color:#aaa;">&times;</button>
             </div>
@@ -20919,72 +21117,72 @@
                     <div class="quick-snap-badge" style="background:#2563eb;">SNAP 1</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName1">Limpo</span>
-                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                        <span class="quick-snap-desc">Copiar pedais e knobs para esta cena</span>
                     </div>
-                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                    <button class="quick-snap-save-btn">Copiar Aqui</button>
                 </div>
 
                 <div class="quick-save-snap-item" data-target-snap="2">
                     <div class="quick-snap-badge" style="background:#e11d48;">SNAP 2</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName2">Crunch</span>
-                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                        <span class="quick-snap-desc">Copiar pedais e knobs para esta cena</span>
                     </div>
-                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                    <button class="quick-snap-save-btn">Copiar Aqui</button>
                 </div>
 
                 <div class="quick-save-snap-item" data-target-snap="3">
                     <div class="quick-snap-badge" style="background:#d97706;">SNAP 3</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName3">Solo</span>
-                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                        <span class="quick-snap-desc">Copiar pedais e knobs para esta cena</span>
                     </div>
-                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                    <button class="quick-snap-save-btn">Copiar Aqui</button>
                 </div>
 
                 <div class="quick-save-snap-item" data-target-snap="4">
                     <div class="quick-snap-badge" style="background:#00c853;">SNAP 4</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName4">Ambiente</span>
-                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                        <span class="quick-snap-desc">Copiar pedais e knobs para esta cena</span>
                     </div>
-                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                    <button class="quick-snap-save-btn">Copiar Aqui</button>
                 </div>
 
                 <div class="quick-save-snap-item" data-target-snap="5">
                     <div class="quick-snap-badge" style="background:#9333ea;">SNAP 5</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName5">Lead</span>
-                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                        <span class="quick-snap-desc">Copiar pedais e knobs para esta cena</span>
                     </div>
-                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                    <button class="quick-snap-save-btn">Copiar Aqui</button>
                 </div>
 
                 <div class="quick-save-snap-item" data-target-snap="6">
                     <div class="quick-snap-badge" style="background:#06b6d4;">SNAP 6</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName6">Modulado</span>
-                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                        <span class="quick-snap-desc">Copiar pedais e knobs para esta cena</span>
                     </div>
-                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                    <button class="quick-snap-save-btn">Copiar Aqui</button>
                 </div>
 
                 <div class="quick-save-snap-item" data-target-snap="7">
                     <div class="quick-snap-badge" style="background:#ea580c;">SNAP 7</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName7">Acústico</span>
-                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                        <span class="quick-snap-desc">Copiar pedais e knobs para esta cena</span>
                     </div>
-                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                    <button class="quick-snap-save-btn">Copiar Aqui</button>
                 </div>
 
                 <div class="quick-save-snap-item" data-target-snap="8">
                     <div class="quick-snap-badge" style="background:#db2777;">SNAP 8</div>
                     <div class="quick-snap-info">
                         <span class="quick-snap-name" id="quickSnapName8">Especial</span>
-                        <span class="quick-snap-desc">Gravar pedais e knobs nesta cena</span>
+                        <span class="quick-snap-desc">Copiar pedais e knobs para esta cena</span>
                     </div>
-                    <button class="quick-snap-save-btn">Salvar Aqui</button>
+                    <button class="quick-snap-save-btn">Copiar Aqui</button>
                 </div>
             </div>
 
