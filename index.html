@@ -4627,6 +4627,31 @@
             }
         }
 
+        /* Knobs that are a preset-wide default (same value in every snapshot) */
+        .control-row.snap-shared .control-label::after {
+            content: 'padrão';
+            margin-left: 7px;
+            padding: 2px 6px;
+            border-radius: 5px;
+            background: rgba(59, 130, 255, 0.16);
+            color: #8ab4ff;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            vertical-align: 1px;
+        }
+
+        /* Auto-save confirmation on the active snapshot pill */
+        .pedal-snap-pill.just-saved {
+            animation: snapSavedPulse 0.9s ease-out;
+        }
+
+        @keyframes snapSavedPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.9); }
+            100% { box-shadow: 0 0 0 10px rgba(0, 230, 118, 0); }
+        }
+
 </style>
 </head>
 <body>
@@ -16871,6 +16896,7 @@
             // QUICK SAVE SCENE TO SNAPSHOT
             // ============================================================================
             initQuickSaveSceneSystem() {
+                try { this.initSnapshotAutoSave(); } catch (e) { console.warn('initSnapshotAutoSave error', e); }
                 const quickSaveBtn = document.getElementById('quickSaveSnapBtn');
                 const modal = document.getElementById('quickSaveSnapModal');
                 const closeBtn = document.getElementById('closeQuickSaveModalBtn');
@@ -16932,6 +16958,198 @@
                 if (modal) modal.classList.remove('active');
             }
 
+
+            // ============================================================================
+            // SNAPSHOT DEFAULTS + AUTO-SAVE
+            // - EQ bands and the amp's Bass/Middle/Treble are a preset-wide default:
+            //   editing them in any snapshot updates every snapshot of the preset.
+            // - Each snapshot keeps its own amp model/capture, Gain, Vol and EQ Vol.
+            // - Any edit made by the user is saved automatically into the active snapshot.
+            // ============================================================================
+            getSnapSharedAlgs(uiModuleId, fxId) {
+                const out = {};
+                const def = this.definitions?.effectLibrary?.[fxId];
+                if (!def || !Array.isArray(def.alg)) return out;
+                def.alg.forEach(param => {
+                    let name = String(param.name || '').trim().toLowerCase();
+                    if (name === 'mid') name = 'middle';
+                    const isShared = (uiModuleId === 5)
+                        ? name !== 'vol'
+                        : (uiModuleId === 3 && ['bass', 'middle', 'treble'].includes(name));
+                    if (isShared) out[param.algId] = name;
+                });
+                return out;
+            }
+
+            getLiveModuleFxId(uiModuleId) {
+                const ctrl = document.querySelector(`#module-params-${uiModuleId} [data-fx-id]`);
+                const fromCtrl = ctrl ? parseInt(ctrl.dataset.fxId, 10) : NaN;
+                if (!isNaN(fromCtrl)) return fromCtrl;
+                const sel = document.getElementById(`module-type-${uiModuleId}`);
+                const fromSel = sel ? parseInt(sel.value, 10) : NaN;
+                return isNaN(fromSel) ? null : fromSel;
+            }
+
+            markSharedSnapParams(uiModuleId) {
+                if (uiModuleId !== 3 && uiModuleId !== 5) return;
+                document.querySelectorAll(`#module-params-${uiModuleId} [data-alg-id]`).forEach(ctrl => {
+                    const shared = this.getSnapSharedAlgs(uiModuleId, parseInt(ctrl.dataset.fxId, 10));
+                    const row = ctrl.closest('.control-row');
+                    if (row) row.classList.toggle('snap-shared', shared[ctrl.dataset.algId] !== undefined);
+                });
+            }
+
+            // Copies the live scene into `targetSnap` and pushes the preset-wide defaults
+            // to the other snapshots. Returns the rhythmic multiplier that was stored.
+            writeSceneIntoSnap(presetBaseName, targetSnap) {
+                targetSnap.states = this.captureCurrentPresetStates();
+                targetSnap.params = this.captureCurrentPresetFullParameters();
+
+                const cloneToggle = document.getElementById('amp-clone-mode');
+                const ampFxId = this.getLiveModuleFxId(3);
+                if (ampFxId !== null) {
+                    targetSnap.amp = { clone: !!(cloneToggle && cloneToggle.classList.contains('on')), fxId: ampFxId };
+                }
+
+                const currentChainOrder = this.getCurrentChainOrder();
+                targetSnap.order = currentChainOrder;
+                if (!this.presetOrders) this.presetOrders = {};
+                const prevOrder = this.presetOrders[presetBaseName];
+                if (!prevOrder || prevOrder.join('-') !== currentChainOrder.join('-')) {
+                    this.presetOrders[presetBaseName] = currentChainOrder;
+                    this.savePresetOrders();
+                }
+
+                const activeMultiplierBtn = document.querySelector('#note-divisions-7 .note-btn.active');
+                const noteMultiplier = activeMultiplierBtn ? parseFloat(activeMultiplierBtn.dataset.multiplier) : (this.globalTapTempo.multiplier || 1.0);
+                targetSnap.rhythmicMultiplier = noteMultiplier;
+                targetSnap.saved = true;
+
+                this.propagateSharedSnapParams(presetBaseName, targetSnap);
+                return noteMultiplier;
+            }
+
+            propagateSharedSnapParams(presetBaseName, sourceSnap) {
+                const snaps = this.snapshotsData?.[presetBaseName];
+                if (!Array.isArray(snaps) || !sourceSnap.params) return;
+
+                const eqShared = this.getSnapSharedAlgs(5, this.getLiveModuleFxId(5));
+                const srcAmpFx = sourceSnap.amp ? sourceSnap.amp.fxId : this.getLiveModuleFxId(3);
+                const ampByName = {};
+                Object.entries(this.getSnapSharedAlgs(3, srcAmpFx)).forEach(([algId, name]) => {
+                    const v = sourceSnap.params[3]?.[algId];
+                    if (v !== undefined) ampByName[name] = v;
+                });
+
+                snaps.forEach(snap => {
+                    if (snap === sourceSnap || snap.saved === false || !snap.params) return;
+
+                    if (!snap.params[5]) snap.params[5] = {};
+                    Object.keys(eqShared).forEach(algId => {
+                        const v = sourceSnap.params[5]?.[algId];
+                        if (v !== undefined) snap.params[5][algId] = v;
+                    });
+
+                    // Amp tone is matched by knob name, because each snapshot may use a different model/capture
+                    const targetFx = (snap.amp && snap.amp.fxId) || srcAmpFx;
+                    if (!snap.params[3]) snap.params[3] = {};
+                    Object.entries(this.getSnapSharedAlgs(3, targetFx)).forEach(([algId, name]) => {
+                        if (ampByName[name] !== undefined) snap.params[3][algId] = ampByName[name];
+                    });
+                });
+            }
+
+            // Switches the amp model / capture stored in a snapshot. Returns true if the device model changed.
+            async applySnapshotAmpModel(amp) {
+                const cloneToggle = document.getElementById('amp-clone-mode');
+                const ampSelect = document.getElementById('module-type-3');
+                if (!amp || typeof amp.fxId !== 'number' || !cloneToggle || !ampSelect) return false;
+
+                const isClone = cloneToggle.classList.contains('on');
+                if (isClone !== !!amp.clone) {
+                    // The toggle handler restores the "last used" model of the mode it enters
+                    if (amp.clone) this.ampModeFxId9 = amp.fxId; else this.ampModeFxId3 = amp.fxId;
+                    cloneToggle.click();
+                    await new Promise(r => setTimeout(r, 40));
+                    return true;
+                }
+
+                if (parseInt(ampSelect.value, 10) !== amp.fxId) {
+                    const hasOption = [...ampSelect.options].some(o => parseInt(o.value, 10) === amp.fxId);
+                    if (!hasOption) return false;
+                    ampSelect.value = String(amp.fxId);
+                    ampSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                    await new Promise(r => setTimeout(r, 30));
+                    return true;
+                }
+                return false;
+            }
+
+            initSnapshotAutoSave() {
+                // Keep the "padrão" marker on shared knobs whenever a panel is rebuilt
+                const originalCreate = this.createParameterControls.bind(this);
+                this.createParameterControls = (moduleId, fxId) => {
+                    originalCreate(moduleId, fxId);
+                    try { this.markSharedSnapParams(moduleId); } catch (e) { /* cosmetic only */ }
+                };
+                this.markSharedSnapParams(3);
+                this.markSharedSnapParams(5);
+
+                // Only real user gestures inside the editing areas trigger a save;
+                // values arriving from the pedal or applied by a snapshot never do.
+                const zones = '.effects-panel, .signal-chain, #note-divisions-7';
+                const onUserEdit = (event) => {
+                    if (!event.isTrusted) return;
+                    const target = event.target;
+                    if (!target || !target.closest || !target.closest(zones)) return;
+                    this.scheduleSnapAutoSave();
+                };
+                ['input', 'change', 'click', 'dragend', 'drop'].forEach(type => {
+                    document.addEventListener(type, onUserEdit);
+                });
+            }
+
+            scheduleSnapAutoSave() {
+                if (this.isActivatingSnapshot || this.isApplyingState || this.isSyncing) return;
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                this._snapAutoSaveCtx = { preset: presetBaseName, snapId: this.activeSnapshotId };
+                clearTimeout(this._snapAutoSaveTimer);
+                this._snapAutoSaveTimer = setTimeout(() => this.flushSnapAutoSave(), 400);
+            }
+
+            flushSnapAutoSave() {
+                clearTimeout(this._snapAutoSaveTimer);
+                const ctx = this._snapAutoSaveCtx;
+                this._snapAutoSaveCtx = null;
+                if (!ctx) return false;
+                if (this.isActivatingSnapshot || this.isApplyingState || this.isSyncing) return false;
+
+                const presetBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
+                if (presetBaseName !== ctx.preset || this.activeSnapshotId !== ctx.snapId) return false;
+                // Never overwrite a snapshot that is merely highlighted: it must have been
+                // applied (or saved) in this session, so the screen really is that snapshot.
+                if (this._snapLiveKey !== `${presetBaseName}:${ctx.snapId}`) return false;
+
+                const snaps = this.snapshotsData?.[presetBaseName];
+                const snap = Array.isArray(snaps) ? snaps.find(s => s.id === ctx.snapId) : null;
+                if (!snap || snap.saved === false || !snap.states) return false;
+
+                const fingerprint = () => JSON.stringify(snaps.map(s => [s.states, s.params, s.order, s.rhythmicMultiplier, s.amp]));
+                const before = fingerprint();
+                this.writeSceneIntoSnap(presetBaseName, snap);
+                if (fingerprint() === before) return false;
+
+                this.saveAllSnapshotsData();
+                this.renderSnapshotsForCurrentPreset();
+                const pill = document.querySelector(`.pedal-snap-pill[data-snap-id="${snap.id}"]`);
+                if (pill) {
+                    pill.classList.add('just-saved');
+                    setTimeout(() => pill.classList.remove('just-saved'), 900);
+                }
+                this.log(`Snapshot salvo automaticamente: ${presetBaseName} -> ${snap.title} ("${snap.name}")`, 'success');
+                return true;
+            }
+
             captureCurrentPresetFullParameters() {
                 const params = {};
                 for (let i = 0; i <= 8; i++) {
@@ -16965,31 +17183,13 @@
                 const targetSnap = snaps.find(s => s.id === snapId) || snaps[0];
                 if (!targetSnap) return;
 
-                // 1. Capture current module ON/OFF states
-                const states = {};
-                for (let i = 0; i <= 8; i++) {
-                    const toggle = document.getElementById(`module-enable-${i}`);
-                    states[i] = toggle ? toggle.classList.contains('on') : false;
-                }
-                targetSnap.states = states;
-
-                // 2. Capture complete knob and switch parameter values (individual per snapshot)
-                targetSnap.params = this.captureCurrentPresetFullParameters();
-
-                // 3. Capture current effect chain order
-                const currentChainOrder = this.getCurrentChainOrder();
-                targetSnap.order = currentChainOrder;
-                if (!this.presetOrders) this.presetOrders = {};
-                this.presetOrders[presetBaseName] = currentChainOrder;
-                this.savePresetOrders();
-
-                // 4. Capture current rhythmic subdivision
-                const activeMultiplierBtn = document.querySelector('#note-divisions-7 .note-btn.active');
-                const noteMultiplier = activeMultiplierBtn ? parseFloat(activeMultiplierBtn.dataset.multiplier) : (this.globalTapTempo.multiplier || 1.0);
-                targetSnap.rhythmicMultiplier = noteMultiplier;
-                targetSnap.saved = true;
+                // Capture the whole live scene (states, knobs, amp model, order, rhythm)
+                const noteMultiplier = this.writeSceneIntoSnap(presetBaseName, targetSnap);
 
                 this.activeSnapshotId = snapId;
+                this._snapLiveKey = `${presetBaseName}:${snapId}`;
+                this._snapAutoSaveCtx = null;
+                clearTimeout(this._snapAutoSaveTimer);
 
                 // Save to localStorage
                 this.saveAllSnapshotsData();
@@ -17201,6 +17401,8 @@
                     { id: 7, title: 'SNAP 7', name: defaultNames[6], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[6], saved: true },
                     { id: 8, title: 'SNAP 8', name: defaultNames[7], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[7], saved: true }
                 ];
+                // Freshly created snapshots are a copy of what is on screen, so the active one is "live"
+                this._snapLiveKey = `${presetBaseName}:${this.activeSnapshotId || 1}`;
                 this.saveAllSnapshotsData();
                 return this.snapshotsData[presetBaseName];
             }
@@ -17655,6 +17857,9 @@
                     return;
                 }
 
+                // Edits made in the last instant belong to the snapshot we are leaving
+                if (this._snapAutoSaveCtx) this.flushSnapAutoSave();
+
                 this.activeSnapshotId = snapId;
                 this.isActivatingSnapshot = true;
                 clearTimeout(this._autoSaveTimer); // NUNCA grava na Flash durante troca de cena ao vivo!
@@ -17689,6 +17894,14 @@
                         }
                     }
 
+                    // 1b. Modelo de amp / captura deste snapshot (só troca se for diferente do atual)
+                    let ampSwitched = false;
+                    try {
+                        ampSwitched = await this.applySnapshotAmpModel(snap.amp);
+                    } catch (e) {
+                        console.warn('applySnapshotAmpModel error', e);
+                    }
+
                     // 2. Cirúrgico: Aplicar apenas knobs que foram alterados (evitando sobrecarga MIDI e resets)
                     if (snap.params && Object.keys(snap.params).length > 0) {
                         for (const [modIdStr, algs] of Object.entries(snap.params)) {
@@ -17721,7 +17934,10 @@
                                         }
                                     }
 
-                                    if (hasChanged && this.isConnected) {
+                                    // After a model/capture switch the pedal holds that model's own knob values,
+                                    // so every amp knob of this snapshot is re-sent, changed or not.
+                                    const forceSend = ampSwitched && uiModuleId === 3;
+                                    if ((hasChanged || forceSend) && this.isConnected) {
                                         this.onParameterChange(control);
                                         await new Promise(r => setTimeout(r, 12));
                                     }
@@ -17751,6 +17967,7 @@
                         }
                     }
 
+                    this._snapLiveKey = `${presetBaseName}:${snapId}`;
                     this.log(`Snapshot Ativado: ${snap.name} (${snap.title}) em ${presetBaseName} - Ritmo: ${this.getRhythmLabel(multiplier)}`, 'info');
                 } finally {
                     this.isActivatingSnapshot = false;
