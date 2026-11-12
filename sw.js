@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pocketedit-cache-v11';
+const CACHE_NAME = 'pocketedit-cache-v12';
 const ASSETS = [
     './',
     './index.html',

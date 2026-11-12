@@ -12,6 +12,9 @@
     <link rel="icon" type="image/png" sizes="192x192" href="./img/icon-192.png">
     <link rel="apple-touch-icon" href="./img/icon-192.png">
     <link rel="manifest" href="./manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
     <title>Pocket Edit</title>
 <style>
         :root {
@@ -2907,7 +2910,7 @@
         }
 
         /* Comprehensive Mobile Portrait Layout for Pedals Screen */
-        @media (max-width: 768px) and (orientation: portrait), (max-width: 680px) {
+        @media (max-width: 768px) and (orientation: portrait) {
             html, body {
                 overflow-y: auto !important;
                 height: 100% !important;
@@ -3124,6 +3127,1042 @@
             }
         }
 
+
+        /* ======================================================== */
+        /* MOBILE REDESIGN v2                                       */
+        /* Portrait: top bar + bottom tab bar, chain in a grid.     */
+        /* Landscape phones: left action rail, chain fills width.   */
+        /* ======================================================== */
+
+        /* Icons/labels only shown in the mobile layouts */
+        .header-right .btn-ico,
+        .header-right .btn-lbl-mobile {
+            display: none;
+        }
+
+        /* Drawer list items were shrinking to a sliver inside the flex column */
+        .patch-item {
+            flex-shrink: 0;
+        }
+
+        /* ---------------------- PORTRAIT ------------------------ */
+        @media (max-width: 768px) and (orientation: portrait) {
+            :root {
+                --m-bg: #0e0e11;
+                --m-surface: #16161b;
+                --m-surface-2: #1d1d23;
+                --m-line: rgba(255, 255, 255, 0.07);
+                --m-line-strong: rgba(255, 255, 255, 0.12);
+                --m-muted: #8b8b97;
+                --m-nav-h: 64px;
+            }
+
+            html, body {
+                background-color: var(--m-bg) !important;
+            }
+
+            .main-content,
+            #editor-container {
+                min-width: 0 !important;
+            }
+
+            .main-content {
+                overflow: visible !important;
+                background: var(--m-bg) !important;
+            }
+
+            /* --- Top bar: brand + status, then a big preset navigator --- */
+            body .app-header {
+                position: sticky !important;
+                top: 0 !important;
+                display: grid !important;
+                grid-template-columns: 1fr auto;
+                grid-template-areas:
+                    "logo conn"
+                    "nav  nav";
+                align-items: center;
+                gap: 10px 8px !important;
+                padding: 10px 12px 12px !important;
+                background: var(--m-bg) !important;
+                border-bottom: 1px solid var(--m-line) !important;
+                height: auto !important;
+            }
+
+            body .header-left {
+                display: contents !important;
+            }
+
+            body .app-logo {
+                grid-area: logo;
+                font-size: 15px !important;
+                font-weight: 800;
+                letter-spacing: 1.5px;
+            }
+
+            body .app-logo::before {
+                content: '';
+                width: 10px;
+                height: 10px;
+                border-radius: 3px;
+                background: var(--accent-orange);
+                box-shadow: 0 0 10px var(--accent-orange-glow);
+            }
+
+            body .connection-badge {
+                grid-area: conn;
+                height: 30px;
+                padding: 0 12px !important;
+                font-size: 12px !important;
+                font-weight: 600;
+                background: var(--m-surface) !important;
+                border: 1px solid var(--m-line) !important;
+            }
+
+            body .header-center {
+                grid-area: nav;
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                gap: 8px !important;
+            }
+
+            body .nav-preset-btn {
+                width: 52px !important;
+                height: 52px !important;
+                flex-shrink: 0;
+                border-radius: 16px;
+                font-size: 26px !important;
+                font-weight: 500;
+                line-height: 1;
+                padding-bottom: 3px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .patch-info-badge {
+                position: relative;
+                flex: 1 !important;
+                min-width: 0 !important;
+                max-width: none !important;
+                height: 52px !important;
+                flex-direction: column;
+                justify-content: center;
+                gap: 2px;
+                padding: 0 34px !important;
+                border-radius: 16px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .patch-info-badge::after {
+                content: '';
+                position: absolute;
+                right: 16px;
+                top: 50%;
+                width: 7px;
+                height: 7px;
+                border-right: 2px solid var(--m-muted);
+                border-bottom: 2px solid var(--m-muted);
+                transform: translateY(-70%) rotate(45deg);
+            }
+
+            body .patch-info-badge .patch-number {
+                font-family: 'JetBrains Mono', ui-monospace, monospace;
+                font-size: 11px !important;
+                font-weight: 700;
+                letter-spacing: 1px;
+                line-height: 1;
+            }
+
+            body .patch-info-badge .patch-name {
+                max-width: 100%;
+                font-size: 18px !important;
+                font-weight: 800;
+                line-height: 1.15;
+            }
+
+            /* --- Bottom tab bar (the header's action buttons) --- */
+            body .header-right {
+                position: fixed !important;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 900;
+                display: grid !important;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 2px !important;
+                padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+                background: rgba(14, 14, 17, 0.92);
+                -webkit-backdrop-filter: blur(16px);
+                backdrop-filter: blur(16px);
+                border-top: 1px solid var(--m-line);
+            }
+
+            body .header-right > button {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 4px !important;
+                width: auto !important;
+                height: var(--m-nav-h) !important;
+                padding: 0 2px !important;
+                background: transparent !important;
+                border: none !important;
+                border-radius: 14px !important;
+                box-shadow: none !important;
+                color: var(--m-muted) !important;
+                font-family: inherit;
+                font-size: 10.5px !important;
+                font-weight: 600 !important;
+                letter-spacing: 0 !important;
+                text-transform: none;
+                transform: none;
+            }
+
+            body .header-right > button:active {
+                background: rgba(255, 255, 255, 0.06) !important;
+                color: #ffffff !important;
+            }
+
+            body .header-right .btn-ico,
+            body .header-right .btn-lbl-mobile {
+                display: block;
+            }
+
+            body .header-right .btn-lbl-desktop {
+                display: none;
+            }
+
+            body .header-right svg {
+                width: 22px !important;
+                height: 22px !important;
+                flex-shrink: 0;
+            }
+
+            body .header-right .btn-lbl {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+            }
+
+            #openPresetsDrawerBtn  { order: 1; }
+            #openSnapshotsBtn      { order: 2; }
+            #quickSaveSnapBtn      { order: 3; }
+            #headerEditSnapBtn     { order: 4; }
+            #logHeaderToggleBtn    { order: 5; }
+            #advancedSettingsBtn   { order: 6; }
+
+            /* Snapshots = primary destination: highlighted tab */
+            body #openSnapshotsBtn {
+                color: var(--accent-orange) !important;
+            }
+
+            body #openSnapshotsBtn .btn-ico {
+                width: 44px !important;
+                height: 28px !important;
+                padding: 4px 11px;
+                border-radius: 999px;
+                background: rgba(255, 107, 53, 0.16);
+            }
+
+            body #openSnapshotsBtn .btn-lbl {
+                font-weight: 800;
+            }
+
+            /* --- Snapshot pills: bigger targets, fade hints at more content --- */
+            body .pedals-snapshots-bar {
+                min-height: 0 !important;
+                padding: 12px 0 10px 12px !important;
+                background: transparent !important;
+                border-bottom: none !important;
+            }
+
+            body .pedals-snap-label {
+                display: none !important;
+            }
+
+            body .pedals-snap-left-group {
+                width: 100%;
+            }
+
+            body .pedals-snap-pills {
+                gap: 8px !important;
+                padding-right: 32px;
+                scroll-snap-type: x proximity;
+                -webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+                mask-image: linear-gradient(to right, #000 82%, transparent);
+            }
+
+            body .pedal-snap-pill {
+                height: 42px !important;
+                padding: 0 14px 0 12px !important;
+                gap: 8px;
+                border-radius: 14px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+                scroll-snap-align: start;
+            }
+
+            body .pedal-snap-pill .pill-dot {
+                width: 9px;
+                height: 9px;
+            }
+
+            body .pedal-snap-pill .pill-num {
+                font-family: 'JetBrains Mono', ui-monospace, monospace;
+                font-size: 11px;
+                color: var(--m-muted);
+            }
+
+            body .pedal-snap-pill .pill-name {
+                font-size: 14px !important;
+                font-weight: 700;
+                max-width: 120px !important;
+            }
+
+            body .pedal-snap-pill .pill-rhythm-tag {
+                font-family: 'JetBrains Mono', ui-monospace, monospace;
+                font-size: 10px;
+                padding: 2px 6px;
+                border-radius: 6px;
+            }
+
+            body .pedal-snap-pill.active {
+                border-color: transparent !important;
+                box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+            }
+
+            body .pedal-snap-pill.active .pill-rhythm-tag {
+                color: #ffffff;
+                background: rgba(0, 0, 0, 0.25);
+            }
+
+            /* --- Signal chain: whole chain visible at once in a 5-column grid --- */
+            body .signal-chain {
+                padding: 0 12px 12px !important;
+                background: transparent !important;
+                border-bottom: none !important;
+            }
+
+            body .chain-flow {
+                display: grid !important;
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+                gap: 8px !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                scroll-snap-type: none !important;
+            }
+
+            body #fixed-chain-block {
+                display: contents !important;
+            }
+
+            body .chain-module {
+                width: auto !important;
+                height: 68px !important;
+                min-width: 0;
+                padding: 8px 4px 6px !important;
+                border-radius: 16px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+                gap: 1px;
+            }
+
+            body .chain-module .module-icon {
+                width: 22px;
+                height: 22px;
+                margin-bottom: 3px;
+            }
+
+            body .chain-module .module-name {
+                font-size: 12px;
+                letter-spacing: 0.3px;
+            }
+
+            body .chain-module .module-type {
+                max-width: 100%;
+                font-size: 9.5px;
+                padding: 0 2px;
+            }
+
+            body .chain-module .module-status {
+                top: 7px;
+                right: 7px;
+                width: 6px;
+                height: 6px;
+            }
+
+            body .chain-module.active {
+                background: linear-gradient(180deg, rgba(255, 107, 53, 0.22), rgba(255, 107, 53, 0.06)) !important;
+                border-color: var(--accent-orange) !important;
+                box-shadow: 0 8px 20px -10px var(--accent-orange-glow) !important;
+            }
+
+            body .chain-module.active .module-icon {
+                color: var(--accent-orange);
+            }
+
+            body .chain-module.disabled {
+                opacity: 0.4;
+            }
+
+            /* --- Stage: content-sized panels, room for the tab bar --- */
+            body .stage-content {
+                padding: 0 12px calc(var(--m-nav-h) + env(safe-area-inset-bottom, 0px) + 28px) !important;
+                gap: 12px !important;
+            }
+
+            body .effects-panel {
+                flex: none !important;
+                padding: 16px !important;
+                border-radius: 20px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .effect-controls {
+                height: auto !important;
+            }
+
+            body .effect-controls > .control-section:first-child {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center;
+                gap: 12px 14px !important;
+                padding-bottom: 16px;
+                margin-bottom: 16px;
+                border-bottom: 1px solid var(--m-line);
+            }
+
+            body .effect-controls > .control-section:first-child .module-title {
+                flex: 1;
+                font-size: 24px;
+                font-weight: 800;
+                letter-spacing: 0.5px;
+            }
+
+            body .effect-controls > .control-section:first-child .control-label {
+                font-size: 12px;
+                color: var(--m-muted);
+            }
+
+            body .effect-controls > .control-section:first-child .control-row:has(select) {
+                flex-basis: 100%;
+            }
+
+            body .effect-controls > .control-section:first-child .control-row:has(select) .control-label {
+                min-width: 52px;
+            }
+
+            body .dropdown-select {
+                flex: 1;
+                min-width: 0;
+                height: 46px;
+                padding: 0 40px 0 14px;
+                font-size: 15px;
+                font-weight: 700;
+                border-radius: 12px;
+                background-color: var(--m-surface-2);
+                border: 1px solid var(--m-line-strong);
+                -webkit-appearance: none;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23ff6b35' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 16px center;
+            }
+
+            body .toggle-switch {
+                width: 52px;
+                height: 30px;
+                border-radius: 15px;
+            }
+
+            body .toggle-switch::after {
+                top: 3px;
+                left: 3px;
+                width: 24px;
+                height: 24px;
+            }
+
+            body .toggle-switch.on::after {
+                transform: translateX(22px);
+            }
+
+            /* Parameters: one per row, chunky touch sliders */
+            body .effect-controls > .control-section:last-child {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+
+            body .control-row {
+                row-gap: 10px;
+            }
+
+            body .control-row .control-label {
+                font-size: 13px;
+                font-weight: 700;
+                color: #c4c4ce;
+                letter-spacing: 0.3px;
+            }
+
+            body .control-row .slider-value {
+                min-width: 46px;
+                padding: 3px 8px !important;
+                border-radius: 8px;
+                background: var(--m-surface-2) !important;
+                font-size: 13px;
+                text-align: center;
+            }
+
+            body .slider {
+                height: 8px;
+                border-radius: 4px;
+                margin: 4px 0;
+            }
+
+            body .slider::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+                border: 4px solid #ffffff;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+            }
+
+            body .slider::-moz-range-thumb {
+                width: 22px;
+                height: 22px;
+                border: 4px solid #ffffff;
+            }
+
+            /* --- Tap tempo: a compact stage button instead of a glowing slab --- */
+            body .live-controls-panel {
+                margin-bottom: 0 !important;
+                gap: 8px !important;
+            }
+
+            body .live-tap-card {
+                display: grid !important;
+                grid-template-columns: 1fr auto auto;
+                grid-template-areas:
+                    "hdr bpm unit"
+                    "ms  bpm unit";
+                align-items: center;
+                column-gap: 8px;
+                height: 88px !important;
+                min-height: 0 !important;
+                padding: 14px 20px !important;
+                border-radius: 20px !important;
+                box-shadow: 0 10px 28px -12px var(--accent-orange-glow) !important;
+            }
+
+            body .tap-card-header {
+                grid-area: hdr;
+                align-self: end;
+                font-size: 14px !important;
+                font-weight: 800;
+                letter-spacing: 2px !important;
+                text-shadow: none;
+            }
+
+            body .tap-delay-ms {
+                grid-area: ms;
+                justify-self: start;
+                align-self: start;
+                margin-top: 6px;
+                padding: 2px 8px;
+                border-radius: 6px;
+                background: rgba(0, 0, 0, 0.2);
+                font-size: 12px !important;
+                opacity: 1;
+            }
+
+            body .tap-card-bpm-display {
+                grid-area: bpm;
+                margin: 0 !important;
+            }
+
+            body .tap-bpm-number {
+                font-size: 46px !important;
+                font-weight: 800;
+                letter-spacing: -2px;
+                text-shadow: none;
+            }
+
+            body .tap-card-label {
+                grid-area: unit;
+                align-self: center;
+                font-size: 11px;
+                letter-spacing: 1.5px;
+                writing-mode: vertical-rl;
+                transform: rotate(180deg);
+                opacity: 0.85;
+            }
+
+            /* Note divisions as a segmented control */
+            body .note-divisions {
+                gap: 4px !important;
+                padding: 4px;
+                border-radius: 16px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .note-btn {
+                height: 44px !important;
+                flex-direction: row;
+                gap: 6px;
+                border: none;
+                border-radius: 12px !important;
+                background: transparent;
+                color: var(--m-muted);
+            }
+
+            body .note-btn.active {
+                background: var(--accent-orange);
+                color: #ffffff;
+                box-shadow: none;
+            }
+
+            body .note-btn .note-symbol {
+                font-size: 15px;
+            }
+
+            body .note-btn .note-name {
+                font-family: 'JetBrains Mono', ui-monospace, monospace;
+                font-size: 12px;
+                margin-top: 0;
+            }
+
+            /* --- Overlays become bottom sheets above the tab bar --- */
+            body .advanced-settings-panel {
+                top: auto !important;
+                left: 8px !important;
+                right: 8px !important;
+                width: auto !important;
+                bottom: calc(var(--m-nav-h) + env(safe-area-inset-bottom, 0px) + 20px) !important;
+                max-height: 70vh;
+                overflow-y: auto;
+                border-radius: 20px;
+            }
+
+            body .log-panel {
+                left: 8px;
+                right: 8px;
+                width: auto;
+                height: 50vh;
+                bottom: calc(var(--m-nav-h) + env(safe-area-inset-bottom, 0px) + 20px);
+                border-radius: 16px;
+                overflow: hidden;
+            }
+
+            body .sidebar.drawer {
+                width: min(86vw, 360px);
+                padding-top: env(safe-area-inset-top, 0px);
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+
+            body .patch-tab-btn {
+                padding: 11px;
+                font-size: 13px;
+                border-radius: 12px;
+            }
+
+            body .patch-search-container input {
+                height: 44px;
+                padding: 0 14px;
+                font-size: 16px; /* >=16px prevents iOS zoom on focus */
+                border-radius: 12px;
+            }
+
+            body .patch-items-container {
+                gap: 6px;
+            }
+
+            body .patch-item {
+                padding: 13px 14px;
+                font-size: 14px;
+                border-radius: 12px;
+            }
+        }
+
+        /* ------------------ LANDSCAPE PHONES -------------------- */
+        @media (orientation: landscape) and (max-height: 520px) {
+            :root {
+                --m-rail-w: 68px;
+                --m-surface: #16161b;
+                --m-line: rgba(255, 255, 255, 0.07);
+                --m-muted: #8b8b97;
+            }
+
+            html, body {
+                background-color: #0e0e11 !important;
+            }
+
+            .main-content,
+            #editor-container {
+                background: #0e0e11 !important;
+            }
+
+            /* Make room for the left rail (not needed while Snapshots is open) */
+            body .main-container {
+                margin-left: var(--m-rail-w);
+            }
+
+            body:has(#snapshots-view.active) .main-container {
+                margin-left: 0;
+            }
+
+            /* --- Left action rail --- */
+            body .header-right {
+                position: fixed !important;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 900;
+                width: calc(var(--m-rail-w) + env(safe-area-inset-left, 0px));
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: flex-start;
+                gap: 2px !important;
+                padding: calc(6px + env(safe-area-inset-top, 0px)) 6px calc(6px + env(safe-area-inset-bottom, 0px)) calc(6px + env(safe-area-inset-left, 0px)) !important;
+                background: #0a0a0d;
+                border-right: 1px solid var(--m-line);
+            }
+
+            body .header-right > button {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 3px !important;
+                width: 100% !important;
+                height: 52px !important;
+                flex-shrink: 0;
+                padding: 0 !important;
+                background: transparent !important;
+                border: none !important;
+                border-radius: 12px !important;
+                box-shadow: none !important;
+                color: var(--m-muted) !important;
+                font-family: inherit;
+                font-size: 9.5px !important;
+                font-weight: 600 !important;
+                letter-spacing: 0 !important;
+            }
+
+            body .header-right > button:active {
+                background: rgba(255, 255, 255, 0.07) !important;
+                color: #ffffff !important;
+            }
+
+            body .header-right .btn-ico,
+            body .header-right .btn-lbl-mobile {
+                display: block;
+            }
+
+            body .header-right .btn-lbl-desktop {
+                display: none;
+            }
+
+            body .header-right svg {
+                width: 20px !important;
+                height: 20px !important;
+            }
+
+            body .header-right .btn-lbl {
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            #openPresetsDrawerBtn  { order: 1; }
+            #openSnapshotsBtn      { order: 2; }
+            #quickSaveSnapBtn      { order: 3; }
+            #headerEditSnapBtn     { order: 4; }
+            #logHeaderToggleBtn    { order: 5; margin-top: auto; }
+            #advancedSettingsBtn   { order: 6; }
+
+            body #openSnapshotsBtn {
+                color: #ffffff !important;
+                background: var(--accent-orange) !important;
+                box-shadow: 0 6px 16px -6px var(--accent-orange-glow) !important;
+            }
+
+            body #openSnapshotsBtn .btn-lbl {
+                font-weight: 800;
+            }
+
+            /* --- Header: brand/status left, wide preset navigator centered --- */
+            body .app-header {
+                height: 48px !important;
+                padding: 0 12px !important;
+                background: #0e0e11 !important;
+                border-bottom: 1px solid var(--m-line) !important;
+                gap: 12px !important;
+            }
+
+            body .app-logo {
+                font-size: 13px !important;
+                letter-spacing: 1px;
+            }
+
+            body .connection-badge {
+                height: 28px;
+                padding: 0 10px !important;
+                font-size: 11px !important;
+                background: var(--m-surface) !important;
+                border: 1px solid var(--m-line) !important;
+            }
+
+            body .header-center {
+                flex: 1 1 auto !important;
+                max-width: 420px !important;
+                margin: 0 auto;
+                gap: 6px !important;
+            }
+
+            body .nav-preset-btn {
+                width: 38px !important;
+                height: 36px !important;
+                font-size: 20px !important;
+                border-radius: 10px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .patch-info-badge {
+                flex: 1;
+                max-width: none !important;
+                height: 36px !important;
+                padding: 0 14px !important;
+                border-radius: 10px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .patch-info-badge .patch-number {
+                font-family: 'JetBrains Mono', ui-monospace, monospace;
+                font-size: 12px !important;
+            }
+
+            body .patch-info-badge .patch-name {
+                font-size: 15px !important;
+                font-weight: 800;
+            }
+
+            /* --- Snapshot strip --- */
+            body .pedals-snapshots-bar {
+                height: 44px !important;
+                padding: 0 0 0 12px !important;
+                background: transparent !important;
+                border-bottom: none !important;
+            }
+
+            body .pedals-snap-label {
+                display: none !important;
+            }
+
+            body .pedals-snap-pills {
+                gap: 6px !important;
+                padding-right: 28px;
+                -webkit-mask-image: linear-gradient(to right, #000 88%, transparent);
+                mask-image: linear-gradient(to right, #000 88%, transparent);
+            }
+
+            body .pedal-snap-pill {
+                height: 32px !important;
+                padding: 0 12px 0 10px !important;
+                border-radius: 10px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .pedal-snap-pill .pill-name {
+                font-size: 12.5px !important;
+                max-width: 100px !important;
+            }
+
+            body .pedal-snap-pill.active {
+                border-color: transparent !important;
+                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+            }
+
+            /* --- Chain stretches across the full width --- */
+            body .signal-chain {
+                padding: 0 12px 8px !important;
+                background: transparent !important;
+                border-bottom: none !important;
+            }
+
+            body .chain-flow {
+                gap: 6px !important;
+                padding: 0 !important;
+            }
+
+            body #fixed-chain-block {
+                display: contents !important;
+            }
+
+            body .chain-module {
+                flex: 1 1 0 !important;
+                width: auto !important;
+                min-width: 56px;
+                height: 58px !important;
+                padding: 4px 3px !important;
+                border-radius: 12px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .chain-module .module-icon {
+                width: 18px !important;
+                height: 18px !important;
+            }
+
+            body .chain-module .module-type {
+                max-width: 100%;
+            }
+
+            body .chain-module.active {
+                background: linear-gradient(180deg, rgba(255, 107, 53, 0.22), rgba(255, 107, 53, 0.06)) !important;
+                box-shadow: none !important;
+            }
+
+            body .chain-module.active .module-icon {
+                color: var(--accent-orange);
+            }
+
+            /* --- Stage --- */
+            body .stage-content {
+                padding: 0 12px calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+                gap: 8px !important;
+            }
+
+            body .effects-panel {
+                padding: 10px 14px !important;
+                border-radius: 16px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .effect-controls > .control-section:first-child {
+                gap: 14px !important;
+                padding-bottom: 8px;
+                margin-bottom: 10px;
+                border-bottom: 1px solid var(--m-line);
+            }
+
+            body .effect-controls > .control-section:first-child .module-title {
+                font-size: 18px;
+                margin-right: auto;
+            }
+
+            body .dropdown-select {
+                height: 34px;
+                padding: 0 32px 0 10px;
+                border-radius: 9px;
+                font-size: 13px;
+                -webkit-appearance: none;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23ff6b35' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 11px center;
+            }
+
+            body .effect-controls > .control-section:last-child {
+                gap: 12px 22px !important;
+            }
+
+            body .control-row .control-label {
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+            body .slider::-webkit-slider-thumb {
+                width: 24px;
+                height: 24px;
+                border-width: 3px;
+            }
+
+            body .live-controls-panel {
+                width: 168px !important;
+                gap: 6px !important;
+            }
+
+            body .live-tap-card {
+                border-radius: 16px;
+                box-shadow: 0 10px 24px -14px var(--accent-orange-glow) !important;
+            }
+
+            body .tap-bpm-number {
+                font-size: 38px !important;
+                text-shadow: none;
+            }
+
+            body .note-divisions {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 4px !important;
+                padding: 4px;
+                border-radius: 12px;
+                background: var(--m-surface);
+                border: 1px solid var(--m-line);
+            }
+
+            body .note-btn {
+                height: 34px !important;
+                flex-direction: row;
+                gap: 5px;
+                border: none;
+                border-radius: 9px;
+                background: transparent;
+                color: var(--m-muted);
+            }
+
+            body .note-btn.active {
+                background: var(--accent-orange);
+                color: #ffffff;
+                box-shadow: none;
+            }
+
+            body .note-btn .note-symbol {
+                font-size: 13px;
+            }
+
+            body .note-btn .note-name {
+                font-size: 11px;
+                margin-top: 0;
+            }
+
+            /* Overlays: anchor next to the rail instead of the old header icons */
+            body .advanced-settings-panel {
+                top: 8px !important;
+                bottom: 8px;
+                left: calc(var(--m-rail-w) + env(safe-area-inset-left, 0px) + 8px) !important;
+                right: auto !important;
+                max-height: none;
+                overflow-y: auto;
+                border-radius: 16px;
+            }
+
+            body .log-panel {
+                left: calc(var(--m-rail-w) + env(safe-area-inset-left, 0px) + 8px);
+                right: 8px;
+                width: auto;
+                height: 70vh;
+                bottom: 8px;
+                border-radius: 14px;
+                overflow: hidden;
+            }
+
+            body .patch-item {
+                padding: 11px 14px;
+                font-size: 13.5px;
+            }
+        }
+
 </style>
 </head>
 <body>
@@ -3183,9 +4222,9 @@
                     </div>
 
                     <div class="header-right">
-                        <button id="quickSaveSnapBtn" class="quick-save-snap-btn" title="Gravar pedais e knobs atuais no snapshot selecionado">Gravar Snap</button>
-                        <button id="headerEditSnapBtn" class="quick-save-snap-btn header-edit-snap-btn" title="Organizar e renomear os Snapshots deste preset">Editar</button>
-                        <button id="openSnapshotsBtn" class="snapshots-nav-btn" title="Entrar no Modo Snapshots de Palco">SNAPSHOTS</button>
+                        <button id="quickSaveSnapBtn" class="quick-save-snap-btn" title="Gravar pedais e knobs atuais no snapshot selecionado"><svg class="btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4" fill="currentColor"></circle></svg><span class="btn-lbl btn-lbl-desktop">Gravar Snap</span><span class="btn-lbl btn-lbl-mobile">Gravar</span></button>
+                        <button id="headerEditSnapBtn" class="quick-save-snap-btn header-edit-snap-btn" title="Organizar e renomear os Snapshots deste preset"><svg class="btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg><span class="btn-lbl">Editar</span></button>
+                        <button id="openSnapshotsBtn" class="snapshots-nav-btn" title="Entrar no Modo Snapshots de Palco"><svg class="btn-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg><span class="btn-lbl btn-lbl-desktop">SNAPSHOTS</span><span class="btn-lbl btn-lbl-mobile">Snapshots</span></button>
 
                         <button id="openPresetsDrawerBtn" class="header-icon-btn" title="Lista de Presets" aria-label="Lista de Presets">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3193,7 +4232,7 @@
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
                                 <line x1="3" y1="18" x2="21" y2="18"></line>
                             </svg>
-                        </button>
+                        <span class="btn-lbl btn-lbl-mobile">Presets</span></button>
                         <button id="logHeaderToggleBtn" class="header-icon-btn" title="Histórico de Logs" aria-label="Histórico de Logs">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -3201,13 +4240,13 @@
                                 <line x1="16" y1="13" x2="8" y2="13"></line>
                                 <line x1="16" y1="17" x2="8" y2="17"></line>
                             </svg>
-                        </button>
+                        <span class="btn-lbl btn-lbl-mobile">Logs</span></button>
                         <button id="advancedSettingsBtn" class="header-icon-btn settings-btn" title="Configurações" aria-label="Configurações">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="3"></circle>
                                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                             </svg>
-                        </button>
+                        <span class="btn-lbl btn-lbl-mobile">Ajustes</span></button>
                     </div>
                 </header>
 
