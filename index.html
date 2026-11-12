@@ -4840,6 +4840,49 @@
             white-space: nowrap;
         }
 
+        /* Organizer rows must fit the sheet: the name field shrinks, nothing is pushed off-screen */
+        .snap-organizer-row {
+            min-width: 0;
+        }
+
+        .snap-org-badge,
+        .snap-org-rhythm,
+        .snap-org-reorder-btns {
+            flex-shrink: 0;
+        }
+
+        .snap-org-input {
+            flex: 1 1 0;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .snap-org-reorder-btn {
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .snap-organizer-row {
+                gap: 8px;
+                padding: 8px 10px;
+            }
+
+            .snap-org-badge span:last-child {
+                white-space: nowrap;
+            }
+
+            .snap-org-reorder-btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 9px;
+                font-size: 12px;
+            }
+
+            .snap-org-input {
+                height: 38px;
+            }
+        }
+
 </style>
 </head>
 <body>
