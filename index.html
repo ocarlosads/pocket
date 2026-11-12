@@ -15690,7 +15690,14 @@
 
                 if (this.updateSnapshotsHeaderInfo) {
                     this.updateSnapshotsHeaderInfo();
-                    this.renderSnapshotsForCurrentPreset();
+                    // A tela ainda mostra o preset anterior: snaps criados agora são provisórios
+                    // e serão recapturados quando os dados reais deste preset chegarem do pedal.
+                    this._snapDefaultsProvisional = true;
+                    try {
+                        this.renderSnapshotsForCurrentPreset();
+                    } finally {
+                        this._snapDefaultsProvisional = false;
+                    }
                 }
 
                 // Sempre abrir no SNAP 1 por padrão se houver snapshots para este preset
@@ -16990,6 +16997,39 @@
                 return isNaN(fromSel) ? null : fromSel;
             }
 
+            getLiveAmpModel() {
+                const cloneToggle = document.getElementById('amp-clone-mode');
+                const fxId = this.getLiveModuleFxId(3);
+                if (fxId === null) return null;
+                return { clone: !!(cloneToggle && cloneToggle.classList.contains('on')), fxId };
+            }
+
+            // Snapshots auto-created while the screen still showed the previous preset are
+            // re-captured here, once the real state of this preset has arrived from the pedal.
+            refreshProvisionalSnapshots(presetBaseName) {
+                const snaps = this.snapshotsData?.[presetBaseName];
+                if (!Array.isArray(snaps) || !snaps.some(s => s.provisional)) return false;
+
+                const states = this.captureCurrentPresetStates();
+                const params = this.captureCurrentPresetFullParameters();
+                const order = this.getCurrentChainOrder();
+                const amp = this.getLiveAmpModel();
+
+                snaps.forEach(snap => {
+                    if (!snap.provisional) return;
+                    snap.states = JSON.parse(JSON.stringify(states));
+                    snap.params = JSON.parse(JSON.stringify(params));
+                    snap.order = [...order];
+                    if (amp) snap.amp = { ...amp }; else delete snap.amp;
+                    delete snap.provisional;
+                });
+
+                this._snapLiveKey = `${presetBaseName}:${this.activeSnapshotId || 1}`;
+                this.saveAllSnapshotsData();
+                this.log(`Snapshots iniciais de ${presetBaseName} criados a partir do estado real do preset`, 'info');
+                return true;
+            }
+
             markSharedSnapParams(uiModuleId) {
                 if (uiModuleId !== 3 && uiModuleId !== 5) return;
                 document.querySelectorAll(`#module-params-${uiModuleId} [data-alg-id]`).forEach(ctrl => {
@@ -17005,11 +17045,9 @@
                 targetSnap.states = this.captureCurrentPresetStates();
                 targetSnap.params = this.captureCurrentPresetFullParameters();
 
-                const cloneToggle = document.getElementById('amp-clone-mode');
-                const ampFxId = this.getLiveModuleFxId(3);
-                if (ampFxId !== null) {
-                    targetSnap.amp = { clone: !!(cloneToggle && cloneToggle.classList.contains('on')), fxId: ampFxId };
-                }
+                const liveAmp = this.getLiveAmpModel();
+                if (liveAmp) targetSnap.amp = liveAmp;
+                (this.snapshotsData?.[presetBaseName] || []).forEach(s => { delete s.provisional; });
 
                 const currentChainOrder = this.getCurrentChainOrder();
                 targetSnap.order = currentChainOrder;
@@ -17401,6 +17439,12 @@
                     { id: 7, title: 'SNAP 7', name: defaultNames[6], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[6], saved: true },
                     { id: 8, title: 'SNAP 8', name: defaultNames[7], states: JSON.parse(JSON.stringify(liveStates)), params: JSON.parse(JSON.stringify(liveParams)), order: [...liveOrder], rhythmicMultiplier: defaultMults[7], saved: true }
                 ];
+                if (this._snapDefaultsProvisional) {
+                    this.snapshotsData[presetBaseName].forEach(s => { s.provisional = true; });
+                } else {
+                    const liveAmp = this.getLiveAmpModel();
+                    if (liveAmp) this.snapshotsData[presetBaseName].forEach(s => { s.amp = { ...liveAmp }; });
+                }
                 // Freshly created snapshots are a copy of what is on screen, so the active one is "live"
                 this._snapLiveKey = `${presetBaseName}:${this.activeSnapshotId || 1}`;
                 this.saveAllSnapshotsData();
@@ -20185,6 +20229,11 @@
                     // Sincroniza snapshots e garante abertura sempre no SNAP 1 por padrão
                     const currentBaseName = document.getElementById('patchNumber')?.textContent.trim() || 'P01';
                     this.activeSnapshotId = 1;
+                    try {
+                        this.refreshProvisionalSnapshots(currentBaseName);
+                    } catch (e) {
+                        console.warn('refreshProvisionalSnapshots error', e);
+                    }
                     if (this.updateSnapshotsHeaderInfo) {
                         this.updateSnapshotsHeaderInfo();
                         this.renderSnapshotsForCurrentPreset();
