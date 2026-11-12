@@ -4499,6 +4499,31 @@
             background: rgba(0, 0, 0, 0.25);
         }
 
+        /* Snapshots covers the whole window (it used to inherit a container
+           84px shorter than the screen, leaving an empty band at the bottom) */
+        #snapshots-view {
+            position: fixed;
+            inset: 0;
+            width: auto;
+            height: auto;
+            padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+            box-sizing: border-box;
+        }
+
+        @media (orientation: portrait) {
+            /* Cards share all the free height; tap pad keeps a fixed, generous size */
+            #snapshots-view .snapshots-grid {
+                flex: 1 0 auto; /* never squeeze: very short phones scroll instead */
+                grid-template-rows: repeat(4, minmax(96px, 1fr)) auto !important;
+                padding: 10px 12px 12px !important;
+            }
+
+            #snapshots-view .snap-tap-tempo-column {
+                height: 96px !important;
+                margin-top: 2px !important;
+            }
+        }
+
 </style>
 </head>
 <body>
