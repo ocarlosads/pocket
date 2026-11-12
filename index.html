@@ -4163,6 +4163,278 @@
             }
         }
 
+
+        /* ======================================================== */
+        /* SNAPSHOTS STAGE REDESIGN                                 */
+        /* Only the ACTIVE snapshot is fully lit; the others stay   */
+        /* dark with a tint of their colour, so the live scene is   */
+        /* readable at a glance from standing height.               */
+        /* ======================================================== */
+        #snapshots-view {
+            background-color: #09090c;
+        }
+
+        #snapshots-view .snapshots-header {
+            height: 54px;
+            padding: 0 12px;
+            gap: 10px;
+            background: #09090c;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        #snapshots-view .snapshots-back-btn,
+        #snapshots-view .snapshots-edit-btn {
+            height: 38px;
+            padding: 0 14px;
+            flex-shrink: 0;
+            border-radius: 12px;
+            background: #16161b;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e4e4ec;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        #snapshots-view .snapshots-header-title {
+            min-width: 0;
+            font-size: 17px;
+        }
+
+        #snapshots-view .snapshots-header-title .patch-num {
+            flex-shrink: 0;
+            padding: 4px 8px;
+            border-radius: 8px;
+            background: rgba(255, 107, 53, 0.14);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        #snapshots-view .snapshots-header-title .patch-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #snapshots-view .snapshots-empty-state {
+            top: 54px;
+        }
+
+        /* Let the grid fill whatever is left under the header */
+        #snapshots-view .snapshots-grid {
+            counter-reset: snap;
+            flex: 1 1 auto;
+            height: auto !important;
+            min-height: 0 !important;
+        }
+
+        @media (orientation: landscape) {
+            #snapshots-view .snapshots-grid {
+                flex: 1 1 0;
+            }
+        }
+
+        /* --- Cards --- */
+        #snapshots-view .snapshot-card {
+            --rgb: 255, 255, 255;
+            --rgb2: 200, 200, 200;
+            counter-increment: snap;
+            align-items: stretch;
+            border-radius: 20px;
+            border: 1.5px solid rgba(var(--rgb), 0.36) !important;
+            background:
+                radial-gradient(130% 100% at 0% 0%, rgba(var(--rgb), 0.26), rgba(var(--rgb), 0.05) 55%, transparent 80%),
+                #131318 !important;
+            box-shadow: none !important;
+            opacity: 1;
+            filter: none;
+            transform: none;
+        }
+
+        #snapshots-view .snapshot-card[data-snap-id="1"] { --rgb: 45, 116, 255;  --rgb2: 15, 70, 217; }
+        #snapshots-view .snapshot-card[data-snap-id="2"] { --rgb: 255, 45, 96;   --rgb2: 201, 9, 56; }
+        #snapshots-view .snapshot-card[data-snap-id="3"] { --rgb: 255, 160, 20;  --rgb2: 214, 120, 0; }
+        #snapshots-view .snapshot-card[data-snap-id="4"] { --rgb: 16, 200, 96;   --rgb2: 0, 143, 58; }
+        #snapshots-view .snapshot-card[data-snap-id="5"] { --rgb: 160, 72, 245;  --rgb2: 107, 33, 168; }
+        #snapshots-view .snapshot-card[data-snap-id="6"] { --rgb: 14, 190, 220;  --rgb2: 8, 135, 170; }
+        #snapshots-view .snapshot-card[data-snap-id="7"] { --rgb: 240, 100, 24;  --rgb2: 194, 65, 12; }
+        #snapshots-view .snapshot-card[data-snap-id="8"] { --rgb: 232, 56, 132;  --rgb2: 190, 24, 93; }
+
+        #snapshots-view .snapshot-card:active {
+            transform: scale(0.97);
+        }
+
+        #snapshots-view .snapshot-card.active {
+            background: linear-gradient(155deg, rgb(var(--rgb)), rgb(var(--rgb2))) !important;
+            border-color: #ffffff !important;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.9), 0 14px 36px -8px rgba(var(--rgb), 0.9) !important;
+        }
+
+        #snapshots-view .snapshot-card.empty-slot {
+            opacity: 0.45;
+        }
+
+        /* Number badge (replaces the "SNAP n" text) + live marker */
+        #snapshots-view .snap-badge-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0;
+            letter-spacing: 0;
+            text-shadow: none;
+        }
+
+        #snapshots-view .snap-badge-label::before {
+            content: counter(snap);
+            display: grid;
+            place-items: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: rgb(var(--rgb));
+            color: #ffffff;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        #snapshots-view .snapshot-card.active .snap-badge-label::before {
+            background: #ffffff;
+            color: rgb(var(--rgb2));
+        }
+
+        #snapshots-view .snapshot-card.active .snap-badge-label::after {
+            content: 'ATIVO';
+            padding: 4px 7px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.28);
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        #snapshots-view .snap-rhythm-badge {
+            padding: 4px 7px;
+            border: none;
+            border-radius: 7px;
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.85);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        #snapshots-view .snapshot-card.active .snap-rhythm-badge {
+            background: rgba(0, 0, 0, 0.28);
+            color: #ffffff;
+        }
+
+        #snapshots-view .snap-main-name {
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: none;
+            text-decoration: none;
+        }
+
+        #snapshots-view .snapshot-card.active .snap-main-name {
+            color: #ffffff;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Pedal chips: "on" pedals pop, "off" pedals recede to plain text */
+        #snapshots-view .snap-pedal-chip {
+            padding: 3px 5px;
+            border-radius: 5px;
+            background: transparent;
+            box-shadow: none;
+            color: rgba(255, 255, 255, 0.26);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9.5px;
+            font-weight: 700;
+        }
+
+        #snapshots-view .snap-pedal-chip.on {
+            background: rgba(var(--rgb), 0.34);
+            color: #ffffff;
+        }
+
+        #snapshots-view .snapshot-card.active .snap-pedal-chip {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        #snapshots-view .snapshot-card.active .snap-pedal-chip.on {
+            background: rgba(0, 0, 0, 0.42);
+            color: #ffffff;
+        }
+
+        /* --- Tap tempo --- */
+        #snapshots-view .snap-tap-tempo-column {
+            border-radius: 20px !important;
+            background: linear-gradient(145deg, #ff7a3d, #f24e18) !important;
+            box-shadow: 0 12px 30px -14px rgba(255, 87, 34, 0.85) !important;
+        }
+
+        #snapshots-view .snap-tap-tempo-column.beat-flash {
+            box-shadow: 0 0 35px #ffffff, 0 0 50px #ff5722 !important;
+        }
+
+        #snapshots-view .snap-tap-title-tap,
+        #snapshots-view .snap-tap-title-tempo {
+            font-weight: 800 !important;
+            letter-spacing: 2px !important;
+        }
+
+        #snapshots-view .snap-tap-bpm-num {
+            font-weight: 800 !important;
+            letter-spacing: -1px;
+        }
+
+        #snapshots-view .snap-tap-bpm-unit {
+            letter-spacing: 1.5px;
+            opacity: 0.85;
+        }
+
+        /* Short landscape phones: tighter badge so the name keeps its room */
+        @media (orientation: landscape) and (max-height: 520px) {
+            #snapshots-view .snapshots-header {
+                height: 46px;
+            }
+
+            #snapshots-view .snapshots-back-btn,
+            #snapshots-view .snapshots-edit-btn {
+                height: 32px;
+                border-radius: 10px;
+            }
+
+            #snapshots-view .snapshots-empty-state {
+                top: 46px;
+            }
+
+            #snapshots-view .snapshot-card {
+                border-radius: 16px;
+            }
+
+            #snapshots-view .snap-badge-label::before {
+                width: 22px;
+                height: 22px;
+                border-radius: 7px;
+                font-size: 12px;
+            }
+
+            #snapshots-view .snapshot-card.active .snap-badge-label::after {
+                padding: 3px 6px;
+                font-size: 9px;
+                letter-spacing: 1px;
+            }
+
+            #snapshots-view .snap-tap-tempo-column {
+                border-radius: 16px !important;
+            }
+        }
+
 </style>
 </head>
 <body>
